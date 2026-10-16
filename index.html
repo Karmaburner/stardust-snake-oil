@@ -515,6 +515,11 @@
     if (h) return `${u(h, 'hour')} ${u(m % 60, 'minute')} ${u(s % 60, 'second')}`;
     return m ? `${u(m, 'minute')} ${u(s % 60, 'second')}` : u(s, 'second');
   };
+  // klokkeslett for tiden et kapittel tok, som 2:27:26
+  const clock = secs => {
+    const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = Math.floor(secs) % 60, p = n => String(n).padStart(2, '0');
+    return h ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`;
+  };
 
   // Priser
   const signCost = () => 100 * Math.pow(2, S.signLvl - 1);
@@ -893,7 +898,7 @@
     { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
       show: () => done('duft'), buy: () => { S.flags.drought = 1; S.droughtDay = today(); say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
     { id: 'grav', gild: true, title: 'Just add water.', cost: { level: 100 }, desc: 'The Order is waiting for your word',
-      show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } } },
+      show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } S.chapter1 = S.t; say(`End of Chapter 1. Time spent on the first chapter: ${clock(S.t / 10)}`); } },
     // Som Coherent Extrapolated Volition og megaprosjektene i Paperclips (samme nivåer og ops-priser).
     // Hvert prosjekt gir også bedre odds på børsen. Katten gir mest, en egen vits i stedet for skallethet i Paperclips.
     { id: 'bygdavil', gild: true, title: 'Unexpected Results', cost: { dreams: 500, coin: 3000, energy: 20000 }, desc: 'Customers report that the potions actually work. Nobody can explain why. (+1 Mastery)',
