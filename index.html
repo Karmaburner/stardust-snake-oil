@@ -1119,9 +1119,10 @@
   // Testmodus: vises bare når lenken slutter på #test, som de skjulte juksekodene i Paperclips
   const CHEATS = {
     money: () => { S.funds += 1000000; },
-    potatoes: () => { S.total += 1000000; S.unsold += 1000000; },
+    // i fase 2 er potions valutaen, og poengene kommer som gaver i stedet for Mastery
+    potatoes: () => { S.total += 1000000; if (S.flags.farm) S.unused += 1000000; else S.unsold += 1000000; },
     energy: () => { S.flags.comp = 1; S.energy = energyMax(); },
-    level: () => { S.flags.comp = 1; S.level += 10; },
+    level: () => { S.flags.comp = 1; if (S.flags.farm) S.gifts += 10; else S.level += 10; },
     dreams: () => { S.flags.comp = 1; S.dreaming = 1; S.dreams += 10000; },
     coin: () => { S.coin += 10000; },
     // fase 2 for testing: hopper over slutten på fase 1
@@ -1141,7 +1142,14 @@
       say('Test mode: “Just add water.” is ready in the project list.');
     },
   };
-  document.querySelectorAll('[data-cheat]').forEach(b => { b.onclick = () => { CHEATS[b.dataset.cheat](); update(); }; });
+  const cheatBtns = {};
+  document.querySelectorAll('[data-cheat]').forEach(b => { cheatBtns[b.dataset.cheat] = b; b.onclick = () => { CHEATS[b.dataset.cheat](); update(); }; });
+  // testknappene som bare gir mening i den ene fasen, skjules i den andre
+  const CHEAT_PHASE = { money: 1, end: 1, p2: 1, pots: 2, p2end: 2 };
+  const drawCheats = p2 => {
+    Object.entries(cheatBtns).forEach(([k, b]) => { b.hidden = CHEAT_PHASE[k] ? CHEAT_PHASE[k] !== (p2 ? 2 : 1) : false; });
+    if (cheatBtns.level) cheatBtns.level.textContent = p2 ? '+10 gifts' : '+10 Mastery';
+  };
   const showTest = () => { $('testBar').hidden = location.hash !== '#test'; };
   window.addEventListener('hashchange', showTest); showTest();
   $('btnCoffee').onclick = () => { coffeeBreak(); update(); };
@@ -1230,6 +1238,7 @@
     // fase 2: butikken og pengene er borte, eliksirene er valutaen, og jorda tappes
     const p2 = !!S.flags.farm;
     $('shopBox').hidden = p2;
+    drawCheats(p2);
     $('buyWaterBox').hidden = p2;
     $('unusedRow').hidden = !p2; $('unusedPot').textContent = big(S.unused);
     $('waterLabel').textContent = p2 ? 'Essence' : 'Water'; $('waterUnit').textContent = p2 ? '' : ' liters';
