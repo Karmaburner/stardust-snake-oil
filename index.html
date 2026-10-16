@@ -1042,13 +1042,20 @@
     note('shadow', () => done('bygdavil'), [900, 1400], 'CUSTOMER COMPLAINT: Man demands refund after accidentally growing a second shadow.'),
     // nikk til Day of the Tentacle (Kenneths ønske): hint, ikke sitater
     note('drfred', () => done('skolemat') || done('forsoning') || done('vannverk'), [100, 300], 'LOCAL SCIENTIST UNVEILS THREE-STEP PLAN TO SAVE THE WORLD: He has not yet found step one.'),
+    // nikk til Hitchhiker's Guide (Kenneths ønske): 42 og Marvin
+    note('fortytwo', () => S.total >= 1e6, [100, 300], 'LEARNED SOCIETY ASKS WHAT THE ELIXIR ACTUALLY CURES: The answer was forty-two. Nobody dared ask a follow-up question.'),
+    note('marvin', () => done('gps'), [150, 400], 'CAULDRON WALKER FILES A COMPLAINT: A brain the size of a barrel, and they have it stirring cough syrup.'),
     // tørken etter Order of the Serpent: regnet kommer ikke igjen, og avisa teller dagene
     { id: 'dry1', when: () => S.flags.drought && dryDays() >= 250, wait: [0, 0], run: () => say(`NOT A CLOUD IN SIGHT: ${num(dryDays())} days without rain. Local farmers report unusually dry conditions. The well keeper insists there is nothing to worry about.`) },
     note('midnight', () => done('menighet'), [300, 700], 'PUBLIC NOTICE: Residents advised not to drink from the well after midnight. No reason provided.'),
+    // som delfinene i Hitchhiker's Guide: dyrene drar før katastrofen
+    note('frogs', () => done('menighet'), [500, 1000], 'THE FROGS HAVE LEFT THE POND: They left a note thanking everyone for the flies.'),
     { id: 'dry2', when: () => S.flags.drought && dryDays() >= 600, wait: [0, 0], run: () => say(`DRY SPELL CONTINUES: ${num(dryDays())} days without rain. The farmers pray for rain. The Order of the Serpent prays for something else.`) },
     { id: 'dry3', when: () => S.flags.drought && dryDays() >= 1000, wait: [0, 0], run: () => say(`WELLS RUNNING LOW: ${num(dryDays())} days without rain. The well keeper has been seen lowering a lantern into his well at night.`) },
     { id: 'dry4', when: () => S.flags.drought && dryDays() >= 1600, wait: [0, 0], run: () => say(`RECORD DROUGHT: ${num(dryDays())} days without rain. Scientists say the water is not drying up. It is going down.`) },
     // fase 2, flere nikk til Day of the Tentacle
+    // som planene om å rive jorda i Hitchhiker's Guide
+    Object.assign(note('leopard', () => S.flags.p2init, [100, 250], 'PLANNING NOTICE: The plans to empty every well on Earth were on public display for months. In a locked cabinet. In a disused cellar. Behind a sign saying Beware of the Leopard.'), { p: 2 }),
     Object.assign(note('hamster', () => S.flags.p2init, [300, 600], 'HAMSTER THAWED IN MICROWAVE: Reportedly fine. Somewhat confused.'), { p: 2 }),
     Object.assign(note('tentacles', () => S.works >= 1, [100, 300], 'RUNOFF BEHIND THE BOTTLING WORKS: Two brothers drank from it. One turned green and worried. The other turned purple and wants to take on the world.'), { p: 2 }),
     Object.assign(note('outhouse', () => done('supply'), [100, 300], 'OUTHOUSE REPORTED MISSING: Owner insists it was there yesterday. And possibly tomorrow.'), { p: 2 }),
