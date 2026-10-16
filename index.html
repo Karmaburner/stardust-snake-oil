@@ -160,6 +160,9 @@
   .flask.p1 { --potion: #a78bdb; }
   .flask.p2 { --potion: #8f6fd6; }
   .flask.p3 { --potion: #4f8f7a; }
+  /* et kort slangegrønt blink av seg selv etter A Voice from Below. Fargen glir sakte tilbake */
+  .flask.omen { --potion: #2fa84a; }
+  .flask.omen .potion { transition: fill .12s ease, transform 2.5s ease-in; }
   .flask .potion { fill: var(--potion); transition: fill 4s ease, transform 2.5s ease-in; animation: drift 30s ease-in-out infinite; }
   .flask.drained .potion { transform: translateY(60px); }
   .flask .bubble { fill: #fffaf2; stroke: #4a2f78; stroke-opacity: .35; stroke-width: .6; opacity: 0; animation: rise linear infinite; }
@@ -175,7 +178,7 @@
   @media (prefers-reduced-motion: reduce) {
     .flask .bubble { animation: none; opacity: .8; transform: translateY(calc(var(--rise) * var(--f))); }
     .flask #vapor.on circle { animation: none; opacity: .25; }
-    .flask .potion { animation: none; transition: none; }
+    .flask .potion, .flask.omen .potion { animation: none; transition: none; }
   }
 
   .bars { display: flex; justify-content: center; gap: 30px; padding: 5px 0 3px; border-bottom: 1px dotted var(--ink-2); }
@@ -473,6 +476,8 @@
     // regnskapsføreren: faktisk inntekt per sekund de siste 10 sekundene, som RevTracker i Paperclips
     income: 0, incomeNow: 0, incomeTracker: [], avgRev: 0, avgSales: 0,
     acc: 0, flags: {}, done: [], milestones: 0,
+    // Fortellende hendelser: når hver ble utløst, siste avisnotis, ryktene etter Unexpected Results og tørken etter Order of the Serpent
+    story: {}, storyDay: 0, surgeDay: null, rainDay: 0, droughtDay: 0,
     // Fase 2: samme tall som Paperclips (matter, droner, fabrikker, strøm og svermen), med våre navn
     unused: 0, matter: 6e27, rawMagic: 0, diviners: 0, distillers: 0, works: 0, worksCost: 1e8,
     divRate: 26180337, disRate: 16180339, worksRate: 1e9, worksBoost: 1, droneBoost: 1,
@@ -495,6 +500,8 @@
   if (S.done.includes('kunde')) { S.demandBoost /= 1.3; S.done = S.done.filter(id => id !== 'kunde'); }
   if (S.waterPerPotato < 1) { S.waterSupply = Math.round(1000 / S.waterPerPotato); S.water = S.water / S.waterPerPotato; S.waterPerPotato = 1; }
   if (S.done.includes('tonne')) { S.waterBase /= 0.7; S.waterFloor /= 0.7; S.done = S.done.filter(id => id !== 'tonne'); }
+  // tørken kom 2026-10-16: den som alt har Order of the Serpent, får tørke fra i dag
+  if (S.done.includes('menighet') && !S.flags.drought) { S.flags.drought = 1; S.droughtDay = Math.floor(S.t / 10); }
 
   // Logg med fem linjer
   const logLines = [...$('log').children];
@@ -514,7 +521,14 @@
   const boyCost = () => Math.pow(1.1, S.boys) + 5;
   const tractorCost = () => Math.pow(1.07, S.tractors) * 1000;
   // Samme formel som Paperclips: vises ganget med 10 som prosent, uten tak
-  const demand = () => (0.8 / S.price) * Math.pow(1.1, S.signLvl - 1) * S.mktEff * S.demandBoost;
+  const demand = () => (0.8 / S.price) * Math.pow(1.1, S.signLvl - 1) * S.mktEff * S.demandBoost * surge();
+  // Ryktene etter Unexpected Results (vår egen vri): +35 % etterspørsel i 15 dager, som så ebber ut over 105 dager
+  const today = () => Math.floor(S.t / 10);
+  const surge = () => {
+    if (S.surgeDay == null) return 1;
+    const t = today() - S.surgeDay;
+    return t < 0 ? 1 : t < 15 ? 1.35 : 1 + 0.35 * Math.max(0, 1 - (t - 15) / 105);
+  };
   const rate = () => S.boys * S.boyBoost + S.tractors * 500 * S.tractorBoost;
 
   // Som calculateRev i Paperclips: oppdateres én gang i sekundet. Er etterspørselen større enn lageret,
@@ -877,7 +891,7 @@
       show: () => done('slagord'), buy: () => { S.mktEff *= 10; say('The same man is cured every night. Nobody notices it is always him.'); } },
     // Slutten på fase 1, som HypnoDrones og Release the HypnoDrones i Paperclips
     { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
-      show: () => done('duft'), buy: () => { say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
+      show: () => done('duft'), buy: () => { S.flags.drought = 1; S.droughtDay = today(); say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
     { id: 'grav', gild: true, title: 'Just add water.', cost: { level: 100 }, desc: 'The Order is waiting for your word',
       show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say('End of demo. Phase 2 is coming.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } } },
     // Som Coherent Extrapolated Volition og megaprosjektene i Paperclips (samme nivåer og ops-priser).
@@ -991,6 +1005,58 @@
     [() => S.total >= 100000, () => `100,000 potions brewed in ${time()}`],
     [() => S.total >= 1000000, () => `1,000,000 potions brewed in ${time()}`],
   ];
+
+  // Fortellende hendelser (finnes ikke i Paperclips, 2026-10-16): historien siver inn i spillet av seg selv, uten at
+  // spilleren klikker. Hver hendelse har en betingelse (when), en ventetid i dager etter at betingelsen ble sann (wait),
+  // og kan falle bort (until). Avisnotisene holder minst STORY_GAP dager mellom seg, så det rare ikke skjer hele tiden.
+  // «urgent» venter ikke på de andre, og «quiet» (kolben) teller ikke som notis. Bare i fase 1.
+  // S.story[id]: dagen den skal skje, true når den har skjedd, false når den falt bort.
+  const STORY_GAP = 250;
+  const dryDays = () => today() - Math.max(S.rainDay || 0, S.droughtDay || 0);
+  let omenTimer = 0;
+  const omen = () => {
+    const f = $('flask'); f.classList.toggle('omen', true);
+    clearTimeout(omenTimer); omenTimer = setTimeout(() => f.classList.toggle('omen', false), calmMotion() ? 2500 : 600);
+  };
+  const before = () => done('bygdavil');
+  const note = (id, when, wait, text, until) => ({ id, when, wait, until, run: () => say(text) });
+  const STORY = [
+    { id: 'rumours', urgent: true, when: () => done('bygdavil'), wait: [8, 15],
+      run: () => { S.surgeDay = today(); say('MIRACLE RUMOURS: Crowds queue outside the shop before dawn. Nobody knows who started the story.'); } },
+    { id: 'omen1', quiet: true, when: () => done('drom6'), wait: [20, 60], ready: () => !document.hidden && S.water >= S.waterPerPotato, run: omen },
+    { id: 'omen2', quiet: true, when: () => S.story.omen1 === true, wait: [30, 60], ready: () => !document.hidden && S.water >= S.waterPerPotato, run: omen },
+    // før Unexpected Results: ingenting virker
+    note('taste', () => S.total >= 20000, [50, 150], 'CUSTOMER REVIEW: Remedy tastes exactly like water. Customer has bought three more bottles to make sure.', before),
+    note('cough', () => done('slagord'), [100, 300], 'CUSTOMER COMPLAINT: Woman says her cough did not move to her neighbour. The neighbour is also disappointed.', before),
+    note('barrel', () => done('sort'), [100, 300], 'LETTER TO THE EDITOR: Why do the love potion and the gout cure come from the same barrel? The reader has since been offered a discount.', before),
+    // etter Unexpected Results: det virker, og det er noe galt
+    note('chemist', () => done('bygdavil'), [150, 250], 'FORMER CHEMIST REFUSES TO COMMENT: Asked about the miraculous properties of your latest remedy, he turned pale and locked his door.'),
+    note('results', () => done('bygdavil'), [300, 600], 'PRODUCT REVIEW: Customer reports excellent results. Refuses to specify which results.'),
+    note('whisper', () => done('bygdavil') && done('drom6'), [400, 900], 'UNUSUAL INCIDENT: Man claims bottle whispered his name. Company confirms this is not an advertised feature.'),
+    note('snakes', () => done('bygdavil'), [600, 1000], 'LOCAL MIRACLE: Woman claims remedy cured her fear of snakes. Snakes reportedly disappointed.'),
+    note('shadow', () => done('bygdavil'), [900, 1400], 'CUSTOMER COMPLAINT: Man demands refund after accidentally growing a second shadow.'),
+    // tørken etter Order of the Serpent: regnet kommer ikke igjen, og avisa teller dagene
+    { id: 'dry1', when: () => S.flags.drought && dryDays() >= 250, wait: [0, 0], run: () => say(`NOT A CLOUD IN SIGHT: ${num(dryDays())} days without rain. Local farmers report unusually dry conditions. The well keeper insists there is nothing to worry about.`) },
+    note('midnight', () => done('menighet'), [300, 700], 'PUBLIC NOTICE: Residents advised not to drink from the well after midnight. No reason provided.'),
+    { id: 'dry2', when: () => S.flags.drought && dryDays() >= 600, wait: [0, 0], run: () => say(`DRY SPELL CONTINUES: ${num(dryDays())} days without rain. The farmers pray for rain. The Order of the Serpent prays for something else.`) },
+    { id: 'dry3', when: () => S.flags.drought && dryDays() >= 1000, wait: [0, 0], run: () => say(`WELLS RUNNING LOW: ${num(dryDays())} days without rain. The well keeper has been seen lowering a lantern into his well at night.`) },
+    { id: 'dry4', when: () => S.flags.drought && dryDays() >= 1600, wait: [0, 0], run: () => say(`RECORD DROUGHT: ${num(dryDays())} days without rain. Scientists say the water is not drying up. It is going down.`) },
+  ];
+  const storyTick = () => {
+    const st = S.story, d = today();
+    for (const e of STORY) {
+      if (st[e.id] === true || st[e.id] === false) continue;
+      if (st[e.id] === undefined) {
+        if (!e.when()) continue;
+        st[e.id] = d + e.wait[0] + Math.floor(Math.random() * (e.wait[1] - e.wait[0] + 1));
+      }
+      if (e.until && e.until()) { st[e.id] = false; continue; }
+      if (d < st[e.id] || (e.ready && !e.ready())) continue;
+      if (!e.quiet && !e.urgent && d - S.storyDay < STORY_GAP) continue;
+      st[e.id] = true; e.run();
+      if (!e.quiet) S.storyDay = d;
+    }
+  };
 
   // Knapper
   $('btnGrow').onclick = () => { if (grow(1)) clickBubble(); update(); };
@@ -1127,7 +1193,7 @@
     $('barMadeN').textContent = num(Math.round(made)); $('barWantN').textContent = num(Math.round(want));
     $('signLvl').textContent = S.signLvl; $('signCost').textContent = kr(signCost());
     $('rate').textContent = num(Math.round(S.water >= S.waterPerPotato ? rate() : 0));
-    $('water').textContent = num(S.water); $('waterCost').textContent = num(S.waterCost); $('waterSupply').textContent = num(S.waterSupply); $('rain').textContent = S.rainLeft > 0 ? '(raining)' : '';
+    $('water').textContent = num(S.water); $('waterCost').textContent = num(S.waterCost); $('waterSupply').textContent = num(S.waterSupply); $('rain').textContent = S.rainLeft > 0 ? '(raining)' : S.flags.drought && S.story.dry1 === true && !S.flags.dry ? `(no rain for ${num(dryDays())} days)` : '';
     $('boys').textContent = S.boys; $('boyCost').textContent = kr(boyCost());
     $('tractors').textContent = S.tractors; $('tractorCost').textContent = kr(tractorCost());
 
@@ -1368,14 +1434,16 @@
     S.waterTimer++;
     if (S.waterTimer > 250 && S.waterBase > S.waterFloor) { S.waterBase -= S.waterBase / 1000; S.waterTimer = 0; }
     // regn er vår egen vri: i snitt hvert annet minutt regner det i 20 sekunder, og vannet er 40 % billigere så lenge det varer
+    // etter Order of the Serpent kommer det ikke mer regn (tørken). Vannet koster som før, bare rabatten forsvinner
     if (S.rainLeft > 0) {
-      S.rainLeft--;
+      S.rainLeft--; S.rainDay = today();
       S.waterCost = Math.ceil(S.waterBase * 0.6);
       if (S.rainLeft === 0) { S.waterCounter++; S.waterCost = Math.ceil(S.waterBase + 6 * Math.sin(S.waterCounter)); }
     } else {
       if (Math.random() < 0.015) { S.waterCounter++; S.waterCost = Math.ceil(S.waterBase + 6 * Math.sin(S.waterCounter)); }
-      if (Math.random() < 1 / 1200) { S.rainLeft = 200; S.waterCost = Math.ceil(S.waterBase * 0.6); }
+      if (!S.flags.drought && Math.random() < 1 / 1200) { S.rainLeft = 200; S.waterCost = Math.ceil(S.waterBase * 0.6); }
     }
+    if (!S.flags.farm && S.t % 10 === 0) storyTick();
     // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Stamina × 1 000
     if (!S.flags.farm) levelSource().check();
     if (S.flags.exchange) {
