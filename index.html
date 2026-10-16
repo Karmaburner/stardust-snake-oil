@@ -1014,7 +1014,7 @@
   // Fortellende hendelser (finnes ikke i Paperclips, 2026-10-16): historien siver inn i spillet av seg selv, uten at
   // spilleren klikker. Hver hendelse har en betingelse (when), en ventetid i dager etter at betingelsen ble sann (wait),
   // og kan falle bort (until). Avisnotisene holder minst STORY_GAP dager mellom seg, så det rare ikke skjer hele tiden.
-  // «urgent» venter ikke på de andre, og «quiet» (kolben) teller ikke som notis. Bare i fase 1.
+  // «urgent» venter ikke på de andre, og «quiet» (kolben) teller ikke som notis. «p: 2» betyr fase 2, ellers fase 1.
   // S.story[id]: dagen den skal skje, true når den har skjedd, false når den falt bort.
   const STORY_GAP = 250;
   const dryDays = () => today() - Math.max(S.rainDay || 0, S.droughtDay || 0);
@@ -1040,17 +1040,23 @@
     note('whisper', () => done('bygdavil') && done('drom6'), [400, 900], 'UNUSUAL INCIDENT: Man claims bottle whispered his name. Company confirms this is not an advertised feature.'),
     note('snakes', () => done('bygdavil'), [600, 1000], 'LOCAL MIRACLE: Woman claims remedy cured her fear of snakes. Snakes reportedly disappointed.'),
     note('shadow', () => done('bygdavil'), [900, 1400], 'CUSTOMER COMPLAINT: Man demands refund after accidentally growing a second shadow.'),
+    // nikk til Day of the Tentacle (Kenneths ønske): hint, ikke sitater
+    note('drfred', () => done('skolemat') || done('forsoning') || done('vannverk'), [100, 300], 'LOCAL SCIENTIST UNVEILS THREE-STEP PLAN TO SAVE THE WORLD: He has not yet found step one.'),
     // tørken etter Order of the Serpent: regnet kommer ikke igjen, og avisa teller dagene
     { id: 'dry1', when: () => S.flags.drought && dryDays() >= 250, wait: [0, 0], run: () => say(`NOT A CLOUD IN SIGHT: ${num(dryDays())} days without rain. Local farmers report unusually dry conditions. The well keeper insists there is nothing to worry about.`) },
     note('midnight', () => done('menighet'), [300, 700], 'PUBLIC NOTICE: Residents advised not to drink from the well after midnight. No reason provided.'),
     { id: 'dry2', when: () => S.flags.drought && dryDays() >= 600, wait: [0, 0], run: () => say(`DRY SPELL CONTINUES: ${num(dryDays())} days without rain. The farmers pray for rain. The Order of the Serpent prays for something else.`) },
     { id: 'dry3', when: () => S.flags.drought && dryDays() >= 1000, wait: [0, 0], run: () => say(`WELLS RUNNING LOW: ${num(dryDays())} days without rain. The well keeper has been seen lowering a lantern into his well at night.`) },
     { id: 'dry4', when: () => S.flags.drought && dryDays() >= 1600, wait: [0, 0], run: () => say(`RECORD DROUGHT: ${num(dryDays())} days without rain. Scientists say the water is not drying up. It is going down.`) },
+    // fase 2, flere nikk til Day of the Tentacle
+    Object.assign(note('hamster', () => S.flags.p2init, [300, 600], 'HAMSTER THAWED IN MICROWAVE: Reportedly fine. Somewhat confused.'), { p: 2 }),
+    Object.assign(note('tentacles', () => S.works >= 1, [100, 300], 'RUNOFF BEHIND THE BOTTLING WORKS: Two brothers drank from it. One turned green and worried. The other turned purple and wants to take on the world.'), { p: 2 }),
+    Object.assign(note('outhouse', () => done('supply'), [100, 300], 'OUTHOUSE REPORTED MISSING: Owner insists it was there yesterday. And possibly tomorrow.'), { p: 2 }),
   ];
   const storyTick = () => {
-    const st = S.story, d = today();
+    const st = S.story, d = today(), phase = S.flags.farm ? 2 : 1;
     for (const e of STORY) {
-      if (st[e.id] === true || st[e.id] === false) continue;
+      if ((e.p || 1) !== phase || st[e.id] === true || st[e.id] === false) continue;
       if (st[e.id] === undefined) {
         if (!e.when()) continue;
         st[e.id] = d + e.wait[0] + Math.floor(Math.random() * (e.wait[1] - e.wait[0] + 1));
@@ -1448,7 +1454,7 @@
       if (Math.random() < 0.015) { S.waterCounter++; S.waterCost = Math.ceil(S.waterBase + 6 * Math.sin(S.waterCounter)); }
       if (!S.flags.drought && Math.random() < 1 / 1200) { S.rainLeft = 200; S.waterCost = Math.ceil(S.waterBase * 0.6); }
     }
-    if (!S.flags.farm && S.t % 10 === 0) storyTick();
+    if (!S.flags.heart && S.t % 10 === 0) storyTick();
     // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Stamina × 1 000
     if (!S.flags.farm) levelSource().check();
     if (S.flags.exchange) {
