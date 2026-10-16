@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -360,7 +360,7 @@
       <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
       <div id="log" aria-live="polite"><div></div><div></div><div></div><div></div><div></div></div>
       <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" class="idle" aria-live="polite"></p></div>
-      <div class="colophon"><span class="sub" id="resetNote"></span><button id="btnReset" class="link" type="button">Start over</button></div>
+      <div class="colophon"><span class="sub" id="resetNote"></span><button id="btnTheme" class="link" type="button" data-tip="Switch between dark lamplight and light daylight.">Daylight</button> · <button id="btnReset" class="link" type="button">Start over</button></div>
     </section>
 
     <div class="col" id="colMarket">
@@ -441,6 +441,11 @@
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  // Mørk «kro» er standard (Kenneths valg). Lenken nederst i avisa bytter til lyst papir, og valget huskes på enheten
+  const root = document.documentElement;
+  const setTheme = t => { if (root && root.setAttribute) root.setAttribute('data-theme', t); const b = $('btnTheme'); if (b) b.textContent = t === 'dark' ? 'Daylight' : 'Lamplight'; };
+  try { setTheme(localStorage.getItem('ssoi-theme') || 'dark'); } catch (e) { setTheme('dark'); }
+  $('btnTheme').onclick = () => { const t = root && root.getAttribute && root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; setTheme(t); try { localStorage.setItem('ssoi-theme', t); } catch (e) {} };
   // gull med to desimaler (heter kr i koden fra potettiden)
   const kr = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const num = n => Math.floor(n).toLocaleString('en-US');
