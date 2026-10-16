@@ -893,7 +893,7 @@
     { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
       show: () => done('duft'), buy: () => { S.flags.drought = 1; S.droughtDay = today(); say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
     { id: 'grav', gild: true, title: 'Just add water.', cost: { level: 100 }, desc: 'The Order is waiting for your word',
-      show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say('End of demo. Phase 2 is coming.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } } },
+      show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } } },
     // Som Coherent Extrapolated Volition og megaprosjektene i Paperclips (samme nivåer og ops-priser).
     // Hvert prosjekt gir også bedre odds på børsen. Katten gir mest, en egen vits i stedet for skallethet i Paperclips.
     { id: 'bygdavil', gild: true, title: 'Unexpected Results', cost: { dreams: 500, coin: 3000, energy: 20000 }, desc: 'Customers report that the potions actually work. Nobody can explain why. (+1 Mastery)',
@@ -1210,7 +1210,6 @@
     // fase 2: butikken og pengene er borte, eliksirene er valutaen, og jorda tappes
     const p2 = !!S.flags.farm;
     $('shopBox').hidden = p2;
-    ['autoWaterBox', 'boyBox', 'tractorBox'].forEach(id => { if (p2) $(id).hidden = true; });
     $('buyWaterBox').hidden = p2;
     $('unusedRow').hidden = !p2; $('unusedPot').textContent = big(S.unused);
     $('waterLabel').textContent = p2 ? 'Essence' : 'Water'; $('waterUnit').textContent = p2 ? '' : ' liters';
@@ -1252,7 +1251,7 @@
     $('giftRowP').hidden = !p2; $('giftsP').textContent = num(S.gifts);
     $('revBox').hidden = !S.flags.rev;
     $('avgSales').textContent = num(Math.round(S.avgSales)); $('avgRev').textContent = kr(S.avgRev);
-    $('autoWaterBox').hidden = !S.flags.autoWater; $('autoWaterStatus').textContent = S.autoWaterOn ? 'ON' : 'OFF';
+    $('autoWaterBox').hidden = p2 || !S.flags.autoWater; $('autoWaterStatus').textContent = S.autoWaterOn ? 'ON' : 'OFF';
     $('btnSign').disabled = S.funds < signCost();
     $('btnBoy').disabled = S.funds < boyCost();
     $('btnTractor').disabled = S.funds < tractorCost();
@@ -1317,7 +1316,8 @@
     if (!S.flags.comp && (S.total >= 2000 || stuck())) { S.flags.comp = 1; say('New powers awakened. Mana can be spent on projects, and when it is full, inspiration comes.'); }
     // Inspirasjonen kommer av seg selv når Bonden har åpnet (Kenneths valg, ikke et eget prosjekt som i Paperclips)
     if (S.flags.comp) S.dreaming = 1;
-    $('boyBox').hidden = !S.flags.boy; $('tractorBox').hidden = !S.flags.tractor;
+    // lærlinger, Cauldron Walkers og Dowsing Rod hører til fase 1 og skal ikke komme tilbake i fase 2
+    $('boyBox').hidden = p2 || !S.flags.boy; $('tractorBox').hidden = p2 || !S.flags.tractor;
     $('farmerBox').hidden = !S.flags.comp; $('projBox').hidden = !S.flags.comp;
 
     for (const p of PROJECTS) {
