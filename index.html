@@ -1057,6 +1057,8 @@
     // som planene om å rive jorda i Hitchhiker's Guide
     Object.assign(note('leopard', () => S.flags.p2init, [100, 250], 'PLANNING NOTICE: The plans to empty every well on Earth were on public display for months. In a locked cabinet. In a disused cellar. Behind a sign saying Beware of the Leopard.'), { p: 2 }),
     Object.assign(note('hamster', () => S.flags.p2init, [300, 600], 'HAMSTER THAWED IN MICROWAVE: Reportedly fine. Somewhat confused.'), { p: 2 }),
+    // leoparden kommer tilbake som gjennomgangsvits (Kenneths ønske)
+    Object.assign(note('leopard2', () => S.story.leopard === true, [1200, 1800], 'LEOPARD FOUND IN CELLAR: Says nobody ever told it about any plans.'), { p: 2 }),
     Object.assign(note('tentacles', () => S.works >= 1, [100, 300], 'RUNOFF BEHIND THE BOTTLING WORKS: Two brothers drank from it. One turned green and worried. The other turned purple and wants to take on the world.'), { p: 2 }),
     Object.assign(note('outhouse', () => done('supply'), [100, 300], 'OUTHOUSE REPORTED MISSING: Owner insists it was there yesterday. And possibly tomorrow.'), { p: 2 }),
   ];
