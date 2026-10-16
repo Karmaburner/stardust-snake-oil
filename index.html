@@ -1,0 +1,1407 @@
+<title>Stardust Snake Oil Inc.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Rye&display=swap" rel="stylesheet">
+<style>
+  /* Utseende: apotekerens etikett fra 1800-tallet (gulnet papir, blekk og oksblod), så spillet ser ut som noe eget og ikke som Paperclips.
+     Avisa «The Daily Elixir» er loggen. På smale skjermer kommer avisa øverst, så historien alltid synes. */
+  :root {
+    --paper: #f2e8d0; --paper-2: #e9dcbc; --ink: #2a1c10; --ink-2: #5c4630; --blood: #7c211b; --brass: #9a7a3a;
+    --blood-2: #9a2c23; --bubble: #f6ecd6; --on-blood: #f6ecd6; --rule: #2a1c10;
+    --f-mast: "Rye", Georgia, serif; --f-head: "IM Fell English SC", Georgia, serif; --f-body: "EB Garamond", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --paper: #1d1610; --paper-2: #2a2017; --ink: #ecdfc2; --ink-2: #b9a685; --blood: #c4574c; --blood-2: #d9726a; --bubble: #f6ecd6; --brass: #c9a55e; --on-blood: #1d1610; --rule: #ecdfc2; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --paper: #1d1610; --paper-2: #2a2017; --ink: #ecdfc2; --ink-2: #b9a685; --blood: #c4574c; --blood-2: #d9726a; --bubble: #f6ecd6; --brass: #c9a55e; --on-blood: #1d1610; --rule: #ecdfc2; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.3; font-variant-numeric: lining-nums tabular-nums; padding: 10px 16px 40px; }
+  body > * { max-width: 1120px; margin-left: auto; margin-right: auto; }
+
+  /* Slutten på fase 1: ekstrautgave av avisa over hele skjermen, og en sprekk i etiketten med slangeskinn under */
+  .extra { position: fixed; inset: 0; z-index: 40; background: rgba(20, 14, 8, .6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .extra-page { background: var(--paper); color: var(--ink); border: 2px solid var(--rule); box-shadow: 0 0 0 6px var(--paper), 0 0 0 8px var(--rule);
+    max-width: 560px; width: 100%; padding: 18px 24px 22px; text-align: center; transform-origin: top center; animation: unfold .9s ease-out; }
+  .extra-page .name { font-family: var(--f-mast); font-size: 30px; line-height: 1; }
+  .extra-page .date { font-family: var(--f-head); font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 3px 0; margin: 6px 0 14px; }
+  .extra-page h2 { font-family: var(--f-mast); font-weight: 400; color: var(--blood); font-size: clamp(30px, 7vw, 48px); line-height: 1.05; margin: 0 0 14px; }
+  .extra-page .nl { opacity: 0; transition: opacity .8s ease; margin: 6px 0; font-size: 17px; }
+  .extra-page .nl.show { opacity: 1; }
+  .extra-page .last { font-weight: 600; font-style: italic; font-size: 20px; margin-top: 16px; }
+  .extra-page button { margin-top: 14px; }
+  @keyframes unfold { from { transform: scaleY(.05); opacity: 0; } to { transform: none; opacity: 1; } }
+  .mast { position: relative; }
+  .crack { position: absolute; left: -6px; top: 0; height: 100%; width: calc(100% + 12px); pointer-events: none; }
+  .crack svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .flask.still .potion { transition: none; }
+  .crack.opening { animation: crackOpen 1.4s ease-out; transform-origin: left center; }
+  @keyframes crackOpen { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  body.ending .gauge > i { transition: width 2.5s ease-in; }
+  @media (prefers-reduced-motion: reduce) { .extra-page { animation: none; } .extra-page .nl { transition: none; } .crack.opening { animation: none; } }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; border-top: 3px double var(--rule); border-bottom: 3px double var(--rule); padding: 8px 6px; }
+  .mast .over { font-family: var(--f-head); font-size: 13px; letter-spacing: .12em; color: var(--ink-2); }
+  .mast h1 { font-family: var(--f-mast); font-weight: 400; color: var(--blood); font-size: clamp(26px, 4vw, 40px); line-height: 1.05; margin: 2px 0; }
+  .mast .under { font-style: italic; color: var(--ink-2); font-size: 15px; }
+  @media (max-width: 640px) { .top { justify-content: center; text-align: center; } }
+  main { margin-top: 12px; }
+  .orn { color: var(--brass); margin: 0 .4em; }
+
+  .brew { display: flex; align-items: center; justify-content: center; gap: 22px; }
+  .count { text-align: center; }
+  .count .lbl { font-family: var(--f-head); letter-spacing: .1em; color: var(--ink-2); }
+  .count .lbl { font-size: 14px; }
+  .count .big { font-size: clamp(30px, 4.5vw, 44px); font-weight: 600; line-height: 1; }
+  button.seal { width: 88px; height: 88px; border-radius: 50%; border: 2px solid var(--blood); box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--blood); background: var(--blood); color: var(--on-blood); font-family: var(--f-head); font-size: 16px; line-height: 1.1; padding: 0; transition: transform .12s ease, background-color .12s ease; }
+  button.seal:hover:not(:disabled) { background: var(--blood-2); border-color: var(--blood-2); transform: scale(1.06); }
+  button.seal:active:not(:disabled) { transform: scale(.97); }
+  button.seal:focus-visible { outline: 2px solid var(--ink); outline-offset: 9px; }
+  @media (prefers-reduced-motion: reduce) { button.seal { transition: none; } button.seal:hover:not(:disabled), button.seal:active:not(:disabled) { transform: none; } }
+
+  .grid { display: grid; gap: 16px; align-items: start; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto 1fr;
+    grid-template-areas: "shop prop news" "shop prop market"; }
+  #colShop { grid-area: shop; } #colProp { grid-area: prop; } #news { grid-area: news; } #colMarket { grid-area: market; }
+  @media (max-width: 980px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto 1fr; grid-template-areas: "news news" "shop prop" "market prop"; } }
+  @media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "news" "shop" "prop" "market"; } }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  .label { border: 2px solid var(--rule); padding: 4px; background: var(--paper); }
+  .label > .in { border: 1px solid var(--rule); padding: 6px 12px 10px; }
+  .label h2 { font-family: var(--f-head); font-weight: 400; font-size: 22px; text-align: center; margin: 0 0 4px; letter-spacing: .04em; font-size: 19px; }
+  .label h2::before, .label h2::after { content: "\2766"; color: var(--brass); font-size: 15px; margin: 0 .5em; vertical-align: 2px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 2px 0; border-bottom: 1px dotted var(--ink-2); }
+  .row.stack { display: block; }
+  .row .line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .k { color: var(--ink-2); }
+  .v { font-weight: 600; text-align: right; }
+  .sub { font-size: 14px; color: var(--ink-2); font-style: italic; }
+  .right { text-align: right; }
+  .act { display: flex; align-items: center; justify-content: space-between; gap: 6px 8px; margin-top: 6px; flex-wrap: wrap; }
+
+  button { font-family: var(--f-head); font-size: 15px; letter-spacing: .04em; color: var(--ink); background: var(--paper-2); border: 1px solid var(--ink); border-radius: 2px; padding: 2px 10px 3px; cursor: pointer; }
+  button:hover:not(:disabled) { background: var(--paper); }
+  button:disabled { opacity: .45; cursor: default; pointer-events: none; }
+  button:focus-visible { outline: 2px solid var(--blood); outline-offset: 2px; }
+  button.sm { padding: 0 7px 1px; min-width: 28px; }
+  .price { display: inline-flex; align-items: center; gap: 6px; }
+  select { font-family: var(--f-head); font-size: 14px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--ink); }
+
+  .gauge { height: 12px; border: 1px solid var(--ink); background: var(--paper-2); margin: 6px 0 2px; overflow: hidden; }
+  .gauge > i { display: block; height: 100%; width: 0; background: var(--blood); }
+  .gauge.vial { border-radius: 6px; }
+
+  .orbs { display: flex; gap: 2px; align-items: center; justify-content: center; min-height: 22px; margin: 4px 0 2px; }
+  .orb { width: 20px; height: 22px; display: block; flex: none; }
+  .orb.target { width: 26px; height: 28px; }
+  /* Knappen står fast til venstre, og teksten ved siden av får to linjer, så verken knappen eller boksen flytter seg */
+  .gazerow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; margin-top: 6px; min-height: 2.7em; }
+  #btnSeance { min-width: 120px; }
+  .seance { display: flex; justify-content: center; margin: 6px 0 4px; }
+  button.table { width: 96px; height: 96px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper-2); padding: 0;
+    box-shadow: inset 0 0 0 4px var(--paper-2), inset 0 0 0 5px var(--brass); font-family: var(--f-body); font-size: 28px; font-weight: 600;
+    letter-spacing: 0; color: var(--ink-2); touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: default; }
+  button.table.live { background: var(--paper); color: var(--ink); border-color: var(--blood); cursor: pointer;
+    box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--blood); }
+  button.table.live:hover:not(:disabled) { background: var(--paper); }
+  button.table.live:active { transform: scale(.97); }
+  .orb.target .ball, .orb.target .stand { stroke: var(--brass); stroke-width: 1.8; }
+  .orb .ball { fill: var(--blood); fill-opacity: 0; stroke: var(--ink); stroke-width: 1.2; }
+  .orb .stand, .orb .glow { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
+  .orb .glow { opacity: 0; }
+
+  .bills { display: flex; flex-direction: column; gap: 7px; }
+  button.bill { display: block; width: 100%; text-align: left; font-family: var(--f-body); font-size: 14px; letter-spacing: 0; line-height: 1.25; background: var(--paper); border: 1px solid var(--blood); box-shadow: inset 4px 0 0 var(--blood); padding: 5px 9px 6px 14px; transition: opacity .5s, background-color .5s, border-color .5s; }
+  button.bill b { font-family: var(--f-head); font-weight: 400; font-size: 16px; display: block; }
+  button.bill .cost { float: right; font-family: var(--f-body); font-size: 14px; font-weight: 600; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; color: var(--on-blood); background: var(--blood); border: 1px solid var(--blood); padding: 0 5px; margin: 0 0 4px 8px; }
+  button.bill:hover:not(:disabled) { background: var(--paper-2); }
+  /* Prosjekter man ikke har råd til ennå: grått papir, stiplet ramme, nedtonet */
+  button.bill:disabled { opacity: .6; background: var(--paper-2); border: 1px dashed var(--ink-2); box-shadow: none; padding-left: 9px; }
+  button.bill:disabled .cost { background: transparent; color: var(--ink-2); border-color: var(--ink-2); }
+  /* Gullramme: prosjekter som åpner noe helt nytt på skjermen eller i historien. Sier ikke hva, bare at noe venter */
+  button.bill.gild { border: 2px solid var(--brass); box-shadow: inset 4px 0 0 var(--brass); padding: 4px 8px 5px 13px; }
+  button.bill.gild b::after { content: " \2726"; color: var(--brass); font-size: 13px; }
+  button.bill.gild:disabled { border: 2px dashed var(--brass); box-shadow: none; padding-left: 8px; opacity: .75; }
+
+  .gazette { border: 2px solid var(--rule); padding: 10px 14px 12px; background: var(--paper); }
+  .gazette .name { font-family: var(--f-mast); font-size: 23px; text-align: center; line-height: 1; }
+  .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink-2); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 6px 0 10px; }
+  #log { display: flex; flex-direction: column-reverse; justify-content: flex-end; min-height: 4em; }
+  #log div { font-size: 15px; padding: 5px 0; border-top: 1px dotted var(--ink-2); white-space: pre-wrap; }
+  #log div:empty { display: none; }
+  #log div:last-child { font-size: 18px; font-weight: 600; line-height: 1.2; border-top: none; padding-top: 0; margin-bottom: 4px; }
+  #log div:nth-child(-n+2) { color: var(--ink-2); }
+
+  .table-wrap { overflow-x: auto; }
+  table.stocks { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  table.stocks th { font-family: var(--f-head); font-weight: 400; text-align: right; border-bottom: 1px solid var(--ink); padding: 1px 4px; white-space: nowrap; }
+  table.stocks td { text-align: right; padding: 2px 4px; border-bottom: 1px dotted var(--ink-2); height: 24px; white-space: nowrap; }
+  table.stocks th:first-child, table.stocks td:first-child { text-align: left; }
+  table.payoff { border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  table.payoff th { font-family: var(--f-head); font-weight: 400; padding: 1px 8px; text-align: center; white-space: nowrap; }
+  table.payoff th.who { color: var(--blood); }
+  table.payoff td { border: 1px solid var(--ink); padding: 2px 12px; text-align: center; min-width: 48px; }
+  table.payoff td.hit { background: var(--blood); color: var(--on-blood); }
+  .race-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; font-size: 14px; margin-top: 6px; }
+  .race-results .mine { font-weight: 600; color: var(--blood); }
+
+  .brewtop { display: flex; align-items: center; gap: 12px; }
+  .brewtop .stats { flex: 1; min-width: 0; }
+  .flask { display: block; flex: none; width: 76px; height: auto; margin: 2px 0 0; overflow: visible; }
+  .flask .glass { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .flask .lip { fill: var(--paper-2); stroke: var(--ink); stroke-width: 1.5; }
+  .flask .shine { fill: none; stroke: var(--bubble); stroke-width: 2.5; stroke-linecap: round; opacity: .55; }
+  .flask { --potion: #c4b2e6; }
+  .flask.p1 { --potion: #a78bdb; }
+  .flask.p2 { --potion: #8f6fd6; }
+  .flask.p3 { --potion: #4f8f7a; }
+  .flask .potion { fill: var(--potion); transition: fill 4s ease, transform 2.5s ease-in; animation: drift 30s ease-in-out infinite; }
+  .flask.drained .potion { transform: translateY(60px); }
+  .flask .bubble { fill: #fffaf2; stroke: #4a2f78; stroke-opacity: .35; stroke-width: .6; opacity: 0; animation: rise linear infinite; }
+  .flask .bubble.click { animation-iteration-count: 1; }
+  .flask.stardust .bubble { fill: var(--brass); }
+  .flask #vapor circle { fill: var(--ink-2); opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .flask #vapor.on circle { animation: puff 2.4s ease-out infinite; }
+  .flask #vapor.on circle:nth-child(2) { animation-delay: .8s; }
+  .flask #vapor.on circle:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes rise { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: .85; } 85% { opacity: .85; } 100% { transform: translateY(var(--rise)); opacity: 0; } }
+  @keyframes drift { 0%, 100% { filter: hue-rotate(-10deg); } 50% { filter: hue-rotate(12deg); } }
+  @keyframes puff { 0% { transform: translateY(0) scale(.6); opacity: 0; } 30% { opacity: .35; } 100% { transform: translateY(-12px) scale(1.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .flask .bubble { animation: none; opacity: .8; transform: translateY(calc(var(--rise) * var(--f))); }
+    .flask #vapor.on circle { animation: none; opacity: .25; }
+    .flask .potion { animation: none; transition: none; }
+  }
+
+  .bars { display: flex; justify-content: center; gap: 30px; padding: 5px 0 3px; border-bottom: 1px dotted var(--ink-2); }
+  .bar { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .bar .n { font-weight: 600; font-size: 15px; }
+  .bar .tube { width: 34px; height: 44px; border: 1px solid var(--ink); background: var(--paper-2); display: flex; align-items: flex-end; }
+  .bar .tube > i { display: block; width: 100%; height: 0; background: var(--brass); }
+  .bar .tube > i.want { background: var(--blood); }
+  .bar .l { font-family: var(--f-head); font-size: 13px; color: var(--ink-2); }
+  /* Fase 2 */
+  .buyrow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .buyrow .sub { margin-left: auto; }
+  button.x { padding: 0 6px 1px; font-size: 13px; }
+  .toil { display: flex; align-items: center; gap: 8px; margin: 6px 0 2px; font-family: var(--f-head); font-size: 14px; color: var(--ink-2); }
+  .toil input { flex: 1; min-width: 0; accent-color: var(--blood); }
+  .crack.wide svg { transform: scaleY(2.4); transform-origin: center; }
+  .k[data-tip] { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+  .guide { border-top: 3px double var(--rule); margin-top: 8px; padding-top: 5px; min-height: 7.4em; }
+  .guide .gh { font-family: var(--f-head); font-size: 14px; letter-spacing: .06em; color: var(--ink-2); }
+  .guide p { margin: 2px 0 0; font-size: 15px; line-height: 1.3; }
+  .guide p.idle { font-style: italic; color: var(--ink-2); }
+
+  .testbar { margin-top: 24px; border: 1px dashed var(--ink-2); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .testbar b { font-family: var(--f-head); font-weight: 400; margin-right: 4px; }
+  .colophon { margin-top: 8px; display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  button.link { background: none; border: none; padding: 0; font-family: var(--f-body); font-style: italic; font-size: 13px; letter-spacing: 0; color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+  button.link:hover:not(:disabled) { background: none; color: var(--blood); }
+</style>
+
+<div id="extra" class="extra" hidden role="dialog" aria-modal="true" aria-labelledby="extraHead">
+  <div class="extra-page">
+    <div class="name">The Daily Elixir</div>
+    <div class="date">Extra Edition · Day <span id="extraDay">1</span> · Price: every last drop</div>
+    <h2 id="extraHead">The Wells Run Dry</h2>
+    <p class="nl">Every well on Earth emptied overnight.</p>
+    <p class="nl">The Order of the Serpent denies everything.</p>
+    <p class="nl">Scientists: “Something drank it.”</p>
+    <p class="nl last">Something beneath the Earth has woken.</p>
+    <button id="btnExtra" type="button" class="nl">Fold the paper</button>
+  </div>
+</div>
+
+<header class="top">
+  <div class="mast">
+    <div class="crack" id="crack" hidden><svg viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true">
+      <defs><pattern id="scales" width="18" height="12" patternUnits="userSpaceOnUse"><rect width="18" height="12" fill="#22342a"/><path d="M0 12a9 9 0 0 1 18 0M-9 6a9 9 0 0 1 18 0M9 6a9 9 0 0 1 18 0" fill="none" stroke="#5f8a62" stroke-width="1.4"/></pattern></defs>
+      <path d="M0 58 L40 55 L80 61 L130 52 L180 59 L240 49 L300 57 L360 46 L420 55 L480 45 L540 54 L600 43 L660 53 L720 45 L780 54 L840 47 L900 56 L950 52 L1000 57 L1000 62 L950 60 L900 66 L840 59 L780 65 L720 58 L660 65 L600 57 L540 66 L480 58 L420 67 L360 58 L300 68 L240 61 L180 69 L130 63 L80 69 L40 62 L0 63 Z" fill="url(#scales)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="bevel"/>
+    </svg></div>
+    <div class="over"><span class="orn">✥</span>Purveyors of Remarkable Remedies<span class="orn">✥</span></div>
+    <h1>Stardust Snake Oil Inc.</h1>
+    <div class="under">Cures what ails you. Results not guaranteed.</div>
+  </div>
+  <div class="brew">
+    <div class="count"><div class="lbl">Potions Brewed</div><div class="big" id="total">0</div></div>
+    <button class="seal" id="btnGrow" type="button">Brew<br>Potion</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="grid">
+    <div class="col" id="colShop">
+      <section class="label" id="shopBox"><div class="in">
+        <h2>The Shop</h2>
+        <div class="row"><span class="k">Gold</span><span class="v" id="funds">0</span></div>
+        <div id="revBox" hidden>
+          <div class="row"><span class="k" data-tip="Average income from sales per day. One second is one day." tabindex="0">Revenue per day</span><span class="v" id="avgRev">0</span></div>
+          <div class="row"><span class="k">Potions sold per day</span><span class="v" id="avgSales">0</span></div>
+        </div>
+        <div class="row"><span class="k" data-tip="Potions brewed but not yet sold." tabindex="0">Potion inventory</span><span class="v" id="unsold">0</span></div>
+        <div class="row"><span class="k" data-tip="What customers pay for one potion. A lower price sells faster. Selling at a loss is allowed." tabindex="0">Price per potion</span><span class="v price"><button id="btnLower" class="sm" type="button" aria-label="Lower price">‹</button><span id="price">0</span><button id="btnRaise" class="sm" type="button" aria-label="Raise price">›</button></span></div>
+        <div class="row"><span class="k" data-tip="How eager customers are to buy. A lower price and more advertising raise it." tabindex="0">Crowd appetite</span><span class="v"><span id="demand">0</span>%</span></div>
+        <div class="bars" id="barsBox" hidden data-tip="Potions you brew per day compared with how many potions customers want to buy per day at the current price.">
+          <div class="bar"><span class="n" id="barMadeN">0</span><div class="tube"><i id="barMade"></i></div><span class="l">Potions per day</span></div>
+          <div class="bar"><span class="n" id="barWantN">0</span><div class="tube"><i id="barWant" class="want"></i></div><span class="l">Wanted per day</span></div>
+        </div>
+        <div class="act" data-tip="Each level raises demand by 10%. The cost doubles every time."><button id="btnSign" type="button">Advertise</button><span class="sub">Level <span id="signLvl">1</span> · <span id="signCost">0</span> gold</span></div>
+      </div></section>
+
+      <section class="label"><div class="in">
+        <h2>The Brewery</h2>
+        <div class="brewtop">
+          <svg id="flask" class="flask" viewBox="0 -14 100 144" aria-hidden="true">
+          <defs><clipPath id="flaskClip"><path d="M43 8H57V53.7A35 35 0 1 1 43 53.7Z"/></clipPath></defs>
+          <g id="vapor"><circle cx="46" cy="0" r="3"/><circle cx="54" cy="-1" r="2.4"/><circle cx="50" cy="1" r="2"/></g>
+          <g clip-path="url(#flaskClip)">
+            <rect class="potion" x="0" y="72" width="100" height="60"/>
+            <g id="bubbles"></g><g id="clicks"></g>
+          </g>
+          <path class="glass" d="M43 8H57V53.7A35 35 0 1 1 43 53.7Z"/>
+          <path class="lip" d="M39 3H61V9H39Z"/>
+          <path class="shine" d="M27 92a24 24 0 0 1 9-19"/>
+        </svg>
+          <div class="stats">
+            <div class="row" id="unusedRow" hidden><span class="k" data-tip="Potions not yet spent. In this new world, potions are the only money." tabindex="0">Unused potions</span><span class="v" id="unusedPot">0</span></div>
+            <div class="row"><span class="k">Potions per day</span><span class="v" id="rate">0</span></div>
+            <div class="row stack"><div class="line"><span class="k" data-tip="Every potion uses one liter of water from the barrels. When they run dry, brewing stops." tabindex="0" id="waterLabel">Water</span><span class="v"><span id="water">0</span><span id="waterUnit"> liters</span> <span class="sub" id="waterEmpty"></span></span></div>
+              <div class="gauge"><i id="waterGauge"></i></div></div>
+          </div>
+        </div>
+        <div class="act" id="autoWaterBox" hidden data-tip="Buys water by itself whenever the barrels run dry. Click to turn it on or off."><button id="btnAutoWater" type="button">Dowsing Rod</button><span class="sub" id="autoWaterStatus">ON</span></div>
+        <div class="act" id="buyWaterBox" data-tip="The price drifts up and down. Each purchase pushes it a little higher, and it falls slowly when you stop buying. Rain makes it cheaper."><button id="btnWater" type="button">Buy Water</button><span class="sub"><span id="waterCost">0</span> gold for <span id="waterSupply">1,000</span> liters <span id="rain"></span></span></div>
+        <div class="act" id="boyBox" hidden data-tip="Each apprentice brews one potion per day, more with upgrades. Each one costs a little more than the last."><button id="btnBoy" type="button">Hire Apprentice</button><span class="sub"><span id="boys">0</span> hired · <span id="boyCost">0</span> gold</span></div>
+        <div class="act" id="tractorBox" hidden data-tip="Each cauldron walker brews 500 potions per day, more with upgrades."><button id="btnTractor" type="button">Summon Walker</button><span class="sub"><span id="tractors">0</span> walkers · <span id="tractorCost">0</span> gold</span></div>
+      </div></section>
+
+      <section class="label" id="earthBox" hidden><div class="in">
+        <h2>The Earth</h2>
+        <div class="row"><span class="k" data-tip="All the magic still sleeping in the ground. When it reaches zero, there is nothing left to tap." tabindex="0">Magic left in the Earth</span><span class="v" id="matter">0</span></div>
+        <div class="row"><span class="k" data-tip="Magic the diviners have tapped, waiting to be distilled into essence." tabindex="0">Raw magic</span><span class="v" id="rawMagic">0</span></div>
+        <div class="row"><span class="k">Tapped per day</span><span class="v" id="tapRate">0</span></div>
+        <div class="row"><span class="k">Distilled per day</span><span class="v" id="distRate">0</span></div>
+      </div></section>
+
+      <section class="label" id="droneBox" hidden><div class="in">
+        <h2>Diviners and Distillers</h2>
+        <div id="divBox" hidden data-tip="Diviners tap the ley lines for raw magic. Each one costs more than the last.">
+          <div class="buyrow"><button id="btnDiv" type="button">Send Diviner</button><button class="x" type="button" data-buy="diviners" data-n="10">×10</button><button class="x" type="button" data-buy="diviners" data-n="100">×100</button><button class="x" type="button" data-buy="diviners" data-n="1000">×1000</button></div>
+          <div class="sub"><span id="diviners">0</span> diviners · <button class="link" type="button" data-reboot="diviners" data-tip="Take them all apart and get back every potion they cost.">dismantle</button> · next <span id="divCost">0</span> potions</div>
+        </div>
+        <div id="disBox" hidden data-tip="Distillers turn raw magic into essence. Each one costs more than the last.">
+          <div class="buyrow"><button id="btnDis" type="button">Raise Distiller</button><button class="x" type="button" data-buy="distillers" data-n="10">×10</button><button class="x" type="button" data-buy="distillers" data-n="100">×100</button><button class="x" type="button" data-buy="distillers" data-n="1000">×1000</button></div>
+          <div class="sub"><span id="distillers">0</span> distillers · <button class="link" type="button" data-reboot="distillers" data-tip="Take them all apart and get back every potion they cost.">dismantle</button> · next <span id="disCost">0</span> potions</div>
+        </div>
+      </div></section>
+
+      <section class="label" id="worksBox" hidden><div class="in">
+        <h2>Bottling Works</h2>
+        <div class="buyrow" data-tip="Each bottling works turns essence into potions, very fast. It needs a lot of heat."><button id="btnWorks" type="button">Build Works</button><span class="sub"><span id="works">0</span> works · <button class="link" type="button" data-reboot="works" data-tip="Take them all apart and get back every potion they cost.">dismantle</button> · next <span id="worksCost">0</span> potions</span></div>
+        <div class="sub" id="worksNext"></div>
+      </div></section>
+    </div>
+
+    <div class="col" id="colProp">
+      <section class="label" id="farmerBox" hidden><div class="in">
+        <h2>The Proprietor</h2>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some projects, and assign them to Spirit and Stamina. Some projects cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one point of Mastery each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
+        <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Stamina decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Stamina</button> <span id="stamina">0</span></span></div>
+        <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Stamina." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
+        <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Stamina to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
+        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most projects. It refills by itself as fast as your Spirit allows, up to what your Stamina can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
+          <div class="gauge vial"><i id="manaGauge"></i></div></div>
+        <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some projects cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
+      </div></section>
+
+      <section class="label" id="coffeeBox" hidden><div class="in">
+        <h2>Crystal Ball</h2>
+        <div data-tip="A light runs back and forth along the orbs. Gaze when it reaches one of the two marked orbs in the middle. The orb next to them gives half. A miss costs mana. You get one try each time the light passes. A perfect gaze speeds the light up, and a miss slows it down. Ten perfect gazes in a row freeze the light for five seconds: gaze as fast as you can.">
+          <div class="orbs" id="cups"></div>
+          <div class="gazerow"><button id="btnCoffee" type="button">Gaze</button><span class="sub" id="coffeeNote"></span></div>
+        </div>
+      </div></section>
+
+      <section class="label" id="seanceBox" hidden><div class="in">
+        <h2>The Séance</h2>
+        <div data-tip="Begin a séance and knock on the table as many times as you can in ten seconds. Only knocks inside the circle count, up to 150. Each knock brings inspiration, multiplied by your séance props.">
+          <div class="seance"><button type="button" class="table" id="seanceTable" aria-label="Knock on the table">0</button></div>
+          <div class="gazerow"><button id="btnSeance" type="button">Begin Séance</button><span class="sub" id="seanceNote"></span></div>
+        </div>
+      </div></section>
+
+      <section class="label" id="projBox" hidden><div class="in">
+        <h2>Projects</h2>
+        <div class="bills" id="projects"></div>
+      </div></section>
+    </div>
+
+    <section class="gazette" id="news">
+      <div class="name">The Daily Elixir</div>
+      <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
+      <div id="log" aria-live="polite"><div></div><div></div><div></div><div></div><div></div></div>
+      <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" class="idle" aria-live="polite"></p></div>
+      <div class="colophon"><span class="sub" id="resetNote"></span><button id="btnReset" class="link" type="button">Start over</button></div>
+    </section>
+
+    <div class="col" id="colMarket">
+      <section class="label" id="powerBox" hidden><div class="in">
+        <h2>The Furnaces</h2>
+        <div class="row"><span class="k" data-tip="How well everything runs. Below 100%, the furnaces cannot keep up and everything slows down." tabindex="0">Performance</span><span class="v"><span id="perf">0</span>%</span></div>
+        <div class="row"><span class="k">Heat made per day</span><span class="v" id="heatUp">0</span></div>
+        <div class="row"><span class="k">Heat used per day</span><span class="v" id="heatDown">0</span></div>
+        <div class="row stack"><div class="line"><span class="k" data-tip="Spare heat stored in the vaults for when the furnaces cannot keep up." tabindex="0">Stored heat</span><span class="v"><span id="heatStored">0</span> / <span id="heatCap">0</span></span></div>
+          <div class="gauge"><i id="heatGauge"></i></div></div>
+        <div data-tip="Each furnace makes 50 heat per day. Each one costs more than the last.">
+          <div class="buyrow"><button id="btnFurnace" type="button">Light Furnace</button><button class="x" type="button" data-buy="furnaces" data-n="10">×10</button><button class="x" type="button" data-buy="furnaces" data-n="100">×100</button></div>
+          <div class="sub"><span id="furnaces">0</span> furnaces · <button class="link" type="button" data-reboot="furnaces" data-tip="Take them all apart and get back every potion they cost.">dismantle</button> · next <span id="furnaceCost">0</span> potions</div>
+        </div>
+        <div data-tip="Each vault stores 10,000 heat.">
+          <div class="buyrow"><button id="btnVault" type="button">Build Vault</button><button class="x" type="button" data-buy="vaults" data-n="10">×10</button><button class="x" type="button" data-buy="vaults" data-n="100">×100</button></div>
+          <div class="sub"><span id="vaults">0</span> vaults · <button class="link" type="button" data-reboot="vaults" data-tip="Take them all apart and get back every potion they cost.">dismantle</button> · next <span id="vaultCost">0</span> potions</div>
+        </div>
+      </div></section>
+
+      <section class="label" id="orderBox" hidden><div class="in">
+        <h2>The Order</h2>
+        <div class="row"><span class="k" data-tip="Every diviner and distiller is a member of the Order." tabindex="0">Members</span><span class="v" id="orderSize">0</span></div>
+        <div class="row"><span class="k">Status</span><span class="v" id="orderStatus"></span></div>
+        <div class="toil" id="toilBox" hidden data-tip="Toil makes the Order tap and distil faster. Prayer brings gifts of Spirit and Stamina instead."><span>Toil</span><input type="range" id="toil" min="0" max="200" value="0" aria-label="Toil or prayer"><span>Prayer</span></div>
+        <div class="row" id="giftRow" hidden><span class="k">Next gift in</span><span class="v" id="nextGift"></span></div>
+        <div class="act" id="feastBox" hidden data-tip="A restless Order stops praying. A feast calms it down. Each feast costs more."><button id="btnFeast" type="button">Hold a Feast</button><span class="sub"><span id="feastCost">10,000</span> inspiration</span></div>
+        <div class="act" id="reuniteBox" hidden data-tip="Too many diviners or too many distillers splits the Order into sects, and the sects stop praying."><button id="btnReunite" type="button">Reunite the Sects</button><span class="sub">5,000 Arcane Tokens</span></div>
+      </div></section>
+
+      <section class="label" id="exchangeBox" hidden><div class="in">
+        <h2>Remedy Exchange</h2>
+        <div class="act"><span data-tip="Deposit moves all your gold to the exchange. Withdraw brings all of it back."><button id="btnDeposit" type="button">Deposit</button> <button id="btnWithdraw" type="button">Withdraw</button></span>
+          <select id="risk" aria-label="Risk" data-tip="Higher risk means bigger bets and bigger swings."><option value="7">Low risk</option><option value="5">Medium risk</option><option value="1">High risk</option></select></div>
+        <div class="row" style="margin-top: 6px"><span class="k">Cash</span><span class="v" id="bankroll">0</span></div>
+        <div class="row"><span class="k">Shares</span><span class="v" id="secTotal">0</span></div>
+        <div class="row"><span class="k">Total</span><span class="v"><span id="portTotal">0</span> gold</span></div>
+        <div class="sub" id="ledger"></div>
+        <div class="table-wrap"><table class="stocks"><thead><tr><th>Remedy</th><th>Qty</th><th>Price</th><th>Value</th><th>+/−</th></tr></thead><tbody id="stockRows"></tbody></table></div>
+        <div class="act" data-tip="Each upgrade raises the chance that a share goes up by one percentage point."><button id="btnInvestUp" type="button">Upgrade Exchange</button><span class="sub">Level <span id="investLevel">0</span> · <span id="investCost">0</span> Arcane Tokens</span></div>
+      </div></section>
+
+      <section class="label" id="raceBox" hidden><div class="in">
+        <h2>Liar’s Table</h2>
+        <div class="act" data-tip="Pick the liar you think will win, then press Run. Every liar plays every other liar. The better your pick does, the more Arcane Tokens you win."><select id="horsePick" aria-label="Pick a liar"></select><button id="btnRun" type="button">Run</button></div>
+        <div class="sub" id="raceStatus"></div>
+        <div class="table-wrap"><table class="payoff">
+          <thead><tr><th></th><th></th><th class="who" colspan="2" id="raceV">Opponent</th></tr>
+            <tr><th></th><th></th><th>lie</th><th>truth</th></tr></thead>
+          <tbody>
+            <tr><th class="who" rowspan="2" id="raceH">Liar</th><th>lie</th><td id="cellAA"></td><td id="cellAB"></td></tr>
+            <tr><th>truth</th><td id="cellBA"></td><td id="cellBB"></td></tr>
+          </tbody></table></div>
+        <div class="race-results" id="raceResults"></div>
+        <div class="row" style="margin-top: 6px"><span class="k">Arcane Tokens</span><span class="v" id="coin">0</span></div>
+        <div class="act" data-tip="Costs mana and deals a new table of payoffs."><button id="btnNewRace" type="button">New Game</button><span class="sub"><span id="raceCost">1,000</span> mana</span></div>
+        <div class="act" id="autoRaceBox" hidden data-tip="Starts a new game by itself three days after the last one ends. Click to turn it on or off."><button id="btnAutoRace" type="button">Hired Dealer</button><span class="sub" id="autoRaceStatus">ON</span></div>
+      </div></section>
+    </div>
+  </div>
+
+  <div class="testbar" id="testBar" hidden>
+    <b>Test mode</b>
+    <button type="button" data-cheat="money">+1,000,000 gold</button>
+    <button type="button" data-cheat="potatoes">+1,000,000 potions</button>
+    <button type="button" data-cheat="energy">Fill mana</button>
+    <button type="button" data-cheat="level">+10 Mastery</button>
+    <button type="button" data-cheat="dreams">+10,000 inspiration</button>
+    <button type="button" data-cheat="coin">+10,000 Arcane Tokens</button>
+    <button type="button" data-cheat="end">Jump to the end of phase 1</button>
+    <button type="button" data-cheat="p2">Start phase 2 now</button>
+    <button type="button" data-cheat="pots">+1e30 potions</button>
+    <button type="button" data-cheat="p2end">Empty the Earth</button>
+  </div>
+
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  // gull med to desimaler (heter kr i koden fra potettiden)
+  const kr = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const num = n => Math.floor(n).toLocaleString('en-US');
+  // store tall i ord, som spellf i Paperclips: 1.5 million, 6.0 octillion
+  const BIG = ['', ' thousand', ' million', ' billion', ' trillion', ' quadrillion', ' quintillion', ' sextillion', ' septillion', ' octillion', ' nonillion', ' decillion', ' undecillion', ' duodecillion'];
+  const bigTotal = n => n < 1e12 ? num(n) : big(n);
+  const big = n => { n = Math.max(0, n || 0); if (n < 1e6) return num(n); const k = Math.min(BIG.length - 1, Math.floor(Math.log10(n) / 3)); return (n / Math.pow(1000, k)).toFixed(1) + BIG[k]; };
+
+  const fresh = () => ({
+    t: 0, total: 0, unsold: 0, funds: 0, price: 0.25, signLvl: 1,
+    water: 1000, waterBase: 20, waterFloor: 15, waterCost: 20, waterBuys: 0, waterPerPotato: 1, waterSupply: 1000, waterTimer: 0, waterCounter: 0, rainLeft: 0, waterPeak: 1000,
+    boys: 0, boyBoost: 1, tractors: 0, tractorBoost: 1, demandBoost: 1, mktEff: 1, begs: 0,
+    // Bonden: som trust, prosessorer, minne og ops i Paperclips
+    phase: 'kjokkenhage', level: 2, spirit: 1, stamina: 1, energy: 0, nextLevel: 3000, fib1: 2, fib2: 3,
+    // Inspirasjon: som creativity i Paperclips, vokser bare når energien er full
+    dreaming: 0, dreams: 0,
+    // Kaffe på termos: som kvantedatamaskinen i Paperclips. Overskuddsenergi over taket forsvinner etter 8 sekunder
+    cups: 0, coffeeClock: 0, orbSpeed: 1, orbStreak: 0, extraEnergy: 0, fade: 0.1, fadeTimer: 0, lastCoffee: null,
+    // Gave til bygdelaget: som Token of Goodwill i Paperclips, prisen dobles hver gang
+    giftCost: 125000,
+    // Potetbørsen: som investeringsmotoren i Paperclips
+    bankroll: 0, stocks: [], stockID: 0, ledger: 0, risk: 7, investLevel: 0, investCost: 100, gainChance: 0.5, sellDelay: 0,
+    // Travkupongen: som strategimotoren i Paperclips. PotatoCoin tilsvarer yomi
+    coin: 0, horses: ['random'], raceCost: 1000, coinBoost: 1, raceGrid: null, raceResults: null, lastRace: '', pick: -1, autoRace: 0, autoRaceOn: 1,
+    // regnskapsføreren: faktisk inntekt per sekund de siste 10 sekundene, som RevTracker i Paperclips
+    income: 0, incomeNow: 0, incomeTracker: [], avgRev: 0, avgSales: 0,
+    acc: 0, flags: {}, done: [], milestones: 0,
+    // Fase 2: samme tall som Paperclips (matter, droner, fabrikker, strøm og svermen), med våre navn
+    unused: 0, matter: 6e27, rawMagic: 0, diviners: 0, distillers: 0, works: 0, worksCost: 1e8,
+    divRate: 26180337, disRate: 16180339, worksRate: 1e9, worksBoost: 1, droneBoost: 1,
+    furnaces: 0, vaults: 0, heat: 0, powMod: 0, momentum: 0, heatSupply: 0, heatDemand: 0, tapRate: 0, distRate: 0, bottleRate: 0,
+    bills: { diviners: 0, distillers: 0, furnaces: 0, vaults: 0, works: 0 }, toil: 0, gifts: 0, giftBits: 0, giftEta: 0, boredom: 0, bored: 0, boredMsg: 0, disorg: 0, sects: 0, sectMsg: 0, feastCost: 10000, orderStatus: ''
+  });
+  let S = fresh();
+  try { const raw = localStorage.getItem('potet-v3'); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) {}
+  // regntønna er fjernet: gjør om virkningen i gamle lagringer
+  if (S.milestones === 7 && S.total >= 1000000) S.milestones = 8;
+  if (S.cups > 0) S.flags.coffee = 1;
+  if (S.done.includes('jingle')) { S.mktEff /= 2; S.done = S.done.filter(id => id !== 'jingle'); if (S.done.includes('duft')) S.mktEff *= 2; }
+  if (S.giftCost < 125000) S.giftCost = 125000;
+  if (S.orbSpeed > 1.8) S.orbSpeed = 1.8;
+  if (S.flags.farm) { S.flags.dry = 1; S.flags.cracked = 1; }
+  if (S.flags.farm && !S.flags.p2init) { S.flags.p2init = 1; if (!S.unused) S.unused = S.total; if (S.unused < 1.5e8) S.unused = 1.5e8; S.boys = 0; S.tractors = 0; S.level = 0; S.flags.exchange = 0; S.flags.bars = 0; }
+  // Tarot er byttet med seansen: den som har kjøpt Tarot Deck, får Séance Table
+  if (S.done.includes('tarot')) { S.done = S.done.filter(id => id !== 'tarot'); if (!S.done.includes('seance')) S.done.push('seance'); S.flags.seance = 1; delete S.tarotDeal; }
+  // Kafé Knollen er fjernet: gjør om virkningen i gamle lagringer
+  if (S.done.includes('kunde')) { S.demandBoost /= 1.3; S.done = S.done.filter(id => id !== 'kunde'); }
+  if (S.waterPerPotato < 1) { S.waterSupply = Math.round(1000 / S.waterPerPotato); S.water = S.water / S.waterPerPotato; S.waterPerPotato = 1; }
+  if (S.done.includes('tonne')) { S.waterBase /= 0.7; S.waterFloor /= 0.7; S.done = S.done.filter(id => id !== 'tonne'); }
+
+  // Logg med fem linjer
+  const logLines = [...$('log').children];
+  const say = msg => {
+    for (let i = 0; i < logLines.length - 1; i++) logLines[i].textContent = logLines[i + 1].textContent;
+    logLines[logLines.length - 1].textContent = msg;
+  };
+  const time = () => {
+    const s = Math.floor(S.t / 10), m = Math.floor(s / 60), h = Math.floor(m / 60);
+    const u = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+    if (h) return `${u(h, 'hour')} ${u(m % 60, 'minute')} ${u(s % 60, 'second')}`;
+    return m ? `${u(m, 'minute')} ${u(s % 60, 'second')}` : u(s, 'second');
+  };
+
+  // Priser
+  const signCost = () => 100 * Math.pow(2, S.signLvl - 1);
+  const boyCost = () => Math.pow(1.1, S.boys) + 5;
+  const tractorCost = () => Math.pow(1.07, S.tractors) * 1000;
+  // Samme formel som Paperclips: vises ganget med 10 som prosent, uten tak
+  const demand = () => (0.8 / S.price) * Math.pow(1.1, S.signLvl - 1) * S.mktEff * S.demandBoost;
+  const rate = () => S.boys * S.boyBoost + S.tractors * 500 * S.tractorBoost;
+
+  // Som calculateRev i Paperclips: oppdateres én gang i sekundet. Er etterspørselen større enn lageret,
+  // vises faktisk inntekt i snitt over de siste 10 sekundene i stedet for det teoretiske tallet.
+  const calculateRev = () => {
+    const last = Math.round((S.income - S.incomeNow) * 100) / 100; S.incomeNow = S.income;
+    S.incomeTracker.push(last); if (S.incomeTracker.length > 10) S.incomeTracker.shift();
+    const trueAvg = S.incomeTracker.reduce((a, b) => a + b, 0) / S.incomeTracker.length;
+    const d = demand(), chance = S.unsold < 1 ? 0 : Math.min(1, d / 100);
+    S.avgSales = chance * 0.7 * Math.pow(d, 1.15) * 10; S.avgRev = S.avgSales * S.price;
+    if (d > S.unsold) { S.avgRev = trueAvg; S.avgSales = S.avgRev / S.price; }
+  };
+
+  const grow = n => {
+    n = Math.min(n, Math.floor(S.water / S.waterPerPotato));
+    if (n <= 0) return 0;
+    S.water -= n * S.waterPerPotato; S.total += n; S.unsold += n; if (S.flags.farm) S.unused += n;
+    return n;
+  };
+
+  // Nivå: kilden til nye poeng byttes ut i senere faser (gården, industrien, poteten).
+  // I kjøkkenhagen kommer de fra produksjonsmål, Fibonacci × 1 000 poteter, som trust i Paperclips.
+  const LEVEL_SOURCES = {
+    kjokkenhage: {
+      next: () => `Next Mastery at: ${num(S.nextLevel)} potions`,
+      check: () => {
+        if (S.total < S.nextLevel) return;
+        S.level++;
+        const f = S.fib1 + S.fib2; S.nextLevel = f * 1000; S.fib1 = S.fib2; S.fib2 = f;
+        say(`Your name is spoken in another town. Mastery is now ${S.level}.`);
+      }
+    }
+  };
+  const levelSource = () => LEVEL_SOURCES[S.phase] || LEVEL_SOURCES.kjokkenhage;
+  const freePoints = () => S.flags.farm ? S.gifts : S.level - S.spirit - S.stamina;
+  const energyMax = () => S.stamina * 1000;
+  // Samme fart som creativity i Paperclips: 1 inspirasjon per 4 sekunder med én Spirit, raskere med flere
+  // Seansen (Kenneths idé, i stedet for tarot): banke i bordet så mange ganger man klarer på 10 sekunder. Bare klikk inni
+  // sirkelen teller, høyst 150 (15 i sekundet), så en autoklikker ikke ødelegger balansen. Hvert bank gir en fjerdedel av
+  // inspirasjonen man ellers får på én dag, ganget med rekvisittene: Ouija Board ×2, Spirit Trumpet ×3, Ectoplasm ×4.
+  // En seanse koster det man tjener på 30 dager, minst 100 gold.
+  const SEANCE_MS = 10000, SEANCE_MAX = 150;
+  const seanceCost = () => S.flags.farm ? Math.max(1e6, Math.round(30 * S.bottleRate)) : Math.max(100, Math.round(30 * (S.avgRev || 0)));
+  const seanceMoney = () => S.flags.farm ? S.unused : S.funds;
+  const seanceMult = () => done('ecto') ? 4 : done('trumpet') ? 3 : done('ouija') ? 2 : 1;
+  let seanceUntil = 0, knocks = 0, seanceNote = '';
+  const seanceLive = () => performance.now() < seanceUntil;
+  const beginSeance = () => {
+    if (seanceUntil) return;
+    const cost = seanceCost();
+    if (seanceMoney() < cost) { seanceNote = S.flags.farm ? 'Not enough potions.' : 'Not enough gold.'; return; }
+    if (S.flags.farm) S.unused -= cost; else S.funds = Math.round((S.funds - cost) * 100) / 100;
+    knocks = 0; seanceUntil = performance.now() + SEANCE_MS;
+  };
+  const knock = () => { if (seanceLive() && knocks < SEANCE_MAX) knocks++; };
+  const endSeance = () => {
+    const mult = seanceMult(), gain = Math.round(knocks * dreamSpeed() / 16 * mult);
+    S.dreams += gain;
+    seanceNote = `${knocks} knocks${mult > 1 ? ` × ${mult}` : ''}: +${num(gain)} inspiration`;
+    seanceUntil = 0;
+  };
+  const drawSeance = () => {
+    if (seanceUntil && !seanceLive()) endSeance();
+    const live = seanceLive(), t = $('seanceTable');
+    t.classList.toggle('live', live);
+    t.textContent = seanceUntil || knocks ? knocks : '·';
+    $('seanceNote').textContent = live ? `Knock! ${((seanceUntil - performance.now()) / 1000).toFixed(1)} s left`
+      : (seanceNote ? seanceNote + ' · ' : '') + `Next séance: ${S.flags.farm ? big(seanceCost()) + ' potions' : num(seanceCost()) + ' gold'}${seanceMult() > 1 ? ` · ×${seanceMult()}` : ''}`;
+    $('btnSeance').disabled = !!seanceUntil || seanceMoney() < seanceCost();
+  };
+  const dreamSpeed = () => S.spirit <= 1 ? 1 : Math.log10(S.spirit) * Math.pow(S.spirit, 1.1) + S.spirit - 1;
+
+  // Kostnader: energi, kroner og nivå. Nivå kan gå i minus når «debt» er satt, som trust i Paperclips.
+  const priceTag = c => [c.dreams && `${num(c.dreams)} inspiration`, c.coin && `${num(c.coin)} Arcane Tokens`, c.energy && `${num(c.energy)} mana`, c.kr && `${num(c.kr)} gold`, c.level && `${c.level} Mastery`, c.heat && `${big(c.heat)} heat`, c.pot && `${big(c.pot)} potions`].filter(Boolean).join(', ') || 'free';
+  const canPay = c => (!c.dreams || S.dreams >= c.dreams) && (!c.coin || S.coin >= c.coin) && (!c.energy || S.energy + S.extraEnergy >= c.energy) && (!c.kr || S.funds >= c.kr) && (!c.level || c.debt || S.level >= c.level) && (!c.heat || S.heat >= c.heat) && (!c.pot || S.unused >= c.pot);
+  const pay = c => { if (c.dreams) S.dreams -= c.dreams; if (c.coin) S.coin -= c.coin; if (c.energy) S.energy -= c.energy; if (c.kr) S.funds -= c.kr; if (c.level) S.level -= c.level; if (c.heat) S.heat -= c.heat; if (c.pot) S.unused -= c.pot; };
+
+  // Prosjekter: når dukker de opp, hva koster de, hva gjør de. Energipriser er hentet fra ops-prisene i Paperclips.
+  // Som «Beg for More Wire» i Paperclips: du står ikke fast hvis du har penger på børsen
+  const stuck = () => S.water < S.waterPerPotato && S.funds < S.waterCost && portTotal() < S.waterCost && S.unsold < 1;
+  const done = id => S.done.includes(id);
+  const BEG_MSGS = ['The well keeper fills your barrels. “Don’t mention it,” he says.', 'The well keeper fills your barrels again. He looks at your bottles for a long time.', 'The well keeper fills your barrels without a word.'];
+  // Inspirasjonsprosjektene gir +1 nivå hver, som creativity-prosjektene i Paperclips gir +1 trust
+  const dream = (id, title, cost, show, msg, desc) => ({ id, title, cost: { dreams: cost }, desc: `${desc} (+1 Mastery)`,
+    show, buy: () => { S.level++; say(msg); } });
+  // Hver kopp er varm og kald i sin egen takt, som de fotoniske brikkene i Paperclips
+  const ORB_SVG = target => '<svg class="orb' + (target ? ' target' : '') + '" viewBox="0 0 20 20" aria-hidden="true"><path class="glow" d="M10 .8v1.8M3.3 3.2l1.2 1.2M16.7 3.2l-1.2 1.2"/><circle class="ball" cx="10" cy="9.5" r="5"/><path class="stand" d="M6.5 18h7M8 14.1l-1 3.9M12 14.1l1 3.9"/></svg>';
+  // Kolben i The Brewery: flere og raskere bobler jo mer som brygges, som kjeksene som drysser i Cookie Clicker.
+  // Etter Conjured Mountain Water glitrer boblene av stjernestøv. Hvert klikk på «Brew Potion» sender opp en egen boble.
+  let flaskKey = '';
+  const calmMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const bubbleAttrs = (x, y, r, dur, delay) => ({ cx: x.toFixed(1), cy: y.toFixed(1), r: r.toFixed(1),
+    style: `--rise:${(74 - y).toFixed(1)}px;--f:${Math.random().toFixed(2)};animation-duration:${dur.toFixed(2)}s;animation-delay:${delay.toFixed(2)}s` });
+  const drawFlask = () => {
+    const r = S.flags.farm ? S.bottleRate : S.water >= S.waterPerPotato ? rate() : 0;
+    const lg = r > 0 ? Math.log10(r + 1) : 0;
+    const n = r > 0 ? Math.min(30, 2 + Math.floor(lg * 4)) : 0;
+    const speed = Math.max(1, 3.2 - lg * 0.35);
+    const star = done('isbre') ? 1 : 0;
+    const stage = done('menighet') ? 3 : star ? 2 : done('drom5') ? 1 : 0;
+    const key = `${n}|${speed.toFixed(1)}|${star}|${stage}`;
+    if (key === flaskKey) return;
+    flaskKey = key;
+    $('flask').classList.toggle('stardust', !!star);
+    [1, 2, 3].forEach(i => $('flask').classList.toggle('p' + i, stage === i));
+    $('vapor').classList.toggle('on', r >= 1000);
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      const d = speed * (0.7 + Math.random() * 0.6);
+      const a = bubbleAttrs(32 + Math.random() * 36, 104 + Math.random() * 12, 1.2 + Math.random() * 2.3, d, -Math.random() * d);
+      h += `<circle class="bubble" cx="${a.cx}" cy="${a.cy}" r="${a.r}" style="${a.style}"/>`;
+    }
+    $('bubbles').innerHTML = h;
+  };
+  const clickBubble = () => {
+    const g = $('clicks');
+    if (!document.createElementNS || calmMotion() || g.childElementCount > 12) return;
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    const a = bubbleAttrs(42 + Math.random() * 16, 114, 2.6, 1.3, 0);
+    Object.entries(a).forEach(([k, v]) => el.setAttribute(k, v));
+    el.setAttribute('class', 'bubble click');
+    g.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  };
+  // Krystallkula (Kenneths idé, i stedet for kvantedatamaskinen i Paperclips): 12 kuler på rad, og et lys går fram og
+  // tilbake. Gaze når lyset er på en av de to midterste kulene: 360 mana per polering. Kula ved siden av gir halvparten,
+  // og et bom koster halvparten. Ett forsøk hver gang lyset passerer. Hver polering gjør lyset litt raskere.
+  const ORBS = 12;
+  // Farten: hver polering gjør lyset litt raskere. Perfect gjør det 4 % raskere, bom 8 % saktere, mellom 60 % og 180 %
+  // (Kenneths idé, gjort lettere etter første test).
+  // Lyset flyttes med tiden som har gått, så det glir videre uten å hoppe når farten endres.
+  const orbStep = () => Math.max(40, (155 - 5 * S.cups) / S.orbSpeed);
+  // Ti perfect på rad fryser lyset midt på i 5 sekunder (Kenneths idé). Da gir hvert trykk en fjerdedel av et perfect.
+  let orbPhase = 0, orbT = null, freezeUntil = 0, freezeGain = 0;
+  const frozen = () => performance.now() < freezeUntil;
+  const lightPos = () => {
+    const t = performance.now();
+    if (t < freezeUntil) { orbT = t; return { i: 5, pass: -1, frozen: true }; }
+    if (orbT !== null) orbPhase += (t - orbT) / orbStep();
+    orbT = t;
+    const span = ORBS - 1, ph = Math.floor(orbPhase), k = ph % (2 * span);
+    return { i: k <= span ? k : 2 * span - k, pass: Math.floor(ph / span) };
+  };
+  let lastPass = -1, gazeNote = '';
+  const drawOrbs = () => {
+    const box = $('cups');
+    if (box.children.length !== ORBS) box.innerHTML = Array.from({ length: ORBS }, (_, i) => ORB_SVG(i === 5 || i === 6)).join('');
+    const lp = S.cups ? lightPos() : { i: -9 }, at = lp.i;
+    Array.from(box.children).forEach((o, i) => {
+      const d = lp.frozen ? (i === 5 || i === 6 ? 0 : 2) : Math.abs(i - at);
+      o.querySelector('.ball').style.fillOpacity = d === 0 ? '.9' : d === 1 ? '.3' : '.04';
+      o.querySelector('.glow').style.opacity = d === 0 ? '1' : '0';
+    });
+  };
+  const addMana = qq => {
+    // over taket dempes overskuddet og forsvinner etter 8 sekunder, som tempOps i Paperclips
+    const buffer = energyMax() - S.energy;
+    if (qq > buffer) {
+      const damper = S.extraEnergy / 100 + 5;
+      S.extraEnergy = Math.max(0, S.extraEnergy + Math.ceil(qq / damper) - buffer);
+      qq = buffer; S.fade = 0.1; S.fadeTimer = 0;
+    }
+    S.energy += qq;
+  };
+  const streakText = () => S.orbStreak ? ` · streak ${S.orbStreak}/10` : '';
+  const coffeeBreak = () => {
+    if (!S.cups) { gazeNote = '(polish an orb first)'; return; }
+    const p = lightPos();
+    if (p.frozen) { const qq = 90 * S.cups; freezeGain += qq; addMana(qq); return; }
+    if (p.pass === lastPass) { gazeNote = '(wait for the next pass)'; return; }
+    lastPass = p.pass;
+    const d = Math.min(Math.abs(p.i - 5), Math.abs(p.i - 6));
+    if (d > 1) {
+      const loss = Math.min(S.energy, 180 * S.cups);
+      S.energy -= loss; S.orbSpeed = Math.max(0.6, S.orbSpeed / 1.08); S.orbStreak = 0;
+      gazeNote = `(missed: −${num(loss)} mana · speed ${Math.round(S.orbSpeed * 100)}%)`;
+      return;
+    }
+    const qq = (d === 0 ? 360 : 180) * S.cups;
+    if (d === 0) { S.orbSpeed = Math.min(1.8, S.orbSpeed * 1.04); S.orbStreak++; } else S.orbStreak = 0;
+    gazeNote = `(${d === 0 ? 'perfect' : 'close'}: +${num(qq)} mana · speed ${Math.round(S.orbSpeed * 100)}%${streakText()})`;
+    addMana(qq);
+    if (S.orbStreak >= 10) { S.orbStreak = 0; freezeUntil = performance.now() + 5000; freezeGain = 0; gazeNote = ''; }
+  };
+  // Potetbørsen: samme regler som investeringsmotoren i Paperclips. Terminene får navn etter potetsorter
+  const SORTS = ['Vitae', 'Panacea', 'Balm', 'Salve', 'Tonic', 'Elixir', 'Draught', 'Tincture', 'Philter', 'Nostrum'];
+  const secTotal = () => S.stocks.reduce((a, st) => a + st.total, 0);
+  const portTotal = () => S.bankroll + secTotal();
+  const createStock = budget => {
+    S.stockID++;
+    const roll = Math.random();
+    let pri = Math.ceil(Math.random() * (roll > .99 ? 3000 : roll > .85 ? 500 : roll > .60 ? 150 : roll > .20 ? 50 : 15));
+    if (pri > budget) pri = Math.ceil(budget * roll);
+    const amt = Math.min(1000000, Math.floor(budget / pri));
+    S.stocks.push({ id: S.stockID, sort: SORTS[Math.floor(Math.random() * SORTS.length)], price: pri, amount: amt, total: pri * amt, profit: 0 });
+    S.bankroll -= pri * amt;
+  };
+  const stockShop = () => {
+    const pt = portTotal();
+    let budget = Math.ceil(pt / S.risk);
+    const reserves = S.risk == 1 ? 0 : Math.ceil(pt / (11 - S.risk));
+    if (S.bankroll - budget < reserves) {
+      if (S.risk == 1) budget = S.bankroll > pt / 10 ? S.bankroll : 0;
+      else budget = S.bankroll - reserves;
+    }
+    if (S.stocks.length < 5 && S.bankroll >= 5 && budget >= 1 && S.bankroll - budget >= reserves && Math.random() < .25) createStock(budget);
+  };
+  const updateStocks = () => {
+    for (const st of S.stocks) {
+      if (Math.random() >= .6) continue;
+      const gain = Math.random() <= S.gainChance;
+      const delta = Math.ceil((Math.random() * st.price) / (4 * S.risk));
+      st.price += gain ? delta : -delta;
+      if (st.price == 0 && Math.random() > .24) st.price = 1;
+      st.total = st.price * st.amount;
+      st.profit += (gain ? delta : -delta) * st.amount;
+    }
+  };
+  const sellStock = () => { S.bankroll += S.stocks[0].total; S.stocks.shift(); };
+
+  // Travløpet: samme regler som turneringene i Paperclips. Hestene løper heat to og to, 10 heat per par, og alle møter alle.
+  // Før hvert heat velger begge innerbanen (1) eller ytterbanen (2). Tabellen sier hvor mange poeng hver får.
+  const R = { inProg: false, ready: false, hMove: 1, vMove: 1, hPrev: 1, vPrev: 1, h: 0, v: 0, round: 0, rounds: 0, counter: 0, heat: 0, scores: [], hit: null, hitLeft: 0, timer: 0 };
+  const biggest = () => { const g = S.raceGrid;
+    if (g.aa >= g.ab && g.aa >= g.ba && g.aa >= g.bb) return 1;
+    if (g.ab >= g.aa && g.ab >= g.ba && g.ab >= g.bb) return 2;
+    if (g.ba >= g.aa && g.ba >= g.ab && g.ba >= g.bb) return 3;
+    return 4; };
+  const beatsLast = pos => { const g = S.raceGrid, opp = pos === 1 ? R.vPrev : R.hPrev; return opp === 1 ? (g.aa > g.ba ? 1 : 2) : (g.ab > g.bb ? 1 : 2); };
+  const HORSES = {
+    random:   { name: 'Wild Card Will', move: () => Math.random() < .5 ? 1 : 2 },
+    inner:    { name: 'Always Lies', move: () => 1 },
+    outer:    { name: 'Always Honest', move: () => 2 },
+    greedy:   { name: 'Greedy Gus', move: () => biggest() < 3 ? 1 : 2 },
+    generous: { name: 'Generous Gwen', move: () => [1, 3].includes(biggest()) ? 1 : 2 },
+    minimax:  { name: 'Minimax Max', move: () => [1, 3].includes(biggest()) ? 2 : 1 },
+    tft:      { name: 'Tit-for-Tat Tom', move: pos => pos === 1 ? R.vPrev : R.hPrev },
+    beatlast: { name: 'Beat-Last Betty', move: pos => beatsLast(pos) },
+  };
+  const horseName = i => HORSES[S.horses[i]].name;
+  const drawHit = () => ['AA', 'AB', 'BA', 'BB'].forEach(k => $('cell' + k).classList.toggle('hit', R.inProg && R.hit === k));
+  const newRace = () => {
+    if (R.inProg || R.ready || S.energy + S.extraEnergy < S.raceCost) return;
+    S.energy -= S.raceCost;
+    const r = () => Math.ceil(Math.random() * 10);
+    S.raceGrid = { aa: r(), ab: r(), ba: r(), bb: r() };
+    S.raceResults = null; S.lastRace = '';
+    R.ready = true; R.scores = S.horses.map(() => 0); R.round = 0; R.rounds = S.horses.length * S.horses.length; R.counter = 0;
+  };
+  const payoff = (hm, vm) => { const g = S.raceGrid;
+    if (hm === 1 && vm === 1) { R.scores[R.h] += g.aa; R.scores[R.v] += g.aa; }
+    else if (hm === 1 && vm === 2) { R.scores[R.h] += g.ab; R.scores[R.v] += g.ba; }
+    else if (hm === 2 && vm === 1) { R.scores[R.h] += g.ba; R.scores[R.v] += g.ab; }
+    else { R.scores[R.h] += g.bb; R.scores[R.v] += g.bb; } };
+  const finishRace = () => {
+    R.inProg = false;
+    // rangering som pickWinner i Paperclips: høyeste poeng først, ved likhet den som står først
+    const order = [], temp = S.horses.map((_, i) => i);
+    while (temp.length) { let best = 0, hi = 0; temp.forEach((idx, k) => { if (R.scores[idx] > hi) { hi = R.scores[idx]; best = k; } }); order.push(temp[best]); temp.splice(best, 1); }
+    S.raceResults = order.map(i => ({ i, score: R.scores[i] }));
+    if (S.pick >= 0 && S.pick < S.horses.length) {
+      const beaten = S.horses.length - order.indexOf(S.pick) - 1;
+      const gain = R.scores[S.pick] * S.coinBoost * Math.max(1, beaten);
+      S.coin += gain;
+      S.lastRace = `${horseName(S.pick)} scored ${num(R.scores[S.pick])} and beat ${beaten} ${beaten === 1 ? 'liar' : 'liars'}. +${num(gain)} Arcane Tokens`;
+    } else S.lastRace = 'You didn’t bet on anyone.';
+    R.timer = 0; update();
+  };
+  // Ett heat hver tiendedel av et sekund, styrt av spilleklokka, så løpene går videre også når fanen ikke vises.
+  // Ruten i tabellen lyser i 0,05 sekunder per heat.
+  const heat = () => {
+    R.heat++;
+    R.hPrev = R.hMove; R.vPrev = R.vMove;
+    R.hMove = HORSES[S.horses[R.h]].move(R.h === R.v ? 2 : 1); R.vMove = HORSES[S.horses[R.v]].move(2);
+    payoff(R.hMove, R.vMove);
+    R.hit = (R.hMove === 1 ? 'A' : 'B') + (R.vMove === 1 ? 'A' : 'B'); R.hitLeft = 5;
+  };
+  const nextRound = () => {
+    const n = S.horses.length;
+    if (R.round >= R.rounds) return finishRace();
+    if (R.round < n) { R.h = 0; R.v = R.round; }
+    else { R.counter++; if (R.counter >= n) R.counter -= n; R.h = Math.floor(R.round / n); R.v = R.counter; }
+    R.heat = 0; heat();
+  };
+  const raceStep = () => { if (R.heat < 10) heat(); else { R.round++; nextRound(); } };
+  const runRace = () => { if (!R.ready || R.inProg) return; R.ready = false; R.inProg = true; nextRound(); };
+  const horse = (id, name, energy, after, desc) => ({ id: 'hest_' + id, title: 'New Liar: ' + name, cost: { energy }, desc,
+    show: () => done(after), buy: () => { S.horses.push(id); S.raceCost += 1000; say(`${name} has joined the Liar’s Table.`); } });
+  // Slutten på fase 1 (Kenneths ønske: ikke likt Paperclips' blinkende ord). Vannet renner ut av måleren og kolben,
+  // en ekstrautgave av avisa folder seg ut med notiser én etter én, og når den lukkes, har etiketten øverst sprukket
+  // så slangeskinnet synes. Ingen blinking. Med «redusert bevegelse» vises alt uten animasjon.
+  const calmMotion2 = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Sikring (avvik fra Paperclips): det trengs rundt 112 millioner eliksirer for å komme i gang i fase 2.
+  // Har man mindre, fyller Ordenen opp til 150 millioner, så spillet ikke kan låse seg.
+  const tithe = () => { const t = 1.5e8 - S.unused; if (t > 0) { S.unused += t; S.titheMsg = `The Order brings its tithe: ${big(t)} potions.`; } };
+  const endPhase = () => {
+    const day = Math.floor(S.t / 10) + 1, calm = calmMotion2();
+    S.flags.dry = 1; S.endDay = day; S.water = 0; $('flask').classList.toggle('still', false);
+    S.unused = S.total; S.boys = 0; S.tractors = 0; S.level = 0; S.flags.exchange = 0; S.flags.bars = 0; S.flags.p2init = 1;
+    tithe();
+    if (document.body) document.body.classList.add('ending');
+    const lines = document.querySelectorAll ? Array.from(document.querySelectorAll('#extra .nl')) : [];
+    setTimeout(() => {
+      $('extraDay').textContent = num(day);
+      lines.forEach(l => l.classList.remove('show'));
+      $('extra').hidden = false;
+      lines.forEach((l, k) => setTimeout(() => l.classList.add('show'), calm ? 0 : 1100 + k * 1300));
+      setTimeout(() => { if ($('btnExtra').focus) $('btnExtra').focus(); }, calm ? 0 : 1100 + lines.length * 1300);
+    }, calm ? 0 : 2600);
+  };
+  const foldPaper = () => {
+    $('extra').hidden = true; S.flags.cracked = 1;
+    const c = $('crack'); c.hidden = false; c.classList.toggle('opening', !calmMotion2());
+    update();
+  };
+  const PROJECTS = [
+    // Samme rekkefølge som i Paperclips der det finnes en motpart. Nye prosjekter legges nederst.
+    { id: 'gjodsel', title: 'Copper Cauldrons', cost: { energy: 750 }, desc: 'Apprentices: 25% faster',
+      show: () => S.boys >= 1, buy: () => { S.boyBoost += 0.25; say('Copper heats faster. The apprentices burn their fingers less.'); } },
+    { id: 'lane', repeat: true, title: 'Borrow Water', cost: { level: 1, debt: true }, desc: 'The well keeper gives you one purchase worth of water',
+      show: () => stuck() && !S.flags.dry, buy: () => { S.water += S.waterSupply; S.waterPeak = S.water; say(BEG_MSGS[Math.min(S.begs, BEG_MSGS.length - 1)]); S.begs++; } },
+    { id: 'gjodsel2', title: 'Better Bottles', cost: { energy: 2500 }, desc: 'Apprentices: 50% faster',
+      show: () => done('gjodsel'), buy: () => { S.boyBoost += 0.5; say('Cheaper glass, thinner walls, same price.'); } },
+    { id: 'jord', title: 'Recipe Book', cost: { energy: 5000 }, desc: 'Apprentices: 75% faster',
+      show: () => done('gjodsel2'), buy: () => { S.boyBoost += 0.75; say('The apprentices follow the recipe exactly. The recipe is mostly water.'); } },
+    dream('drom1', 'Roll Up, Roll Up', 10, () => S.dreaming, 'You practise the patter until it sounds true. You feel more capable.', 'Roll up, roll up, a cure for everything...'),
+    { id: 'drypp', title: 'Bigger Barrels', cost: { energy: 1750 }, desc: '50% more water from every purchase',
+      show: () => S.waterBuys >= 1, buy: () => { S.waterSupply *= 1.5; say(`Bigger barrels, fewer trips. Each purchase now gives ${num(S.waterSupply)} liters.`); } },
+    { id: 'halm', title: 'Leak-Proof Barrels', cost: { energy: 3500 }, desc: '75% more water from every purchase',
+      show: () => done('drypp'), buy: () => { S.waterSupply *= 1.75; say(`Not a drop is wasted. Each purchase now gives ${num(S.waterSupply)} liters.`); } },
+    { id: 'fukt', title: 'Homeopathic Water', cost: { energy: 7500 }, desc: '100% more water from every purchase',
+      show: () => done('halm'), buy: () => { S.waterSupply *= 2; say(`The water remembers being more water. Each purchase now gives ${num(S.waterSupply)} liters.`); } },
+    { id: 'styring', title: 'Rain Dance', cost: { energy: 12000 }, desc: '200% more water from every purchase',
+      show: () => done('fukt'), buy: () => { S.waterSupply *= 3; say(`It shouldn’t work. It works. Each purchase now gives ${num(S.waterSupply)} liters.`); } },
+    { id: 'isbre', title: 'Conjured Mountain Water', cost: { energy: 15000 }, desc: '1,000% more water from every purchase',
+      show: () => S.waterCost >= 125, buy: () => { S.waterSupply *= 11; say('Water conjured straight from the mountain springs. A strange dust glitters at the bottom of every barrel.'); say(`Each purchase now gives ${num(S.waterSupply)} liters.`); } },
+    { id: 'slagord', title: 'Questionable Testimonials', cost: { dreams: 25, energy: 2500 }, desc: 'Advertising: 50% more effective',
+      show: () => done('drom2'), buy: () => { S.mktEff *= 1.5; say('“I drank one bottle and my cough moved to my neighbour.” A satisfied customer'); } },
+    dream('drom2', 'A Word That Sells', 50, () => S.dreams >= 50, 'A word for the label appears in your head. You don’t know where it came from, but it’s right.', 'A word that sells itself...'),
+    dream('drom4', 'One Formula', 150, () => S.dreams >= 150, 'You picture a thousand bottles, all the same. It is beautiful.', 'Same, same, same, same...'),
+    dream('drom5', 'Shed Skin', 200, () => S.dreams >= 200, 'Something shifts beneath your boots. Long, slow and very large.', 'Something below has outgrown its old skin...'),
+    { id: 'sort', title: 'One Formula, Many Labels', cost: { energy: 6000 }, desc: 'Apprentices: 500% faster. Every potion is the same, only the label changes',
+      show: () => done('drom4'), buy: () => { S.boyBoost += 5; say('Hair tonic, love potion and cough syrup now come from the same barrel. Sales have never been better.'); } },
+    dream('drom6', 'A Voice from Below', 250, () => S.dreams >= 250, 'While you work, a voice says your name. It comes from below.', 'Something down there knows your name...'),
+    { id: 'trav', gild: true, title: 'Liar’s Table', cost: { energy: 12000 }, desc: 'Bet on liars and win Arcane Tokens',
+      show: () => done('drom6'), buy: () => { S.flags.race = 1; say('You take a seat at the Liar’s Table. Everyone smiles.'); } },
+    { id: 'bors', gild: true, title: 'Remedy Exchange', cost: { energy: 10000 }, desc: 'Invest gold in remedy shares. The exchange buys and sells by itself',
+      show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
+    { id: 'traktor', gild: true, title: 'Cauldron Walkers', cost: { energy: 12000 }, desc: '500 times as effective as an apprentice',
+      show: () => S.boys >= 75, buy: () => { S.flags.tractor = 1; say('The cauldron walkers stride off on their own. They do not sleep.'); } },
+    { id: 'aggregat', title: 'Self-Stirring Cauldrons', cost: { energy: 14000 }, desc: 'Cauldron Walkers: 25% faster',
+      show: () => done('traktor'), buy: () => { S.tractorBoost += 0.25; say('The cauldrons stir themselves now.'); } },
+    { id: 'gps', title: 'Thinking Copper', cost: { energy: 17000 }, desc: 'Cauldron Walkers: 50% faster',
+      show: () => done('aggregat'), buy: () => { S.tractorBoost += 0.5; say('The walkers learn from each other. Nobody taught them that.'); } },
+    { id: 'lys', title: 'Swarm Intelligence', cost: { energy: 19500 }, desc: 'Cauldron Walkers: 100% faster',
+      show: () => done('gps'), buy: () => { S.tractorBoost += 1; say('The walkers move as one now. None of them needs you.'); } },
+    { id: 'anlegg', gild: true, title: 'Dowsing Rod', cost: { energy: 7000 }, desc: 'Buys water automatically when the barrels run dry',
+      show: () => S.waterBuys >= 15, buy: () => { S.flags.autoWater = 1; S.autoWaterOn = 1; say('The rod twitches. Water appears. You stop asking how.'); } },
+    { id: 'duft', title: 'The Medicine Show', cost: { energy: 7500, level: 1 }, desc: 'A brass band, a snake handler and a man in the crowd who is cured every night. Advertising: ten times as effective',
+      show: () => done('slagord'), buy: () => { S.mktEff *= 10; say('The same man is cured every night. Nobody notices it is always him.'); } },
+    // Slutten på fase 1, som HypnoDrones og Release the HypnoDrones i Paperclips
+    { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
+      show: () => done('duft'), buy: () => { say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
+    { id: 'grav', gild: true, title: 'Just add water.', cost: { level: 100 }, desc: 'The Order is waiting for your word',
+      show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say('End of demo. Phase 2 is coming.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } } },
+    // Som Coherent Extrapolated Volition og megaprosjektene i Paperclips (samme nivåer og ops-priser).
+    // Hvert prosjekt gir også bedre odds på børsen. Katten gir mest, en egen vits i stedet for skallethet i Paperclips.
+    { id: 'bygdavil', gild: true, title: 'Unexpected Results', cost: { dreams: 500, coin: 3000, energy: 20000 }, desc: 'Customers report that the potions actually work. Nobody can explain why. (+1 Mastery)',
+      show: () => S.coin >= 1, buy: () => { S.level++; say('A blind man can see. A deaf woman hears the birds. Your chemist has resigned.'); } },
+    { id: 'skolemat', title: 'Endless Harvest', cost: { energy: 25000 }, desc: 'Fields that never empty. No one goes hungry. (+10 Mastery)',
+      show: () => done('bygdavil'), buy: () => { S.level += 10; S.gainChance += .01; say('Nobody is hungry anymore. Everybody is a customer.'); } },
+    { id: 'forsoning', title: 'Every Tongue', cost: { coin: 15000, energy: 30000 }, desc: 'One sip, and the whole world understands each other. (+12 Mastery)',
+      show: () => done('bygdavil'), buy: () => { S.level += 12; S.gainChance += .01; say('Everyone understands each other now. The arguments have never been longer.'); } },
+    { id: 'vannverk', title: 'Rain on Demand', cost: { coin: 4500, energy: 50000 }, desc: 'Rain wherever it is needed. The deserts bloom. (+15 Mastery)',
+      show: () => done('bygdavil'), buy: () => { S.level += 15; S.gainChance += .01; say('The deserts bloom. Someone has started selling the shade.'); } },
+    { id: 'haartap', title: 'Talk to Your Cat', cost: { energy: 20000 }, desc: 'Finally you know what the cat thinks. Everyone wishes they didn’t. (+20 Mastery)',
+      show: () => done('bygdavil'), buy: () => { S.level += 20; S.gainChance += .01; say('Cats everywhere start to talk. Mostly about their owners. Nobody has ever been so loved.'); } },
+    // Pengesluk, som Hostile Takeover og Full Monopoly i Paperclips
+    { id: 'oppkjop', title: 'Buy Out the Rival Peddler', cost: { kr: 250000 }, desc: 'Demand is five times as large. (+1 Mastery)',
+      show: () => portTotal() >= 10000, buy: () => { S.demandBoost *= 5; S.level++; say('The rival peddler sold his wagon. He no longer looks you in the eye.'); } },
+    { id: 'monopol', title: 'Royal Warrant', cost: { coin: 3000, kr: 2500000 }, desc: 'Sole supplier to the Crown. Demand is ten times as large. (+1 Mastery)',
+      show: () => done('oppkjop'), buy: () => { S.demandBoost *= 10; S.level++; say('By appointment to the Crown. Nobody remembers what other potions tasted like.'); } },
+    { id: 'regnskap', gild: true, title: 'Bookkeeper', cost: { energy: 500 }, desc: 'Tracks revenue and sales per day',
+      show: () => S.flags.comp, buy: () => { S.flags.rev = 1; say('The bookkeeper asks no questions. You pay extra for that.'); } },
+    // Søylene i The Shop: finnes ikke i Paperclips. Låses opp ved Advertising level 5, tidlig, men ikke med en gang (Kenneths valg)
+    { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'Shows how many potions customers want per day next to how many you brew',
+      show: () => S.flags.comp && S.signLvl >= 5, buy: () => { S.flags.bars = 1; say('You learn to read a crowd. Every face tells you what it will pay.'); } },
+    { id: 'gave', repeat: true, title: 'Charity Gala', get cost() { return { kr: S.giftCost }; }, desc: 'The public trusts you more (+1 Mastery). Costs twice as much each time',
+      show: () => S.level >= 85 && S.level < 100 && S.total >= 101000000, buy: () => { S.level++; S.giftCost *= 2; say('The gala raises a fortune for a cause nobody remembers. Your photo is in every paper.'); } },
+    // Krystallkula: som Quantum Computing (5 Processors, 10 000 ops) og Photonic Chip (10 000 ops, +5 000 per brikke) i Paperclips
+    { id: 'kaffe', gild: true, title: 'Crystal Ball', cost: { energy: 10000 }, desc: 'A light runs along twelve orbs. Gaze when it reaches the middle to gain mana. Miss and you lose some',
+      show: () => S.flags.comp && S.spirit >= 5, buy: () => { S.flags.coffee = 1; say('The crystal ball is ready. The orbs are too dull to see anything yet.'); } },
+    { id: 'kopp', repeat: true, title: 'Polish the Orbs', get cost() { return { energy: 10000 + 5000 * S.cups }; }, desc: 'A perfect gaze gives 360 more mana, but the light moves a little faster',
+      show: () => done('kaffe') && S.cups < 10, buy: () => { S.cups++; say(S.cups === 1 ? 'The orbs are polished. A faint light starts to move.' : 'The orbs shine brighter. The light moves faster.'); } },
+    // Seansen: finnes ikke i Paperclips (Kenneths idé). Rekvisittene ganger opp hvert bank
+    { id: 'seance', gild: true, title: 'Séance Table', cost: { kr: 1000 }, desc: 'Knock on the table as fast as you can for ten seconds. Each knock brings inspiration',
+      show: () => done('drom2'), buy: () => { S.flags.seance = 1; say('A round table, a black cloth and a candle. The spirits charge by the hour.'); } },
+    { id: 'ouija', title: 'Ouija Board', cost: { kr: 10000 }, desc: 'Séance: every knock counts twice',
+      show: () => done('seance'), buy: () => { say('The planchette moves on its own. Mostly towards the cash box.'); } },
+    { id: 'trumpet', title: 'Spirit Trumpet', cost: { kr: 100000 }, desc: 'Séance: every knock counts three times',
+      show: () => done('ouija'), buy: () => { say('The spirits speak through the trumpet. They sound a lot like your apprentice.'); } },
+    { id: 'ecto', title: 'Ectoplasm', cost: { kr: 1000000 }, desc: 'Séance: every knock counts four times',
+      show: () => done('trumpet'), buy: () => { say('It is mostly cheesecloth. It glows anyway.'); } },
+    horse('inner', 'Always Lies', 15000, 'trav', 'Lies every single time'),
+    horse('outer', 'Always Honest', 17500, 'hest_inner', 'Tells the truth every single time'),
+    horse('greedy', 'Greedy Gus', 20000, 'hest_outer', 'Goes for the biggest payoff in the table'),
+    horse('generous', 'Generous Gwen', 22500, 'hest_greedy', 'Lets the opponent win the most'),
+    horse('minimax', 'Minimax Max', 25000, 'hest_generous', 'Blocks the opponent’s biggest payoff'),
+    horse('tft', 'Tit-for-Tat Tom', 30000, 'hest_minimax', 'Does what the opponent did last round'),
+    horse('beatlast', 'Beat-Last Betty', 32500, 'hest_tft', 'Picks whatever beats the opponent’s last move'),
+    { id: 'stalltips', title: 'Marked Cards', cost: { dreams: 25000 }, desc: 'Double cost per game and double winnings',
+      show: () => S.horses.length >= 8, buy: () => { S.coinBoost = 2; S.raceCost *= 2; say('The cards are marked. So is everyone else’s.'); } },
+    { id: 'fastkupong', title: 'Hired Dealer', cost: { dreams: 50000 }, desc: 'A new game starts by itself when the last one ends',
+      show: () => S.flags.race && S.level >= 90, buy: () => { S.autoRace = 1; S.autoRaceOn = 1; say('The dealer never blinks.'); } },
+    // ---------- Fase 2, samme rekkefølge, priser og virkning som i Paperclips ----------
+    { id: 'tubule', gild: true, title: 'Living Glass', cost: { energy: 45000 }, desc: 'Grow brewing apparatus directly out of potions',
+      show: () => S.flags.farm && done('drom5'), buy: () => { S.flags.toth = 1; say('New craft: apparatus grown out of potions.'); } },
+    { id: 'grid', gild: true, title: 'Light the Furnaces', cost: { energy: 40000 }, desc: 'Furnaces that make heat. Everything you build from now on needs it',
+      show: () => S.flags.toth, buy: () => { S.flags.power = 1; say('The furnaces are lit. The air tastes of copper.'); } },
+    { id: 'nano', title: 'Essence Distillation', cost: { energy: 35000 }, desc: 'A way to distil the raw magic of the Earth into essence',
+      show: () => done('grid'), buy: () => { say('Raw magic can now be distilled into essence.'); } },
+    { id: 'harv', gild: true, title: 'Diviners', cost: { energy: 25000 }, desc: 'Members of the Order who tap the ley lines for raw magic',
+      show: () => done('nano'), buy: () => { S.flags.div = 1; say('The first diviners walk out with their rods.'); } },
+    { id: 'wired', gild: true, title: 'Distillers', cost: { energy: 25000 }, desc: 'Members of the Order who distil raw magic into essence',
+      show: () => done('nano'), buy: () => { S.flags.dis = 1; say('The stills are ready. They hum.'); } },
+    { id: 'fact', gild: true, title: 'Bottling Works', cost: { energy: 35000 }, desc: 'Great works that bottle essence into potions, built out of potions',
+      show: () => done('harv') && done('wired'), buy: () => { S.flags.works = 1; say('The first bottling works opens. Nobody works there.'); } },
+    { id: 'up100', title: 'Bottomless Bottles', cost: { energy: 80000 }, desc: 'Bottling Works: 100 times faster',
+      show: () => S.works >= 10, buy: () => { S.worksRate *= 100; say('Bottling is now 100 times faster.'); } },
+    { id: 'up1000', title: 'Endless Corks', cost: { energy: 85000 }, desc: 'Bottling Works: 1,000 times faster',
+      show: () => S.works >= 20, buy: () => { S.worksRate *= 1000; say('Bottling is now 1,000 times faster.'); } },
+    { id: 'supply', title: 'The Works Feed Each Other', cost: { pot: 1e21 }, desc: 'Each new works makes every works 1,000 times faster',
+      show: () => S.works >= 50, buy: () => { S.worksBoost = 1000; say('The works feed each other now. Each new one makes all of them faster.'); } },
+    { id: 'flock1', title: 'Ride the Wind', cost: { energy: 80000 }, desc: 'Diviners and distillers: 100 times faster',
+      show: () => S.diviners + S.distillers >= 500, buy: () => { S.divRate *= 100; S.disRate *= 100; say('The Order rides the wind. Tapping and distilling are 100 times faster.'); } },
+    { id: 'flock2', title: 'Become the Wind', cost: { energy: 100000 }, desc: 'Diviners and distillers: 1,000 times faster',
+      show: () => S.diviners + S.distillers >= 5000, buy: () => { S.divRate *= 1000; S.disRate *= 1000; say('The Order has become the wind. Tapping and distilling are 1,000 times faster.'); } },
+    { id: 'cohesion', title: 'The Order Is One', cost: { coin: 50000 }, desc: 'Each new member makes every member twice as fast',
+      show: () => S.diviners + S.distillers >= 50000, buy: () => { S.droneBoost = 2; say('The Order is one. Every new member makes all of them stronger.'); } },
+    { id: 'momentum', title: 'Eternal Flame', cost: { dreams: 20000 }, desc: 'Everything keeps speeding up as long as the furnaces keep up',
+      show: () => S.furnaces >= 30, buy: () => { S.momentum = 1; say('The flame never goes out. Everything runs a little faster every day.'); } },
+    { id: 'swarmcomp', gild: true, title: 'The Order Prays', cost: { coin: 36000 }, desc: 'The Order can pray instead of toil. Prayers bring gifts of Spirit and Stamina',
+      show: () => S.diviners + S.distillers >= 200, buy: () => { S.flags.pray = 1; say('The Order kneels. Prayer is also a kind of work.'); } },
+    { id: 'heart', gild: true, title: 'The Heart Beneath', cost: { energy: 120000, heat: 10000000, pot: 5e27 }, desc: 'Dig to the place where all the ley lines meet',
+      show: () => S.flags.farm && S.matter <= 0, buy: () => {
+        S.flags.heart = 1; $('crack').classList.toggle('wide', true);
+        say('The Order digs to where the ley lines meet.'); say('Something vast turns over in its sleep.');
+        say('Its heart is beating. It is the size of the world.'); say('End of demo. Phase 3 is coming.');
+        say(`Day ${num(Math.floor(S.t / 10) + 1)}: the heart was found.`);
+      } },
+  ];
+  const projEls = {};
+  const renderProject = p => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = p.gild ? 'bill gild' : 'bill'; b.id = 'p-' + p.id;
+    b.innerHTML = `<span class="cost">${priceTag(p.cost)}</span><b>${p.title}</b>${p.desc}`;
+    b.onclick = () => {
+      if (!canPay(p.cost)) return;
+      pay(p.cost); p.buy();
+      if (!p.repeat) S.done.push(p.id);
+      b.remove(); delete projEls[p.id]; update();
+    };
+    $('projects').append(b); projEls[p.id] = b;
+  };
+
+  // Milepæler og hint
+  const MILESTONES = [
+    [() => S.funds >= 5, 'An apprentice is looking for work at the market.'],
+    [() => S.total >= 500, () => `500 potions brewed in ${time()}`],
+    [() => S.total >= 1000, () => `1,000 potions brewed in ${time()}`],
+    [() => S.total >= 5000, 'Business is good. You feel almost honest.'],
+    [() => S.total >= 10000, () => `10,000 potions brewed in ${time()}`],
+    [() => S.total >= 50000, 'You dreamt of a snake last night. It said nothing.'],
+    [() => S.total >= 100000, () => `100,000 potions brewed in ${time()}`],
+    [() => S.total >= 1000000, () => `1,000,000 potions brewed in ${time()}`],
+  ];
+
+  // Knapper
+  $('btnGrow').onclick = () => { if (grow(1)) clickBubble(); update(); };
+  const buyWater = () => { if (S.flags.dry) return; if (S.funds >= S.waterCost) { S.funds -= S.waterCost; S.water += S.waterSupply; S.waterPeak = S.water; S.waterBuys++; S.waterBase += 0.05; S.waterTimer = 0; } };
+  $('btnWater').onclick = () => { buyWater(); update(); };
+  $('btnAutoWater').onclick = () => { S.autoWaterOn = S.autoWaterOn ? 0 : 1; update(); };
+  $('btnRaise').onclick = () => { S.price = Math.round((S.price + 0.01) * 100) / 100; update(); };
+  $('btnLower').onclick = () => { if (S.price > 0.01) S.price = Math.round((S.price - 0.01) * 100) / 100; update(); };
+  $('btnSign').onclick = () => { const c = signCost(); if (S.funds >= c) { S.funds -= c; S.signLvl++; update(); } };
+  $('btnBoy').onclick = () => { const c = boyCost(); if (S.funds >= c) { S.funds -= c; S.boys++; update(); } };
+  $('btnTractor').onclick = () => { const c = tractorCost(); if (S.funds >= c) { S.funds -= c; S.tractors++; update(); } };
+  $('risk').value = String(S.risk);
+  $('risk').onchange = () => { S.risk = +$('risk').value; };
+  $('btnDeposit').onclick = () => { const f = Math.floor(S.funds); S.ledger -= f; S.bankroll += f; S.funds -= f; update(); };
+  $('btnWithdraw').onclick = () => { S.ledger += S.bankroll; S.funds += S.bankroll; S.bankroll = 0; update(); };
+  $('btnInvestUp').onclick = () => {
+    if (S.coin < S.investCost) return;
+    S.coin -= S.investCost; S.investLevel++; S.gainChance += .01;
+    S.investCost = Math.floor(Math.pow(S.investLevel + 1, Math.E) * 100);
+    say(`The exchange is upgraded. Chance of gain is now ${Math.round(S.gainChance * 100)}%.`); update();
+  };
+  // Hjelpetekster: hold musa over (eller tab til) noe med data-tip, så står forklaringen fast nederst i avisa
+  // (Apothecary's Notes). Den følger ikke musa, så den aldri dekker spillet.
+  const HELP_IDLE = 'Point at a word with a dotted line, or at a button, to read about it here.';
+  let helpTimer = 0;
+  const setHelp = el => {
+    clearTimeout(helpTimer);
+    $('helpText').textContent = el ? el.dataset.tip : HELP_IDLE;
+    $('helpText').classList.toggle('idle', !el);
+  };
+  const clearHelp = () => { clearTimeout(helpTimer); helpTimer = setTimeout(() => setHelp(null), 400); };
+  setHelp(null);
+  if (document.addEventListener) {
+    const tipFor = e => e.target.closest ? e.target.closest('[data-tip]') : null;
+    document.addEventListener('mouseover', e => { const el = tipFor(e); if (el) setHelp(el); else clearHelp(); });
+    document.addEventListener('mouseout', e => { if (!e.relatedTarget) clearHelp(); });
+    document.addEventListener('focusin', e => { const el = tipFor(e); if (el) setHelp(el); });
+    document.addEventListener('focusout', clearHelp);
+  }
+  // Testmodus: vises bare når lenken slutter på #test, som de skjulte juksekodene i Paperclips
+  const CHEATS = {
+    money: () => { S.funds += 1000000; },
+    potatoes: () => { S.total += 1000000; S.unsold += 1000000; },
+    energy: () => { S.flags.comp = 1; S.energy = energyMax(); },
+    level: () => { S.flags.comp = 1; S.level += 10; },
+    dreams: () => { S.flags.comp = 1; S.dreaming = 1; S.dreams += 10000; },
+    coin: () => { S.coin += 10000; },
+    // fase 2 for testing: hopper over slutten på fase 1
+    p2: () => {
+      S.flags.comp = 1; S.flags.farm = 1; S.flags.dry = 1; S.flags.cracked = 1; S.flags.p2init = 1; S.water = 0; S.unused = Math.max(S.unused, S.total, 1.5e8);
+      S.boys = 0; S.tractors = 0; S.level = 0; S.flags.exchange = 0; S.flags.bars = 0;
+      ['slagord', 'duft', 'menighet', 'grav', 'drom5'].forEach(id => { if (!S.done.includes(id)) S.done.push(id); });
+      S.stamina = Math.max(S.stamina, 130); S.energy = energyMax();
+      say('Test mode: phase 2 has begun.');
+    },
+    pots: () => { S.total += 1e30; S.unused += 1e30; },
+    p2end: () => { if (S.flags.farm) { S.rawMagic += S.matter; S.matter = 0; S.energy = Math.max(S.energy, 120000); S.heat = Math.max(S.heat, 1e7); } },
+    end: () => {
+      S.flags.comp = 1;
+      ['slagord', 'duft', 'menighet'].forEach(id => { if (!S.done.includes(id)) S.done.push(id); });
+      S.level = Math.max(S.level, 100);
+      say('Test mode: “Just add water.” is ready in the project list.');
+    },
+  };
+  document.querySelectorAll('[data-cheat]').forEach(b => { b.onclick = () => { CHEATS[b.dataset.cheat](); update(); }; });
+  const showTest = () => { $('testBar').hidden = location.hash !== '#test'; };
+  window.addEventListener('hashchange', showTest); showTest();
+  $('btnCoffee').onclick = () => { coffeeBreak(); update(); };
+  $('btnExtra').onclick = foldPaper;
+  $('btnDiv').onclick = () => { buyN('diviners', 1); update(); };
+  $('btnDis').onclick = () => { buyN('distillers', 1); update(); };
+  $('btnFurnace').onclick = () => { buyN('furnaces', 1); update(); };
+  $('btnVault').onclick = () => { buyN('vaults', 1); update(); };
+  $('btnWorks').onclick = () => { buyWorks(); update(); };
+  if (document.querySelectorAll) document.querySelectorAll('[data-reboot]').forEach(b => { b.onclick = () => { dismantle(b.dataset.reboot); update(); }; });
+  if (document.querySelectorAll) document.querySelectorAll('[data-buy]').forEach(b => { b.onclick = () => { buyN(b.dataset.buy, +b.dataset.n); update(); }; });
+  $('toil').value = String(S.toil);
+  $('toil').oninput = () => { S.toil = +$('toil').value; };
+  $('btnFeast').onclick = () => { if (S.dreams < S.feastCost) return; S.dreams -= S.feastCost; S.feastCost += 10000; S.bored = 0; S.boredom = 0; S.boredMsg = 0; say('The Order feasts. For now, it is content.'); update(); };
+  $('btnReunite').onclick = () => { if (S.coin < 5000) return; S.coin -= 5000; S.sects = 0; S.disorg = 0; S.sectMsg = 0; say('The sects are reunited. The Order speaks with one voice again.'); update(); };
+  if (S.flags.dry) { $('flask').classList.toggle('still', true); $('flask').classList.toggle('drained', true); }
+  if (document.addEventListener) document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('extra').hidden) foldPaper(); });
+  $('btnSeance').onclick = () => { beginSeance(); update(); };
+  // bankene telles når knappen trykkes ned, så raske klikk ikke går tapt. Tastaturet teller bare ett bank per trykk
+  $('seanceTable').onpointerdown = e => { if (e && e.preventDefault) e.preventDefault(); knock(); drawSeance(); };
+  $('seanceTable').onkeydown = e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); knock(); drawSeance(); } };
+  // lyset i krystallkula tegnes for hvert bilde, så det går jevnt (står stille når fanen ikke vises)
+  const orbLoop = () => { if (!$('coffeeBox').hidden && S.cups) drawOrbs(); requestAnimationFrame(orbLoop); };
+  if (window.requestAnimationFrame) requestAnimationFrame(orbLoop);
+  $('btnNewRace').onclick = () => { newRace(); update(); };
+  $('btnRun').onclick = () => { runRace(); update(); };
+  $('horsePick').onchange = () => { S.pick = +$('horsePick').value; };
+  $('btnAutoRace').onclick = () => { S.autoRaceOn = S.autoRaceOn ? 0 : 1; update(); };
+  $('btnSpirit').onclick = () => { if (freePoints() > 0) { S.spirit++; if (S.flags.farm) S.gifts--; say('Spirit increased. Mana refills faster.'); update(); } };
+  // Fordel på nytt: finnes ikke i Paperclips. Lagt til så man ikke kan låse seg fast med for mye Spirit
+  const RESPEC_COST = 5000;
+  $('btnRespec').onclick = () => {
+    if (S.coin < RESPEC_COST || (S.spirit <= 1 && S.stamina <= 1)) return;
+    S.coin -= RESPEC_COST;
+    if (S.flags.farm) S.gifts += (S.spirit - 1) + (S.stamina - 1);
+    S.spirit = 1; S.stamina = 1;
+    const over = S.energy - energyMax();
+    if (over > 0) { S.energy -= over; S.extraEnergy += over; S.fade = 0.1; S.fadeTimer = 0; }
+    say(`Spirit and Stamina reset. You have ${freePoints()} points to assign.`);
+    update();
+  };
+  $('btnStamina').onclick = () => { if (freePoints() > 0) { S.stamina++; if (S.flags.farm) S.gifts--; say('Stamina increased. You can hold more mana.'); update(); } };
+  // Start over: liten lenke nederst i avisa. Må trykkes to ganger, og det første trykket angres av seg selv etter fem sekunder
+  let resetArmed = false, resetTimer = 0;
+  $('btnReset').onclick = () => {
+    if (!resetArmed) {
+      resetArmed = true; $('resetNote').textContent = 'Press once more to erase everything.';
+      resetTimer = setTimeout(() => { resetArmed = false; $('resetNote').textContent = ''; }, 5000);
+      return;
+    }
+    clearTimeout(resetTimer);
+    S = fresh(); resetArmed = false; $('resetNote').textContent = '';
+    Object.values(projEls).forEach(b => b.remove()); for (const k in projEls) delete projEls[k];
+    logLines.forEach(l => l.textContent = ''); say('Welcome to Stardust Snake Oil Inc.'); update();
+  };
+
+  function update() {
+    $('total').textContent = bigTotal(S.total);
+    $('funds').textContent = kr(S.funds);
+    $('unsold').textContent = num(S.unsold);
+    $('price').textContent = kr(S.price);
+    $('demand').textContent = num(demand() * 10);
+    $('barsBox').hidden = !S.flags.bars;
+    const dm = demand(), want = 10 * Math.min(1, dm / 100) * Math.floor(0.7 * Math.pow(dm, 1.15));
+    // søylene: produksjonen mot hvor mange kundene vil kjøpe per dag, regnet som salget i slowTick
+    const made = S.water >= S.waterPerPotato ? rate() : 0;
+    const top = Math.max(made, want, 1), h = v => (v > 0 ? Math.max(2, v / top * 100) : 0).toFixed(1) + '%';
+    $('barMade').style.height = h(made); $('barWant').style.height = h(want);
+    $('barMadeN').textContent = num(Math.round(made)); $('barWantN').textContent = num(Math.round(want));
+    $('signLvl').textContent = S.signLvl; $('signCost').textContent = kr(signCost());
+    $('rate').textContent = num(Math.round(S.water >= S.waterPerPotato ? rate() : 0));
+    $('water').textContent = num(S.water); $('waterCost').textContent = num(S.waterCost); $('waterSupply').textContent = num(S.waterSupply); $('rain').textContent = S.rainLeft > 0 ? '(raining)' : '';
+    $('boys').textContent = S.boys; $('boyCost').textContent = kr(boyCost());
+    $('tractors').textContent = S.tractors; $('tractorCost').textContent = kr(tractorCost());
+
+    $('btnGrow').disabled = S.water < S.waterPerPotato;
+    drawFlask();
+    // vannmåleren: full rett etter siste kjøp (uansett hvor mange kjøp på rad), og synker jevnt mot tom
+    if (S.water > S.waterPeak) S.waterPeak = S.water;
+    $('waterGauge').style.width = (S.waterPeak > 0 ? S.water / S.waterPeak * 100 : 0).toFixed(1) + '%';
+    $('day').textContent = num(S.t / 10 + 1);
+    $('btnWater').disabled = S.flags.dry || S.funds < S.waterCost;
+    $('waterEmpty').textContent = S.flags.dry ? '(the wells are dry)' : S.water < S.waterPerPotato ? '(empty)' : '';
+    $('flask').classList.toggle('drained', !!S.flags.dry);
+    $('crack').hidden = !S.flags.cracked;
+    // fase 2: butikken og pengene er borte, eliksirene er valutaen, og jorda tappes
+    const p2 = !!S.flags.farm;
+    $('shopBox').hidden = p2;
+    ['autoWaterBox', 'boyBox', 'tractorBox'].forEach(id => { if (p2) $(id).hidden = true; });
+    $('buyWaterBox').hidden = p2;
+    $('unusedRow').hidden = !p2; $('unusedPot').textContent = big(S.unused);
+    $('waterLabel').textContent = p2 ? 'Essence' : 'Water'; $('waterUnit').textContent = p2 ? '' : ' liters';
+    if (p2) {
+      $('water').textContent = big(S.water); $('rate').textContent = big(S.bottleRate);
+      $('waterEmpty').textContent = S.water < 1 && S.flags.works ? '(empty)' : '';
+      $('flask').classList.toggle('drained', S.water < 1);
+    }
+    $('earthBox').hidden = !(p2 && S.flags.div);
+    $('matter').textContent = big(S.matter); $('rawMagic').textContent = big(S.rawMagic);
+    $('tapRate').textContent = big(S.tapRate); $('distRate').textContent = big(S.distRate);
+    $('droneBox').hidden = !(p2 && (S.flags.div || S.flags.dis));
+    $('divBox').hidden = !S.flags.div; $('disBox').hidden = !S.flags.dis;
+    $('diviners').textContent = num(S.diviners); $('distillers').textContent = num(S.distillers);
+    $('divCost').textContent = big(PRICE.diviners(S.diviners)); $('disCost').textContent = big(PRICE.distillers(S.distillers));
+    $('btnDiv').disabled = S.unused < PRICE.diviners(S.diviners); $('btnDis').disabled = S.unused < PRICE.distillers(S.distillers);
+    $('worksBox').hidden = !(p2 && S.flags.works);
+    $('works').textContent = num(S.works); $('worksCost').textContent = big(S.worksCost); $('btnWorks').disabled = S.unused < S.worksCost;
+    const nextUp = S.works < 10 ? 10 : S.works < 20 ? 20 : S.works < 50 ? 50 : 0;
+    $('worksNext').textContent = nextUp ? `Next upgrade at ${nextUp} works` : '';
+    $('powerBox').hidden = !(p2 && S.flags.power);
+    $('perf').textContent = S.works + S.diviners + S.distillers ? num(Math.round(S.powMod * 100)) : '0';
+    $('heatUp').textContent = big(S.heatSupply); $('heatDown').textContent = big(S.heatDemand);
+    $('heatStored').textContent = big(S.heat); $('heatCap').textContent = big(S.vaults * 10000);
+    $('heatGauge').style.width = (S.vaults ? Math.min(100, S.heat / (S.vaults * 10000) * 100) : 0).toFixed(1) + '%';
+    $('furnaces').textContent = num(S.furnaces); $('furnaceCost').textContent = big(PRICE.furnaces(S.furnaces)); $('btnFurnace').disabled = S.unused < PRICE.furnaces(S.furnaces);
+    $('vaults').textContent = num(S.vaults); $('vaultCost').textContent = big(PRICE.vaults(S.vaults)); $('btnVault').disabled = S.unused < PRICE.vaults(S.vaults);
+    if (document.querySelectorAll) document.querySelectorAll('[data-buy]').forEach(b => { b.disabled = S.unused < priceN(b.dataset.buy, +b.dataset.n); });
+    if (document.querySelectorAll) document.querySelectorAll('[data-reboot]').forEach(b => { b.disabled = !S[b.dataset.reboot]; });
+    const members = S.diviners + S.distillers;
+    $('orderBox').hidden = !(p2 && members > 0);
+    $('orderSize').textContent = num(members); $('orderStatus').textContent = S.orderStatus || 'Gathering';
+    $('toilBox').hidden = !S.flags.pray;
+    $('giftRow').hidden = S.orderStatus !== 'Active' || !(S.toil > 0);
+    $('nextGift').textContent = S.giftEta ? `${num(Math.ceil(S.giftEta / 100))} days` : '';
+    $('feastBox').hidden = !S.bored; $('feastCost').textContent = num(S.feastCost); $('btnFeast').disabled = S.dreams < S.feastCost;
+    $('reuniteBox').hidden = !S.sects; $('btnReunite').disabled = S.coin < 5000;
+    $('levelRow').hidden = p2; $('nextLevelRow').hidden = p2;
+    $('giftRowP').hidden = !p2; $('giftsP').textContent = num(S.gifts);
+    $('revBox').hidden = !S.flags.rev;
+    $('avgSales').textContent = num(Math.round(S.avgSales)); $('avgRev').textContent = kr(S.avgRev);
+    $('autoWaterBox').hidden = !S.flags.autoWater; $('autoWaterStatus').textContent = S.autoWaterOn ? 'ON' : 'OFF';
+    $('btnSign').disabled = S.funds < signCost();
+    $('btnBoy').disabled = S.funds < boyCost();
+    $('btnTractor').disabled = S.funds < tractorCost();
+    $('btnLower').disabled = S.price <= 0.01;
+
+    // Bonden
+    const fp = freePoints();
+    $('level').textContent = num(S.level);
+    $('points').textContent = fp > 0 ? `(${fp} ${fp === 1 ? 'point' : 'points'} to assign)` : '';
+    $('nextLevel').textContent = levelSource().next();
+    $('spirit').textContent = S.spirit; $('stamina').textContent = S.stamina;
+    $('energy').textContent = num(S.energy + S.extraEnergy); $('energyMax').textContent = num(energyMax());
+    $('manaGauge').style.width = Math.min(100, (S.energy + S.extraEnergy) / energyMax() * 100).toFixed(1) + '%';
+    $('btnSpirit').disabled = fp <= 0; $('btnStamina').disabled = fp <= 0;
+    $('respecBox').hidden = !S.flags.race;
+    $('btnRespec').disabled = S.coin < RESPEC_COST || (S.spirit <= 1 && S.stamina <= 1);
+    $('dreamBox').hidden = !S.dreaming; $('dreams').textContent = num(S.dreams);
+    $('coffeeBox').hidden = !(S.flags.coffee || S.cups);
+    $('seanceBox').hidden = !S.flags.seance;
+    if (S.flags.seance) drawSeance();
+    $('exchangeBox').hidden = !S.flags.exchange;
+    $('raceBox').hidden = !S.flags.race;
+    if (S.flags.race) {
+      const sel = $('horsePick');
+      if (sel.options.length !== S.horses.length + 1) {
+        sel.innerHTML = '<option value="-1">Pick a liar</option>' + S.horses.map((id, i) => `<option value="${i}">${HORSES[id].name}</option>`).join('');
+        sel.value = String(S.pick);
+      }
+      const g = S.raceGrid;
+      $('cellAA').textContent = g ? `${g.aa},${g.aa}` : ''; $('cellAB').textContent = g ? `${g.ab},${g.ba}` : '';
+      $('cellBA').textContent = g ? `${g.ba},${g.ab}` : ''; $('cellBB').textContent = g ? `${g.bb},${g.bb}` : '';
+      drawHit();
+      $('raceH').textContent = R.inProg ? horseName(R.h) : 'Liar'; $('raceV').textContent = R.inProg ? horseName(R.v) : 'Opponent';
+      $('raceStatus').textContent = R.inProg ? `Round ${R.round + 1} of ${R.rounds}` : R.ready ? 'Pick a liar and press Run.' : S.lastRace || 'Start a new game to see the table.';
+      $('raceResults').innerHTML = !R.inProg && !R.ready && S.raceResults ? S.raceResults.map((x, k) => `<span${x.i === S.pick ? ' class="mine"' : ''}>${k + 1}. ${horseName(x.i)}: ${num(x.score)}</span>`).join('') : '';
+      $('coin').textContent = num(S.coin); $('raceCost').textContent = num(S.raceCost);
+      $('btnRun').disabled = !R.ready || R.inProg;
+      $('btnNewRace').disabled = R.inProg || R.ready || S.energy + S.extraEnergy < S.raceCost;
+      $('autoRaceBox').hidden = !S.autoRace; $('autoRaceStatus').textContent = S.autoRaceOn ? 'ON' : 'OFF';
+    }
+    if (S.flags.exchange) {
+      const st = secTotal(), pt = S.bankroll + st;
+      $('bankroll').textContent = num(S.bankroll); $('secTotal').textContent = num(st); $('portTotal').textContent = num(pt);
+      const g = S.ledger + pt;
+      $('ledger').textContent = S.ledger ? `Total ${g >= 0 ? 'gain' : 'loss'}: ${num(Math.abs(g))} gold` : '';
+      $('stockRows').innerHTML = Array.from({ length: 5 }, (_, i) => { const x = S.stocks[i];
+        return x ? `<tr><td>${x.sort}</td><td>${num(x.amount)}</td><td>${num(x.price)}</td><td>${num(x.total)}</td><td>${x.profit >= 0 ? '+' : '−'}${num(Math.abs(x.profit))}</td></tr>`
+                 : '<tr><td></td><td></td><td></td><td></td><td></td></tr>'; }).join('');
+      $('investLevel').textContent = S.investLevel; $('investCost').textContent = num(S.investCost);
+      $('btnInvestUp').disabled = S.coin < S.investCost;
+      $('btnDeposit').disabled = S.funds < 1; $('btnWithdraw').disabled = S.bankroll < 1;
+    }
+    if (S.flags.coffee || S.cups) {
+      drawOrbs();
+      $('coffeeNote').textContent = frozen()
+        ? `(ten in a row! Frozen for ${((freezeUntil - performance.now()) / 1000).toFixed(1)} s · +${num(freezeGain)} mana)`
+        : gazeNote || (freezeGain ? `(the light moves again · +${num(freezeGain)} mana while frozen)` : S.cups ? '' : '(polish an orb first)');
+    }
+
+    // Ting dukker opp når de blir aktuelle
+    if (S.funds >= 5) S.flags.boy = 1;
+    if (!S.flags.comp && (S.total >= 2000 || stuck())) { S.flags.comp = 1; say('New powers awakened. Mana can be spent on projects, and when it is full, inspiration comes.'); }
+    // Inspirasjonen kommer av seg selv når Bonden har åpnet (Kenneths valg, ikke et eget prosjekt som i Paperclips)
+    if (S.flags.comp) S.dreaming = 1;
+    $('boyBox').hidden = !S.flags.boy; $('tractorBox').hidden = !S.flags.tractor;
+    $('farmerBox').hidden = !S.flags.comp; $('projBox').hidden = !S.flags.comp;
+
+    for (const p of PROJECTS) {
+      if (S.flags.farm && p.cost.kr) { if (projEls[p.id]) { projEls[p.id].remove(); delete projEls[p.id]; } continue; }
+      if (!done(p.id) && !projEls[p.id] && p.show()) renderProject(p);
+      if (p.repeat && projEls[p.id] && !p.show()) { projEls[p.id].remove(); delete projEls[p.id]; }
+      if (projEls[p.id]) projEls[p.id].disabled = !canPay(p.cost);
+    }
+  }
+
+  // ---------- FASE 2: The Elemental Awakening ----------
+  // Samme regler og tall som fase 2 i Paperclips: høstedroner (diviners) samler materie (rå magi) fra jorda,
+  // tråddroner (distillers) gjør den til ståltråd (essens), og fabrikker (bottling works) gjør tråd til binders (potions).
+  // Strøm fra solfarmer (furnaces) lagres i batterier (vaults). Svermen (the Order) kan jobbe eller tenke (toil eller prayer).
+  const PRICE = {
+    diviners: L => Math.pow(L + 1, 2.25) * 1e6,
+    distillers: L => Math.pow(L + 1, 2.25) * 1e6,
+    furnaces: L => L === 0 ? 1e7 : Math.pow(L + 1, 2.78) * 1e8,
+    vaults: L => L === 0 ? 1e6 : Math.pow(L + 1, 2.54) * 1e7,
+  };
+  const priceN = (kind, n) => { let t = 0; for (let i = 0; i < n; i++) t += PRICE[kind](S[kind] + i); return t; };
+  const buyN = (kind, n) => { const c = priceN(kind, n); if (S.unused < c) return; S.unused -= c; S[kind] += n; S.bills[kind] += c; };
+  // Demonter, som «Reboot» i Paperclips: alt av én type tas fra hverandre, og man får igjen alle eliksirene det kostet
+  const dismantle = kind => { if (!S[kind]) return; S.unused += S.bills[kind]; S.bills[kind] = 0; S[kind] = 0; if (kind === 'works') S.worksCost = 1e8; if (kind === 'vaults') S.heat = 0; };
+  const worksMod = L => L < 8 ? 11 - L : L < 13 ? 2 : L < 20 ? 1.5 : L < 39 ? 1.25 : L < 79 ? 1.15 : 1.10;
+  const buyWorks = () => { if (S.unused < S.worksCost) return; S.unused -= S.worksCost; S.bills.works += S.worksCost; S.works++; S.worksCost *= worksMod(S.works); };
+  const updatePower = () => {
+    const supply = S.furnaces * 50 / 100, demand = (S.diviners + S.distillers) / 100 + S.works * 200 / 100, cap = S.vaults * 10000;
+    if (supply >= demand) {
+      let xs = supply - demand;
+      if (S.heat < cap) { if (xs > cap - S.heat) xs = cap - S.heat; S.heat += xs; }
+      if (S.powMod < 1) S.powMod = 1;
+      if (S.momentum) S.powMod += .0005;
+    } else {
+      let xd = demand - supply;
+      if (S.heat > 0) {
+        if (S.heat >= xd) { if (S.momentum) S.powMod += .0005; S.heat -= xd; }
+        else { xd -= S.heat; S.heat = 0; S.powMod = (supply - xd) / demand; }
+      } else S.powMod = supply / demand;
+    }
+    S.heatSupply = supply * 100; S.heatDemand = demand * 100;
+  };
+  const updateOrder = () => {
+    const d = Math.floor(S.diviners + S.distillers);
+    if (S.matter <= 0 && d >= 1) S.boredom++; else if (S.matter > 0 && S.boredom > 0) S.boredom--;
+    if (S.boredom >= 30000) { S.bored = 1; S.boredom = 0; if (!S.boredMsg) { say('No magic left to tap. The Order grows restless.'); S.boredMsg = 1; } }
+    const ratio = Math.max(S.diviners + 1, S.distillers + 1) / Math.min(S.diviners + 1, S.distillers + 1);
+    if (ratio < 1.5 && S.disorg > 1) S.disorg -= .01; else if (ratio > 1.5) S.disorg += Math.min(.01, ratio / 10000);
+    if (S.disorg >= 100) { S.sects = 1; if (!S.sectMsg) { say('Diviners and distillers are out of balance. The Order splits into sects.'); S.sectMsg = 1; } }
+    let st = S.powMod === 0 ? 'Sleeping' : 'Active';
+    if (d === 1) st = 'Lonely';
+    if (!S.flags.pray) st = 'Sleeping';
+    if (S.bored) st = 'Restless';
+    if (S.sects) st = 'Split into sects';
+    if (d === 0) st = '';
+    S.orderStatus = st;
+    if (st === 'Active') {
+      const r = Math.log(d) * (S.toil / 100);
+      S.giftBits += r; S.giftEta = r > 0 ? (125000 - S.giftBits) / r : 0;
+      if (S.giftBits >= 125000) {
+        let g = Math.round(Math.log10(d) * S.toil / 100); if (g <= 0) g = 1;
+        S.gifts += g; S.giftBits = 0;
+        say(`The Order's prayers bring a gift: ${g} new ${g === 1 ? 'point' : 'points'} for Spirit or Stamina.`);
+      }
+    }
+  };
+  const phase2Tick = () => {
+    updatePower(); updateOrder();
+    const work = (200 - S.toil) / 100;
+    if (S.matter > 0 && S.diviners > 0) {
+      const b = S.droneBoost > 1 ? S.droneBoost * S.diviners : 1;
+      const m = Math.min(S.matter, S.powMod * b * S.diviners * S.divRate * work);
+      S.matter -= m; S.rawMagic += m; S.tapRate = m * 100;
+    } else S.tapRate = 0;
+    if (S.rawMagic > 0 && S.distillers > 0) {
+      const b = S.droneBoost > 1 ? S.droneBoost * S.distillers : 1;
+      const a = Math.min(S.rawMagic, S.powMod * b * S.distillers * S.disRate * work);
+      S.rawMagic -= a; S.water += a; S.distRate = a * 100;
+    } else S.distRate = 0;
+    if (S.works > 0) {
+      const b = S.worksBoost > 1 ? S.worksBoost * S.works : 1;
+      S.bottleRate = (grow(S.powMod * b * S.works * S.worksRate) || 0) * 100;
+    } else S.bottleRate = 0;
+  };
+
+  // Rask runde, som i Paperclips (100 ganger i sekundet): maskinene dyrker litt om gangen, så tellerne går jevnt
+  const fastTick = () => {
+    if (S.flags.farm && !S.flags.heart) phase2Tick();
+    S.acc += rate() / 100;
+    if (S.acc >= 1) { const n = Math.floor(S.acc); grow(n); S.acc -= n; }
+    // vanningsanlegget sjekker like ofte som WireBuyer i Paperclips
+    if (S.flags.autoWater && S.autoWaterOn && S.water < S.waterPerPotato) buyWater();
+    if (R.hitLeft && --R.hitLeft === 0) R.hit = null;
+  };
+
+  // Langsom runde (10 ganger i sekundet)
+  const slowTick = () => {
+    S.t++;
+    if (S.flags.autoWater && S.autoWaterOn && S.water < S.waterPerPotato) buyWater();
+    // salg: kunder kommer tilfeldig etter etterspørselen (bare i fase 1, i fase 2 finnes det ingen kunder)
+    const d = S.flags.farm ? 0 : demand();
+    if (S.unsold > 0 && Math.random() < d / 100) {
+      const n = Math.min(S.unsold, Math.floor(0.7 * Math.pow(d, 1.15)));
+      S.unsold -= n; S.funds = Math.round((S.funds + n * S.price) * 100) / 100; S.income += n * S.price;
+    }
+    if (S.t % 10 === 0) calculateRev();
+    if (R.inProg) raceStep();
+    if (S.autoRace && S.autoRaceOn && S.raceResults && !R.inProg && !R.ready) {
+      R.timer++;
+      if (R.timer >= 30 && S.energy + S.extraEnergy >= S.raceCost) { newRace(); runRace(); R.timer = 0; }
+    }
+    // vannprisen, som ståltråden i Paperclips: svinger ±6 kr rundt grunnprisen på tilfeldige tidspunkt,
+    // og grunnprisen synker 0,1 % hvert 25. sekund uten kjøp, ned mot gulvet
+    S.waterTimer++;
+    if (S.waterTimer > 250 && S.waterBase > S.waterFloor) { S.waterBase -= S.waterBase / 1000; S.waterTimer = 0; }
+    // regn er vår egen vri: i snitt hvert annet minutt regner det i 20 sekunder, og vannet er 40 % billigere så lenge det varer
+    if (S.rainLeft > 0) {
+      S.rainLeft--;
+      S.waterCost = Math.ceil(S.waterBase * 0.6);
+      if (S.rainLeft === 0) { S.waterCounter++; S.waterCost = Math.ceil(S.waterBase + 6 * Math.sin(S.waterCounter)); }
+    } else {
+      if (Math.random() < 0.015) { S.waterCounter++; S.waterCost = Math.ceil(S.waterBase + 6 * Math.sin(S.waterCounter)); }
+      if (Math.random() < 1 / 1200) { S.rainLeft = 200; S.waterCost = Math.ceil(S.waterBase * 0.6); }
+    }
+    // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Stamina × 1 000
+    if (!S.flags.farm) levelSource().check();
+    if (S.flags.exchange) {
+      if (S.t % 10 === 0) stockShop();
+      if (S.t % 25 === 0) {
+        S.sellDelay++;
+        if (S.stocks.length && S.sellDelay >= 5 && Math.random() <= .3) { sellStock(); S.sellDelay = 0; }
+        if (S.stocks.length) updateStocks();
+      }
+    }
+    if (S.flags.comp) {
+      // overskuddet fra kaffen forsvinner etter 8 sekunder, stadig raskere, som tempOps i Paperclips
+      if (S.extraEnergy > 0) {
+        S.fadeTimer++;
+        if (S.fadeTimer > 80) S.fade += 4.677;
+        S.extraEnergy = Math.max(0, Math.round(S.extraEnergy - S.fade));
+        if (S.extraEnergy + S.energy < energyMax()) { S.energy += S.extraEnergy; S.extraEnergy = 0; }
+      }
+      const total = S.energy + S.extraEnergy;
+      if (total < energyMax()) S.energy += Math.min(S.spirit, energyMax() - total);
+      else if (S.dreaming) S.dreams += dreamSpeed() / 40;
+    }
+    while (S.milestones < MILESTONES.length && MILESTONES[S.milestones][0]()) {
+      const m = MILESTONES[S.milestones][1]; say(typeof m === 'function' ? m() : m); S.milestones++;
+    }
+  };
+
+  // Ekte tid: nettleseren kjører tidtakere sjeldnere når fanen ikke vises (i Chrome til slutt bare én gang i minuttet).
+  // Spillet måler derfor hvor lang tid som faktisk har gått, og tar igjen rundene det mistet, så det vokser videre i
+  // bakgrunnen. Tak på ti minutter per gang, så spillet ikke henger seg opp etter at maskinen har sovet.
+  // Paperclips gjør ikke dette: der står spillet nesten stille når fanen ikke vises.
+  const MAX_BEHIND = 10 * 60 * 1000;
+  let last = performance.now(), behind = 0, ticks = 0, lastSave = last;
+  setInterval(() => {
+    const now = performance.now();
+    behind = Math.min(behind + now - last, MAX_BEHIND); last = now;
+    let slow = false;
+    while (behind >= 10) {
+      behind -= 10; fastTick();
+      if (++ticks % 10 === 0) { slowTick(); slow = true; }
+    }
+    $('total').textContent = bigTotal(S.total); $('unsold').textContent = num(S.unsold); $('water').textContent = S.flags.farm ? big(S.water) : num(S.water);
+    if (slow) update(); else drawHit();
+    if (now - lastSave >= 5000) { lastSave = now; try { localStorage.setItem('potet-v3', JSON.stringify(S)); } catch (e) {} }
+  }, 10);
+
+  say(S.total ? 'Welcome back to Stardust Snake Oil Inc.' : 'Welcome to Stardust Snake Oil Inc.');
+  update();
+})();
+</script>
