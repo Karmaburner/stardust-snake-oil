@@ -269,13 +269,17 @@
     .flask .potion, .flask.omen .potion { animation: none; transition: none; }
   }
 
-  .bars { display: flex; justify-content: center; gap: 30px; padding: 5px 0 3px; border-bottom: 1px dotted var(--ink-2); }
-  .bar { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .bar .n { font-weight: 600; font-size: 15px; }
-  .bar .tube { width: 34px; height: 44px; border: 1px solid var(--ink); background: var(--paper-2); display: flex; align-items: flex-end; }
-  .bar .tube > i { display: block; width: 100%; height: 0; background: var(--brass); }
-  .bar .tube > i.want { background: var(--blood); }
-  .bar .l { font-family: var(--f-head); font-size: 13px; color: var(--ink-2); }
+  /* Apotekervekten (Kenneths ønske, i stedet for søylene, som gjorde det for lett): venstre skål er det man brygger per
+     dag, høyre er det kundene vil ha per dag. Den tyngste siden synker, uten tall. Står bjelken i vater, er prisen riktig */
+  .scale { display: flex; justify-content: center; padding: 4px 0 2px; border-bottom: 1px dotted var(--ink-2); }
+  .scale svg { width: 220px; max-width: 100%; height: auto; overflow: visible; }
+  .scale .base { fill: url(#woodG); stroke: #2e1c0e; stroke-width: 1; }
+  .scale .plate, .scale .pillar, .scale .beam, .scale .pan, .scale .knob { fill: url(#brassG); stroke: #5a4010; stroke-width: .8; }
+  .scale .rim { fill: #f0d68e; fill-opacity: .55; stroke: #5a4010; stroke-width: .6; }
+  .scale .chain { fill: none; stroke: #b8964a; stroke-width: .9; stroke-dasharray: 2 1.2; }
+  .scale .needle { stroke: #5a4010; stroke-width: 1.4; }
+  .scale .dial { fill: none; stroke: var(--ink-2); stroke-width: .9; }
+  .scale text { font-family: var(--f-head); font-size: 11px; letter-spacing: .06em; fill: var(--ink-2); text-anchor: middle; }
   /* Fase 2 */
   .buyrow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
   .buyrow .sub { margin-left: auto; }
@@ -370,10 +374,7 @@
         <div class="row"><span class="k" data-tip="Potions brewed but not yet sold." tabindex="0">Potion inventory</span><span class="v" id="unsold">0</span></div>
         <div class="row"><span class="k" data-tip="What customers pay for one potion. A lower price sells faster. Selling at a loss is allowed. Hold the arrows to change it quickly." tabindex="0">Price per potion</span><span class="v price"><button id="btnLower" class="sm" type="button" aria-label="Lower price">‹</button><span id="price">0</span><button id="btnRaise" class="sm" type="button" aria-label="Raise price">›</button></span></div>
         <div class="row"><span class="k" data-tip="How eager customers are to buy. A lower price and more advertising raise it." tabindex="0">Crowd appetite</span><span class="v"><span id="demand">0</span>%</span></div>
-        <div class="bars" id="barsBox" hidden data-tip="Potions you brew per day compared with how many potions customers want to buy per day at the current price.">
-          <div class="bar"><span class="n" id="barMadeN">0</span><div class="tube"><i id="barMade"></i></div><span class="l">Potions per day</span></div>
-          <div class="bar"><span class="n" id="barWantN">0</span><div class="tube"><i id="barWant" class="want"></i></div><span class="l">Wanted per day</span></div>
-        </div>
+        <div class="scale" id="barsBox" hidden data-tip="An apothecary’s scale. The left pan holds what you brew per day, the right pan what customers want per day at this price. The heavier side sinks. When the beam is level, you have found the price."><svg viewBox="0 0 220 134" aria-hidden="true"><defs><linearGradient id="brassG" x1="0" x2="1"><stop offset="0" stop-color="#7a5a22"/><stop offset=".45" stop-color="#e6c472"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient><linearGradient id="woodG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset="1" stop-color="#4a2e17"/></linearGradient></defs><path class="base" d="M66 122L74 110H146L154 122L146 130H74Z"/><rect class="plate" x="84" y="106" width="52" height="5" rx="2"/><rect class="pillar" x="107" y="24" width="6" height="84"/><circle class="knob" cx="110" cy="13" r="3.5"/><path class="dial" d="M98 14A14 14 0 0 1 122 14"/><line class="dial" x1="110" y1="3" x2="110" y2="7"/><g id="scaleBeam"><line class="needle" x1="110" y1="26" x2="110" y2="6"/><path class="beam" d="M40 24.5H180V27.5H40Z"/><circle class="knob" cx="110" cy="26" r="4"/><circle class="knob" cx="40" cy="26" r="2.5"/><circle class="knob" cx="180" cy="26" r="2.5"/></g><g id="panMade"><path class="chain" d="M0 0L-24 46M0 0L0 47M0 0L24 46"/><path class="pan" d="M-29 46Q0 63 29 46Z"/><ellipse class="rim" cx="0" cy="46" rx="29" ry="2.6"/><text x="0" y="75">Brewed</text></g><g id="panWant"><path class="chain" d="M0 0L-24 46M0 0L0 47M0 0L24 46"/><path class="pan" d="M-29 46Q0 63 29 46Z"/><ellipse class="rim" cx="0" cy="46" rx="29" ry="2.6"/><text x="0" y="75">Wanted</text></g></svg></div>
         <div class="act" data-tip="Each level raises demand by 10%. The cost doubles every time."><button id="btnSign" type="button">Advertise</button><span class="sub">Level <span id="signLvl">1</span> · <span id="signCost">0</span> gold</span></div>
       </div></section>
 
@@ -1121,7 +1122,7 @@
     { id: 'regnskap', gild: true, title: 'Bookkeeper', cost: { energy: 500 }, desc: 'Tracks revenue and sales per day',
       show: () => S.flags.comp, buy: () => { S.flags.rev = 1; say('The bookkeeper asks no questions. You pay extra for that.'); } },
     // Søylene i The Shop: finnes ikke i Paperclips. Låses opp ved Advertising level 5, tidlig, men ikke med en gang (Kenneths valg)
-    { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'Shows how many potions customers want per day next to how many you brew',
+    { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'An apothecary’s scale that weighs what you brew against what customers want',
       show: () => S.flags.comp && S.signLvl >= 5, buy: () => { S.flags.bars = 1; say('You learn to read a crowd. Every face tells you what it will pay.'); } },
     { id: 'gave', repeat: true, title: 'Charity Gala', get cost() { return { kr: S.giftCost }; }, desc: 'The public trusts you more (+1 Mastery point). Costs twice as much each time',
       show: () => S.level >= 85 && S.level < 100 && S.total >= 101000000, buy: () => { S.level++; S.giftCost *= 2; say('The gala raises a fortune for a cause nobody remembers. Your photo is in every paper.'); } },
@@ -1461,6 +1462,7 @@
     news.length = 0; frontPage(); update();
   };
 
+  let scaleAngle = 0;
   function update() {
     $('total').textContent = bigTotal(S.total);
     $('funds').textContent = kr(S.funds);
@@ -1469,11 +1471,17 @@
     $('demand').textContent = num(demand() * 10);
     $('barsBox').hidden = !S.flags.bars;
     const dm = demand(), want = 10 * Math.min(1, dm / 100) * Math.floor(0.7 * Math.pow(dm, 1.15));
-    // søylene: produksjonen mot hvor mange kundene vil kjøpe per dag, regnet som salget i slowTick
+    // vekten: produksjonen mot hvor mange kundene vil kjøpe per dag, regnet som salget i slowTick. Bjelken tipper høyst
+    // 14 grader, og den glir mot riktig vinkel i stedet for å hoppe
     const made = S.water >= S.waterPerPotato ? rate() : 0;
-    const top = Math.max(made, want, 1), h = v => (v > 0 ? Math.max(2, v / top * 100) : 0).toFixed(1) + '%';
-    $('barMade').style.height = h(made); $('barWant').style.height = h(want);
-    $('barMadeN').textContent = num(Math.round(made)); $('barWantN').textContent = num(Math.round(want));
+    if (S.flags.bars) {
+      const target = made <= 0 && want <= 0 ? 0 : made <= 0 ? 14 : want <= 0 ? -14 : -14 * Math.tanh(Math.log(made / want));
+      scaleAngle += (target - scaleAngle) * 0.3;
+      const a = scaleAngle * Math.PI / 180, dx = 70 * Math.cos(a), dy = 70 * Math.sin(a);
+      $('scaleBeam').setAttribute('transform', `rotate(${scaleAngle.toFixed(2)} 110 26)`);
+      $('panMade').setAttribute('transform', `translate(${(110 - dx).toFixed(2)} ${(26 - dy).toFixed(2)})`);
+      $('panWant').setAttribute('transform', `translate(${(110 + dx).toFixed(2)} ${(26 + dy).toFixed(2)})`);
+    }
     $('signLvl').textContent = S.signLvl; $('signCost').textContent = kr(signCost());
     $('rate').textContent = num(Math.round(S.water >= S.waterPerPotato ? rate() : 0));
     $('water').textContent = num(S.water); $('waterCost').textContent = num(S.waterCost); $('waterSupply').textContent = num(S.waterSupply); $('rain').textContent = S.rainLeft > 0 ? '(raining)' : S.flags.drought && S.story.dry1 === true && !S.flags.dry ? `(no rain for ${num(dryDays())} days)` : '';
