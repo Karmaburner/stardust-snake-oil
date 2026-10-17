@@ -167,14 +167,21 @@
   .gazette { container-type: inline-size; }
   .gazette .name { font-size: 22px; font-size: clamp(18px, 7cqi, 30px); text-align: center; line-height: 1; white-space: nowrap; }
   .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 7px 0 10px; }
-  #log { display: flex; flex-direction: column-reverse; justify-content: flex-end; min-height: 4em; }
-  #log div { font-size: 14.5px; padding: 6px 0; border-top: 1px solid rgba(28, 25, 21, .3); white-space: pre-wrap; }
-  #log div:empty { display: none; }
-  #log div[data-k]:not([data-k=""])::before { content: attr(data-k); display: block; font-weight: 600; font-size: 13px; letter-spacing: .03em; line-height: 1.15; margin-bottom: 2px; color: var(--ink); }
-  #log div:last-child { font-size: 19px; font-weight: 600; line-height: 1.15; border-top: none; padding-top: 0; margin-bottom: 4px; }
-  #log div:last-child[data-k]:not([data-k=""]) { font-size: 15px; font-weight: 400; line-height: 1.3; }
-  #log div:last-child[data-k]:not([data-k=""])::before { font-size: 20px; line-height: 1.1; letter-spacing: .01em; margin-bottom: 4px; }
-  #log div:nth-child(-n+2) { color: var(--ink-2); }
+  /* Avisa som en ekte avisside (Kenneths ønske): hovedsaken over hele bredden med stor forbokstav, eldre meldinger som
+     korte notiser i spalter med seksjonsnavn, like meldinger slått sammen, og Apothecary's Notes som fast rubrikk */
+  #log { min-height: 4em; }
+  #log .lead { padding-bottom: 7px; }
+  #log .sec { font-family: var(--f-head); font-size: 10.5px; letter-spacing: .1em; color: var(--ink-2); line-height: 1.2; margin-bottom: 1px; }
+  #log .lead h3 { font-family: var(--f-body); font-weight: 600; font-size: 20px; line-height: 1.12; margin: 0 0 4px; }
+  #log .lead .dek { font-style: italic; font-size: 15px; line-height: 1.25; margin: 0 0 3px; }
+  #log .lead .byline { font-family: var(--f-head); font-size: 11px; letter-spacing: .08em; color: var(--ink-2); margin: 0 0 5px; }
+  #log .lead .body { font-size: 14.5px; line-height: 1.32; margin: 0; text-align: justify; hyphens: auto; }
+  #log .lead .body::first-letter { font-family: "UnifrakturCook", var(--f-mast); font-weight: 700; float: left; font-size: 2.75em; line-height: .8; padding: 4px 5px 0 0; }
+  #log .briefs { columns: 3 150px; column-gap: 16px; column-rule: 1px solid rgba(28, 25, 21, .35); border-top: 1px solid var(--rule); padding-top: 6px; }
+  #log .brief { break-inside: avoid; font-size: 13px; line-height: 1.28; text-align: justify; hyphens: auto; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid rgba(28, 25, 21, .2); }
+  #log .brief b { display: block; font-weight: 600; text-align: left; line-height: 1.15; margin-bottom: 1px; }
+  #log .times { font-style: italic; color: var(--ink-2); white-space: nowrap; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   .table-wrap { overflow-x: auto; }
   table.stocks { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
@@ -235,17 +242,18 @@
   .toil input { flex: 1; min-width: 0; accent-color: var(--blood); }
   .crack.wide svg { transform: scaleY(2.4); transform-origin: center; }
   .k[data-tip] { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
-  .guide { border-top: 3px double var(--rule); margin-top: 8px; padding-top: 5px; min-height: 7.4em; }
-  .guide .gh { font-family: var(--f-head); font-size: 14px; letter-spacing: .06em; color: var(--ink-2); }
-  .guide p { margin: 2px 0 0; font-size: 15px; line-height: 1.3; }
-  .guide p.idle { font-style: italic; color: var(--ink-2); }
+  .guide { border: 1px solid var(--rule); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--rule); margin-top: 8px; padding: 6px 10px 7px; min-height: 7.4em; }
+  .guide .gh { font-family: var(--f-head); font-size: 13px; letter-spacing: .08em; text-align: center; border-bottom: 1px solid var(--rule); padding-bottom: 2px; margin-bottom: 4px; }
+  .guide p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.3; }
+  .guide .ad b { font-family: var(--f-head); font-weight: 400; letter-spacing: .06em; }
+  .guide .hint { font-style: italic; color: var(--ink-2); font-size: 12.5px; margin-top: 5px; }
   /* Mobil: avisa tar mindre plass, så butikken kommer høyere opp */
   @media (max-width: 640px) {
     .gazette { padding: 8px 12px 10px; }
     .gazette .masthead { grid-template-columns: 52px minmax(0, 1fr) 52px; }
     .gazette .date { margin: 4px 0 6px; }
     #log { min-height: 0; }
-    #log div:last-child { font-size: 16px; }
+    #log .lead h3 { font-size: 18px; }
     .guide { min-height: 4.4em; margin-top: 6px; }
   }
 
@@ -423,8 +431,9 @@
         <div class="ear"><b>Price</b><span id="paperPrice">One penny</span></div>
       </div>
       <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
-      <div id="log" aria-live="polite"><div></div><div></div><div></div><div></div><div></div></div>
-      <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" class="idle" aria-live="polite"></p></div>
+      <div id="log"></div>
+      <p id="logLive" class="sr-only" aria-live="polite"></p>
+      <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" aria-live="polite" hidden></p><p id="helpAd" class="ad"></p><p id="helpHint" class="hint">Point at a dotted word, or at a button, for the apothecary’s notes.</p></div>
     </section>
 
     <div class="col" id="colMarket">
@@ -569,13 +578,62 @@
   // tørken kom 2026-10-16: den som alt har Order of the Serpent, får tørke fra i dag
   if (S.done.includes('menighet') && !S.flags.drought) { S.flags.drought = 1; S.droughtDay = Math.floor(S.t / 10); }
 
-  // Logg med fem linjer
-  const logLines = [...$('log').children];
-  // «NOT A CLOUD IN SIGHT: 412 days without rain …» vises som overskrift (data-k) og tekst under
+  // Avisa (The Daily Elixir): de siste sakene som en avisside. Nyeste sak er hovedsaken, de eldre blir korte notiser i
+  // spalter med seksjonsnavn ut fra hvor meldingen kommer fra. Like meldinger etter hverandre slås sammen, så avisa ikke
+  // fylles av «Mastery is now 52 … 56». «NOT A CLOUD IN SIGHT: 412 days …» deles i overskrift og tekst.
+  const NEWS_MAX = 7;
+  const news = [];
+  let sayCtx = '';
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const SECTIONS = [
+    [/^(NOT A CLOUD|DRY SPELL|WELLS RUNNING LOW|RECORD DROUGHT)/, 'Weather'],
+    [/^(PUBLIC NOTICE|PLANNING NOTICE)/, 'Public Advisory'],
+    [/^(CUSTOMER|LETTER TO THE EDITOR|PRODUCT REVIEW)/, 'Letters'],
+    [/Arcane Tokens|pulls up a chair|Liar’s Table/, 'Sporting'],
+    [/exchange/i, 'From the Market'],
+    [/well keeper/i, 'Public Advisory'],
+  ];
+  const sectionOf = msg => { for (const [re, sec] of SECTIONS) if (re.test(msg)) return sec; return sayCtx || 'Town Brief'; };
+  const shape = t => t.replace(/\d[\d,.]*/g, '#');
+  const MERGE = [[/^Your name is spoken in another town\. Mastery is now ([\d,]+)\.$/, (n, m) => `Your name is spoken in ${n} more towns. Mastery is now ${m[1]}.`]];
+  const drawNews = () => {
+    const items = news.slice().reverse(), lead = items[0];
+    const times = it => it.n > 1 && !it.merged ? ` <i class="times">${it.n} times</i>` : '';
+    let h = '';
+    if (lead) {
+      h += '<article class="lead">';
+      if (!lead.front) h += `<div class="sec">${esc(lead.s)}</div>`;
+      if (lead.h) h += `<h3>${esc(lead.h)}</h3>`;
+      if (lead.d) h += `<p class="dek">${esc(lead.d)}</p>`;
+      if (lead.b) h += `<p class="byline">${esc(lead.b)}</p>`;
+      h += lead.h ? `<p class="body">${esc(lead.t)}${times(lead)}</p>` : `<h3>${esc(lead.t)}${times(lead)}</h3>`;
+      h += '</article>';
+    }
+    if (items.length > 1) h += '<div class="briefs">' + items.slice(1).map(it => `<div class="brief"><div class="sec">${esc(it.s)}</div>${it.h ? `<b>${esc(it.h)}</b>` : ''}${esc(it.t)}${times(it)}</div>`).join('') + '</div>';
+    $('log').innerHTML = h;
+  };
   const say = msg => {
-    for (let i = 0; i < logLines.length - 1; i++) { logLines[i].textContent = logLines[i + 1].textContent; logLines[i].dataset.k = logLines[i + 1].dataset.k || ''; }
-    const m = /^([A-Z][A-Z0-9 ,’'.-]+): (.+)$/.exec(msg), last = logLines[logLines.length - 1];
-    last.textContent = m ? m[2] : msg; last.dataset.k = m ? m[1] : '';
+    const m = /^([A-Z][A-Z0-9 ,’'.-]+): (.+)$/.exec(msg), top = news[news.length - 1];
+    if (top && !top.front && shape(top.raw) === shape(msg)) {
+      top.n++; top.raw = msg; top.h = m ? m[1] : ''; top.t = m ? m[2] : msg;
+      for (const [re, f] of MERGE) { const mm = re.exec(msg); if (mm) { top.t = f(top.n, mm); top.merged = true; } }
+    } else {
+      news.push({ s: sectionOf(msg), h: m ? m[1] : '', t: m ? m[2] : msg, raw: msg, n: 1 });
+      if (news.length > NEWS_MAX) news.shift();
+    }
+    $('logLive').textContent = msg;
+    drawNews();
+  };
+  // Forsiden når spillet åpnes: overskrift, ingress, byline og en kort artikkel
+  const frontPage = () => {
+    const by = 'By our own correspondent';
+    news.push(S.flags.heart ? { h: 'THE HEART STILL BEATS', d: 'It is the size of the world.', t: 'The Order keeps watch where the ley lines meet. Nobody has slept since.' }
+      : S.flags.farm ? { h: 'THE ORDER RETURNS TO WORK', d: 'The wells are still dry. Something below is still awake.', t: 'The diviners went back to the ley lines at dawn. The furnaces were never allowed to go out.' }
+      : S.total ? { h: 'STARDUST SNAKE OIL INC. OPEN AS USUAL', d: 'The proprietor has returned. Nobody saw where from.', t: 'Business resumed this morning. Regular customers report that the remedies taste exactly as they remember.' }
+      : { h: 'WELCOME TO STARDUST SNAKE OIL INC.', d: 'Remarkable remedies now available at introductory prices.', t: 'Stardust Snake Oil Inc. opened its doors this morning under fair skies and uncertain medical supervision. Townsfolk are advised that all claims remain technically unverified.' });
+    Object.assign(news[news.length - 1], { front: 1, s: 'Front Page', b: by, raw: '', n: 1 });
+    if (news.length > NEWS_MAX) news.shift();
+    drawNews();
   };
   const time = () => {
     const s = Math.floor(S.t / 10), m = Math.floor(s / 60), h = Math.floor(m / 60);
@@ -1054,13 +1112,16 @@
       } },
   ];
   const projEls = {};
+  const projSection = p => /^drom/.test(p.id) || p.id === 'bygdavil' ? 'Strange Tidings' : /^hest_/.test(p.id) || ['trav', 'stalltips', 'fastkupong'].includes(p.id) ? 'Sporting'
+    : ['seance', 'ouija', 'trumpet', 'ecto'].includes(p.id) ? 'Society' : ['skolemat', 'forsoning', 'vannverk', 'haartap'].includes(p.id) ? 'World News'
+    : ['menighet', 'grav', 'heart'].includes(p.id) ? 'Late Edition' : 'Business';
   const renderProject = p => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = p.gild ? 'bill gild' : 'bill'; b.id = 'p-' + p.id;
     b.innerHTML = `<span class="cost">${priceTag(p.cost)}</span><b>${p.title}</b>${p.desc}`;
     b.onclick = () => {
       if (!canPay(p.cost)) return;
-      pay(p.cost); p.buy();
+      pay(p.cost); sayCtx = projSection(p); p.buy(); sayCtx = '';
       if (!p.repeat) S.done.push(p.id);
       b.remove(); delete projEls[p.id]; update();
     };
@@ -1168,12 +1229,30 @@
   };
   // Hjelpetekster: hold musa over (eller tab til) noe med data-tip, så står forklaringen fast nederst i avisa
   // (Apothecary's Notes). Den følger ikke musa, så den aldri dekker spillet.
-  const HELP_IDLE = 'Point at a word with a dotted line, or at a button, to read about it here.';
-  let helpTimer = 0;
+  // Når man ikke peker på noe, står det små rubrikkannonser her, og de byttes hver 20. dag. Noen kommer først etter
+  // at noe har skjedd i spillet (mannen med den ekstra skyggen, tørken, hamsteren).
+  const ADS = [
+    { t: 'WANTED: Apprentices. Must not ask questions.' },
+    { t: 'NOTICE: Testimonials welcomed. Refunds discouraged.' },
+    { t: 'FOR SALE: Barrels, slightly haunted. Best offer.' },
+    { t: 'FOR HIRE: Brass band, mostly in tune. Available for medicine shows.' },
+    { t: 'SITUATION WANTED: Honest man seeks work. Will consider anything.' },
+    { t: 'WANTED: Volunteers for a new tonic. Paid in tonic.' },
+    { when: () => done('hest_outer'), t: 'PERSONAL: Cornelius, I know it was you. Prudence.' },
+    { when: () => S.story.shadow === true, t: 'LOST: One shadow. Answers to nothing. Reward offered.' },
+    { when: () => S.flags.drought && !S.flags.farm, t: 'FOR SALE: Umbrellas. Hardly used.' },
+    { when: () => S.flags.farm, t: 'WANTED: Water. Any amount. Ask for the Order.' },
+    { when: () => S.story.hamster === true, t: 'FOUND: One hamster, warm at last. Owner please collect.' },
+  ];
+  let helpTimer = 0, helpIdle = true, adIdx = 0, adDay = 0;
+  const drawAd = () => {
+    const list = ADS.filter(a => !a.when || a.when()), m = /^([A-Z ]+): (.+)$/.exec(list[adIdx % list.length].t);
+    $('helpAd').innerHTML = `<b>${esc(m[1])}.</b> ${esc(m[2])}`;
+  };
   const setHelp = el => {
-    clearTimeout(helpTimer);
-    $('helpText').textContent = el ? el.dataset.tip : HELP_IDLE;
-    $('helpText').classList.toggle('idle', !el);
+    clearTimeout(helpTimer); helpIdle = !el;
+    if (el) $('helpText').textContent = el.dataset.tip; else drawAd();
+    $('helpText').hidden = !el; $('helpAd').hidden = !!el; $('helpHint').hidden = !!el;
   };
   const clearHelp = () => { clearTimeout(helpTimer); helpTimer = setTimeout(() => setHelp(null), 400); };
   setHelp(null);
@@ -1275,7 +1354,7 @@
     clearTimeout(resetTimer);
     S = fresh(); resetArmed = false; $('resetNote').textContent = '';
     Object.values(projEls).forEach(b => b.remove()); for (const k in projEls) delete projEls[k];
-    logLines.forEach(l => l.textContent = ''); say('Welcome to Stardust Snake Oil Inc.'); update();
+    news.length = 0; frontPage(); update();
   };
 
   function update() {
@@ -1303,6 +1382,7 @@
     if (S.water > S.waterPeak) S.waterPeak = S.water;
     $('waterGauge').style.width = (S.waterPeak > 0 ? S.water / S.waterPeak * 100 : 0).toFixed(1) + '%';
     $('day').textContent = num(S.t / 10 + 1);
+    if (helpIdle && today() - adDay >= 20) { adDay = today(); adIdx++; drawAd(); }
     $('weather').textContent = S.flags.dry ? 'Wells dry' : S.rainLeft > 0 ? 'Rain' : S.flags.drought && S.story.dry1 === true ? `Dry ${num(dryDays())} days` : 'Fair';
     $('paperPrice').textContent = S.flags.farm ? 'One potion' : 'One penny';
     $('btnWater').disabled = S.flags.dry || S.funds < S.waterCost;
@@ -1593,7 +1673,7 @@
     if (now - lastSave >= 5000) { lastSave = now; try { localStorage.setItem('potet-v3', JSON.stringify(S)); } catch (e) {} }
   }, 10);
 
-  say(S.total ? 'Welcome back to Stardust Snake Oil Inc.' : 'Welcome to Stardust Snake Oil Inc.');
+  frontPage();
   update();
 })();
 </script>
