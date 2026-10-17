@@ -369,12 +369,12 @@
     <div class="col" id="colProp">
       <section class="label" id="farmerBox" hidden><div class="in">
         <h2>The Proprietor</h2>
-        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some projects, and assign them to Spirit and Stamina. Some projects cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some projects, and assign them to Spirit and Intellect. Some projects cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
         <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one point of Mastery each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
-        <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Stamina decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Stamina</button> <span id="stamina">0</span></span></div>
-        <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Stamina." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
-        <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Stamina to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
-        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most projects. It refills by itself as fast as your Spirit allows, up to what your Stamina can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
+        <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
+        <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
+        <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Intellect to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
+        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most projects. It refills by itself as fast as your Spirit allows, up to what your Intellect can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
           <div class="gauge vial"><i id="manaGauge"></i></div></div>
         <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some projects cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
       </div></section>
@@ -434,7 +434,7 @@
         <h2>The Order</h2>
         <div class="row"><span class="k" data-tip="Every diviner and distiller is a member of the Order." tabindex="0">Members</span><span class="v" id="orderSize">0</span></div>
         <div class="row"><span class="k">Status</span><span class="v" id="orderStatus"></span></div>
-        <div class="toil" id="toilBox" hidden data-tip="Toil makes the Order tap and distil faster. Prayer brings gifts of Spirit and Stamina instead."><span>Toil</span><input type="range" id="toil" min="0" max="200" value="0" aria-label="Toil or prayer"><span>Prayer</span></div>
+        <div class="toil" id="toilBox" hidden data-tip="Toil makes the Order tap and distil faster. Prayer brings gifts of Spirit and Intellect instead."><span>Toil</span><input type="range" id="toil" min="0" max="200" value="0" aria-label="Toil or prayer"><span>Prayer</span></div>
         <div class="row" id="giftRow" hidden><span class="k">Next gift in</span><span class="v" id="nextGift"></span></div>
         <div class="act" id="feastBox" hidden data-tip="A restless Order stops praying. A feast calms it down. Each feast costs more."><button id="btnFeast" type="button">Hold a Feast</button><span class="sub"><span id="feastCost">10,000</span> inspiration</span></div>
         <div class="act" id="reuniteBox" hidden data-tip="Too many diviners or too many distillers splits the Order into sects, and the sects stop praying."><button id="btnReunite" type="button">Reunite the Sects</button><span class="sub">5,000 Arcane Tokens</span></div>
@@ -1028,7 +1028,7 @@
       show: () => S.diviners + S.distillers >= 50000, buy: () => { S.droneBoost = 2; say('The Order is one. Every new member makes all of them stronger.'); } },
     { id: 'momentum', title: 'Eternal Flame', cost: { dreams: 20000 }, desc: 'Everything keeps speeding up as long as the furnaces keep up',
       show: () => S.furnaces >= 30, buy: () => { S.momentum = 1; say('The flame never goes out. Everything runs a little faster every day.'); } },
-    { id: 'swarmcomp', gild: true, title: 'The Order Prays', cost: { coin: 36000 }, desc: 'The Order can pray instead of toil. Prayers bring gifts of Spirit and Stamina',
+    { id: 'swarmcomp', gild: true, title: 'The Order Prays', cost: { coin: 36000 }, desc: 'The Order can pray instead of toil. Prayers bring gifts of Spirit and Intellect',
       show: () => S.diviners + S.distillers >= 200, buy: () => { S.flags.pray = 1; say('The Order kneels. Prayer is also a kind of work.'); } },
     { id: 'heart', gild: true, title: 'The Heart Beneath', cost: { energy: 120000, heat: 10000000, pot: 5e27 }, desc: 'Dig to the place where all the ley lines meet',
       show: () => S.flags.farm && S.matter <= 0, buy: () => {
@@ -1245,10 +1245,10 @@
     S.spirit = 1; S.stamina = 1;
     const over = S.energy - energyMax();
     if (over > 0) { S.energy -= over; S.extraEnergy += over; S.fade = 0.1; S.fadeTimer = 0; }
-    say(`Spirit and Stamina reset. You have ${freePoints()} points to assign.`);
+    say(`Spirit and Intellect reset. You have ${freePoints()} points to assign.`);
     update();
   };
-  $('btnStamina').onclick = () => { if (freePoints() > 0) { S.stamina++; if (S.flags.farm) S.gifts--; say('Stamina increased. You can hold more mana.'); update(); } };
+  $('btnStamina').onclick = () => { if (freePoints() > 0) { S.stamina++; if (S.flags.farm) S.gifts--; say('Intellect increased. You can hold more mana.'); update(); } };
   // Start over: liten lenke nederst i avisa. Må trykkes to ganger, og det første trykket angres av seg selv etter fem sekunder
   let resetArmed = false, resetTimer = 0;
   $('btnReset').onclick = () => {
@@ -1468,7 +1468,7 @@
       if (S.giftBits >= 125000) {
         let g = Math.round(Math.log10(d) * S.toil / 100); if (g <= 0) g = 1;
         S.gifts += g; S.giftBits = 0;
-        say(`The Order's prayers bring a gift: ${g} new ${g === 1 ? 'point' : 'points'} for Spirit or Stamina.`);
+        say(`The Order's prayers bring a gift: ${g} new ${g === 1 ? 'point' : 'points'} for Spirit or Intellect.`);
       }
     }
   };
@@ -1532,7 +1532,7 @@
       if (!S.flags.drought && Math.random() < 1 / 1200) { S.rainLeft = 200; S.waterCost = Math.ceil(S.waterBase * 0.6); }
     }
     if (!S.flags.heart && S.t % 10 === 0) storyTick();
-    // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Stamina × 1 000
+    // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Intellect × 1 000
     if (!S.flags.farm) levelSource().check();
     if (S.flags.exchange) {
       if (S.t % 10 === 0) stockShop();
