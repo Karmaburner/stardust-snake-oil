@@ -433,8 +433,8 @@
     <div class="col" id="colProp">
       <section class="label" id="farmerBox" hidden><div class="in">
         <h2>The Alchemist</h2>
-        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
-        <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one point of Mastery each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery points</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one Mastery point each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
         <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
         <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
         <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Intellect to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
@@ -542,7 +542,7 @@
     <button type="button" data-cheat="money">+1,000,000 gold</button>
     <button type="button" data-cheat="potatoes">+1,000,000 potions</button>
     <button type="button" data-cheat="energy">Fill mana</button>
-    <button type="button" data-cheat="level">+10 Mastery</button>
+    <button type="button" data-cheat="level">+10 Mastery points</button>
     <button type="button" data-cheat="dreams">+10,000 inspiration</button>
     <button type="button" data-cheat="coin">+10,000 Arcane Tokens</button>
     <button type="button" data-cheat="end">Jump to the end of phase 1</button>
@@ -622,7 +622,7 @@
 
   // Avisa (The Daily Elixir): de siste sakene som en avisside. Nyeste sak er hovedsaken, de eldre blir korte notiser i
   // spalter med seksjonsnavn ut fra hvor meldingen kommer fra. Like meldinger etter hverandre slås sammen, så avisa ikke
-  // fylles av «Mastery is now 52 … 56». «NOT A CLOUD IN SIGHT: 412 days …» deles i overskrift og tekst.
+  // fylles av «You now have 52 … 56 Mastery points». «NOT A CLOUD IN SIGHT: 412 days …» deles i overskrift og tekst.
   const NEWS_MAX = 7;
   const news = [];
   let sayCtx = '';
@@ -637,7 +637,7 @@
   ];
   const sectionOf = msg => { for (const [re, sec] of SECTIONS) if (re.test(msg)) return sec; return sayCtx || 'Town Brief'; };
   const shape = t => t.replace(/\d[\d,.]*/g, '#');
-  const MERGE = [[/^Your name is spoken in another town\. Mastery is now ([\d,]+)\.$/, (n, m) => `Your name is spoken in ${n} more towns. Mastery is now ${m[1]}.`]];
+  const MERGE = [[/^Your name is spoken in another town\. You now have ([\d,]+) Mastery points\.$/, (n, m) => `Your name is spoken in ${n} more towns. You now have ${m[1]} Mastery points.`]];
   const drawNews = () => {
     const items = news.slice().reverse(), lead = items[0];
     const times = it => it.n > 1 && !it.merged ? ` <i class="times">${it.n} times</i>` : '';
@@ -726,12 +726,12 @@
   // I kjøkkenhagen kommer de fra produksjonsmål, Fibonacci × 1 000 poteter, som trust i Paperclips.
   const LEVEL_SOURCES = {
     kjokkenhage: {
-      next: () => `Next Mastery at: ${num(S.nextLevel)} potions`,
+      next: () => `Next Mastery point at: ${num(S.nextLevel)} potions`,
       check: () => {
         if (S.total < S.nextLevel) return;
         S.level++;
         const f = S.fib1 + S.fib2; S.nextLevel = f * 1000; S.fib1 = S.fib2; S.fib2 = f;
-        say(`Your name is spoken in another town. Mastery is now ${S.level}.`);
+        say(`Your name is spoken in another town. You now have ${S.level} Mastery points.`);
       }
     }
   };
@@ -775,7 +775,7 @@
   const dreamSpeed = () => S.spirit <= 1 ? 1 : Math.log10(S.spirit) * Math.pow(S.spirit, 1.1) + S.spirit - 1;
 
   // Kostnader: energi, kroner og nivå. Nivå kan gå i minus når «debt» er satt, som trust i Paperclips.
-  const priceTag = c => [c.dreams && `${num(c.dreams)} inspiration`, c.coin && `${num(c.coin)} Arcane Tokens`, c.energy && `${num(c.energy)} mana`, c.kr && `${num(c.kr)} gold`, c.level && `${c.level} Mastery`, c.heat && `${big(c.heat)} heat`, c.pot && `${big(c.pot)} potions`].filter(Boolean).join(', ') || 'free';
+  const priceTag = c => [c.dreams && `${num(c.dreams)} inspiration`, c.coin && `${num(c.coin)} Arcane Tokens`, c.energy && `${num(c.energy)} mana`, c.kr && `${num(c.kr)} gold`, c.level && `${c.level} Mastery ${c.level === 1 ? 'point' : 'points'}`, c.heat && `${big(c.heat)} heat`, c.pot && `${big(c.pot)} potions`].filter(Boolean).join(', ') || 'free';
   const canPay = c => (!c.dreams || S.dreams >= c.dreams) && (!c.coin || S.coin >= c.coin) && (!c.energy || S.energy + S.extraEnergy >= c.energy) && (!c.kr || S.funds >= c.kr) && (!c.level || c.debt || S.level >= c.level) && (!c.heat || S.heat >= c.heat) && (!c.pot || S.unused >= c.pot);
   const pay = c => { if (c.dreams) S.dreams -= c.dreams; if (c.coin) S.coin -= c.coin; if (c.energy) S.energy -= c.energy; if (c.kr) S.funds -= c.kr; if (c.level) S.level -= c.level; if (c.heat) S.heat -= c.heat; if (c.pot) S.unused -= c.pot; };
 
@@ -785,7 +785,7 @@
   const done = id => S.done.includes(id);
   const BEG_MSGS = ['The well keeper fills your barrels. “Don’t mention it,” he says.', 'The well keeper fills your barrels again. He looks at your bottles for a long time.', 'The well keeper fills your barrels without a word.'];
   // Inspirasjonsprosjektene gir +1 nivå hver, som creativity-prosjektene i Paperclips gir +1 trust
-  const dream = (id, title, cost, show, msg, desc) => ({ id, title, cost: { dreams: cost }, desc: `${desc} (+1 Mastery)`,
+  const dream = (id, title, cost, show, msg, desc) => ({ id, title, cost: { dreams: cost }, desc: `${desc} (+1 Mastery point)`,
     show, buy: () => { S.level++; say(msg); } });
   // Hver kopp er varm og kald i sin egen takt, som de fotoniske brikkene i Paperclips
   const ORB_SVG = target => '<svg class="orb' + (target ? ' target' : '') + '" viewBox="0 0 20 20" aria-hidden="true"><path class="glow" d="M10 .8v1.8M3.3 3.2l1.2 1.2M16.7 3.2l-1.2 1.2"/><circle class="ball" cx="10" cy="9.5" r="5"/><path class="stand" d="M6.5 18h7M8 14.1l-1 3.9M12 14.1l1 3.9"/></svg>';
@@ -1069,27 +1069,27 @@
       show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } S.chapter1 = S.t; say(`End of Chapter 1. Time spent on the first chapter: ${clock(S.t / 10)}`); } },
     // Som Coherent Extrapolated Volition og megaprosjektene i Paperclips (samme nivåer og ops-priser).
     // Hvert prosjekt gir også bedre odds på børsen. Katten gir mest, en egen vits i stedet for skallethet i Paperclips.
-    { id: 'bygdavil', gild: true, title: 'Unexpected Results', cost: { dreams: 500, coin: 3000, energy: 20000 }, desc: 'Customers report that the potions actually work. Nobody can explain why. (+1 Mastery)',
+    { id: 'bygdavil', gild: true, title: 'Unexpected Results', cost: { dreams: 500, coin: 3000, energy: 20000 }, desc: 'Customers report that the potions actually work. Nobody can explain why. (+1 Mastery point)',
       show: () => S.coin >= 1, buy: () => { S.level++; say('A blind man can see. A deaf woman hears the birds. Your chemist has resigned.'); } },
-    { id: 'skolemat', title: 'Endless Harvest', cost: { energy: 25000 }, desc: 'Fields that never empty. No one goes hungry. (+10 Mastery)',
+    { id: 'skolemat', title: 'Endless Harvest', cost: { energy: 25000 }, desc: 'Fields that never empty. No one goes hungry. (+10 Mastery points)',
       show: () => done('bygdavil'), buy: () => { S.level += 10; S.gainChance += .01; say('Nobody is hungry anymore. Everybody is a customer.'); } },
-    { id: 'forsoning', title: 'Every Tongue', cost: { coin: 15000, energy: 30000 }, desc: 'One sip, and the whole world understands each other. (+12 Mastery)',
+    { id: 'forsoning', title: 'Every Tongue', cost: { coin: 15000, energy: 30000 }, desc: 'One sip, and the whole world understands each other. (+12 Mastery points)',
       show: () => done('bygdavil'), buy: () => { S.level += 12; S.gainChance += .01; say('Everyone understands each other now. The arguments have never been longer.'); } },
-    { id: 'vannverk', title: 'Rain on Demand', cost: { coin: 4500, energy: 50000 }, desc: 'Rain wherever it is needed. The deserts bloom. (+15 Mastery)',
+    { id: 'vannverk', title: 'Rain on Demand', cost: { coin: 4500, energy: 50000 }, desc: 'Rain wherever it is needed. The deserts bloom. (+15 Mastery points)',
       show: () => done('bygdavil'), buy: () => { S.level += 15; S.gainChance += .01; say('The deserts bloom. Someone has started selling the shade.'); } },
-    { id: 'haartap', title: 'Talk to Your Cat', cost: { energy: 20000 }, desc: 'Finally you know what the cat thinks. Everyone wishes they didn’t. (+20 Mastery)',
+    { id: 'haartap', title: 'Talk to Your Cat', cost: { energy: 20000 }, desc: 'Finally you know what the cat thinks. Everyone wishes they didn’t. (+20 Mastery points)',
       show: () => done('bygdavil'), buy: () => { S.level += 20; S.gainChance += .01; say('Cats everywhere start to talk. Mostly about their owners. Nobody has ever been so loved.'); } },
     // Pengesluk, som Hostile Takeover og Full Monopoly i Paperclips
-    { id: 'oppkjop', title: 'Buy Out the Rival Peddler', cost: { kr: 250000 }, desc: 'Demand is five times as large. (+1 Mastery)',
+    { id: 'oppkjop', title: 'Buy Out the Rival Peddler', cost: { kr: 250000 }, desc: 'Demand is five times as large. (+1 Mastery point)',
       show: () => portTotal() >= 10000, buy: () => { S.demandBoost *= 5; S.level++; say('The rival peddler sold his wagon. He no longer looks you in the eye.'); } },
-    { id: 'monopol', title: 'Royal Warrant', cost: { coin: 3000, kr: 2500000 }, desc: 'Sole supplier to the Crown. Demand is ten times as large. (+1 Mastery)',
+    { id: 'monopol', title: 'Royal Warrant', cost: { coin: 3000, kr: 2500000 }, desc: 'Sole supplier to the Crown. Demand is ten times as large. (+1 Mastery point)',
       show: () => done('oppkjop'), buy: () => { S.demandBoost *= 10; S.level++; say('By appointment to the Crown. Nobody remembers what other potions tasted like.'); } },
     { id: 'regnskap', gild: true, title: 'Bookkeeper', cost: { energy: 500 }, desc: 'Tracks revenue and sales per day',
       show: () => S.flags.comp, buy: () => { S.flags.rev = 1; say('The bookkeeper asks no questions. You pay extra for that.'); } },
     // Søylene i The Shop: finnes ikke i Paperclips. Låses opp ved Advertising level 5, tidlig, men ikke med en gang (Kenneths valg)
     { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'Shows how many potions customers want per day next to how many you brew',
       show: () => S.flags.comp && S.signLvl >= 5, buy: () => { S.flags.bars = 1; say('You learn to read a crowd. Every face tells you what it will pay.'); } },
-    { id: 'gave', repeat: true, title: 'Charity Gala', get cost() { return { kr: S.giftCost }; }, desc: 'The public trusts you more (+1 Mastery). Costs twice as much each time',
+    { id: 'gave', repeat: true, title: 'Charity Gala', get cost() { return { kr: S.giftCost }; }, desc: 'The public trusts you more (+1 Mastery point). Costs twice as much each time',
       show: () => S.level >= 85 && S.level < 100 && S.total >= 101000000, buy: () => { S.level++; S.giftCost *= 2; say('The gala raises a fortune for a cause nobody remembers. Your photo is in every paper.'); } },
     // Krystallkula: som Quantum Computing (5 Processors, 10 000 ops) og Photonic Chip (10 000 ops, +5 000 per brikke) i Paperclips
     { id: 'kaffe', gild: true, title: 'Crystal Ball', cost: { energy: 10000 }, desc: 'A light runs along twelve orbs. Gaze when it reaches the middle to gain mana. Miss and you lose some',
@@ -1365,7 +1365,7 @@
   const CHEAT_PHASE = { money: 1, end: 1, p2: 1, pots: 2, p2end: 2 };
   const drawCheats = p2 => {
     Object.entries(cheatBtns).forEach(([k, b]) => { b.hidden = CHEAT_PHASE[k] ? CHEAT_PHASE[k] !== (p2 ? 2 : 1) : false; });
-    if (cheatBtns.level) cheatBtns.level.textContent = p2 ? '+10 gifts' : '+10 Mastery';
+    if (cheatBtns.level) cheatBtns.level.textContent = p2 ? '+10 gifts' : '+10 Mastery points';
   };
   const showTest = () => { $('testBar').hidden = location.hash !== '#test'; };
   window.addEventListener('hashchange', showTest); showTest();
@@ -1514,7 +1514,7 @@
     // Bonden
     const fp = freePoints();
     $('level').textContent = num(S.level);
-    $('points').textContent = fp > 0 ? `(${fp} ${fp === 1 ? 'point' : 'points'} to assign)` : '';
+    $('points').textContent = fp > 0 ? `(${fp} to assign)` : '';
     $('nextLevel').textContent = levelSource().next();
     $('spirit').textContent = S.spirit; $('stamina').textContent = S.stamina;
     $('energy').textContent = num(S.energy + S.extraEnergy); $('energyMax').textContent = num(energyMax());
