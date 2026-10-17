@@ -143,18 +143,35 @@
   .orb .stand, .orb .glow { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
   .orb .glow { opacity: 0; }
 
-  .bills { display: flex; flex-direction: column; gap: 7px; }
-  button.bill { display: block; width: 100%; text-align: left; font-family: var(--f-body); font-size: 14px; letter-spacing: 0; line-height: 1.25; background: var(--paper); border: 1px solid var(--blood); box-shadow: inset 4px 0 0 var(--blood); padding: 5px 9px 6px 14px; transition: opacity .5s, background-color .5s, border-color .5s; }
+  /* To-do list som en oppslagstavle (Kenneths ønske): korktavle med treramme, og hver oppgave er en papirlapp festet
+     med en stift. Lappene er litt skjeve. Har man råd: rød stift og rød prislapp. Har man ikke råd: grå stift og falmet
+     papir. Gullramme (noe helt nytt venter): messingstift og forgylt kant. Lappene er lyst papir i begge modusene */
+  .bills { --paper: #eee6cf; --paper-2: #e2d8bd; --ink: #24190f; --ink-2: #5e4a33; --blood: #8a241c; --on-blood: #f6ecd6; --brass: #8a6a2c;
+    display: flex; flex-direction: column; gap: 11px; min-height: 64px; padding: 14px 12px 12px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 236, 200, .16) 0 1px, transparent 1.6px) 0 0 / 9px 9px,
+      radial-gradient(circle at 60% 70%, rgba(40, 22, 8, .22) 0 1px, transparent 1.6px) 3px 4px / 7px 7px, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .06 0 0 0 0 .02 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23c)' opacity='.35'/%3E%3C/svg%3E"), #8f6a43;
+    border: 7px solid #5b3b20; border-radius: 3px; box-shadow: inset 0 0 0 1px #2f1d0f, inset 0 3px 10px rgba(0, 0, 0, .45), 0 0 0 1px #3a2513; }
+  :root[data-theme="dark"] .bills { background-color: #7a5838; }
+  button.bill { position: relative; display: block; width: 100%; text-align: left; font-family: var(--f-body); font-size: 14px; letter-spacing: 0; line-height: 1.25; color: var(--ink);
+    background: linear-gradient(170deg, rgba(255, 255, 255, .35), transparent 40%), var(--paper); border: none; border-radius: 1px 2px 1px 3px; padding: 9px 10px 7px 11px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .25), 0 5px 9px -3px rgba(0, 0, 0, .45); rotate: -.7deg; transition: opacity .5s, background-color .5s, translate .15s, box-shadow .15s; }
+  button.bill:nth-child(3n+2) { rotate: .6deg; margin-left: 3px; }
+  button.bill:nth-child(3n) { rotate: -.2deg; margin-left: -2px; }
+  /* stiften øverst på lappen */
+  button.bill::before { content: ""; position: absolute; top: -5px; left: 50%; width: 11px; height: 11px; margin-left: -5px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f4b0a6 0 15%, var(--blood) 45%, #4a0f0b 100%); box-shadow: 0 2px 2px rgba(0, 0, 0, .45); }
   button.bill b { font-family: var(--f-head); font-weight: 400; font-size: 16px; display: block; }
-  button.bill .cost { float: right; font-family: var(--f-body); font-size: 14px; font-weight: 600; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; color: var(--on-blood); background: var(--blood); border: 1px solid var(--blood); padding: 0 5px; margin: 0 0 4px 8px; }
-  button.bill:hover:not(:disabled) { background: var(--paper-2); }
-  /* Prosjekter man ikke har råd til ennå: grått papir, stiplet ramme, nedtonet */
-  button.bill:disabled { opacity: .6; background: var(--paper-2); border: 1px dashed var(--ink-2); box-shadow: none; padding-left: 9px; }
+  button.bill .cost { float: right; font-family: var(--f-body); font-size: 14px; font-weight: 600; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; color: var(--on-blood); background: var(--blood); border: 1px solid var(--blood); padding: 0 5px; margin: 3px 0 4px 8px; }
+  button.bill:hover:not(:disabled) { background: linear-gradient(170deg, rgba(255, 255, 255, .45), transparent 40%), var(--paper); translate: 0 -2px; box-shadow: 0 2px 2px rgba(0, 0, 0, .22), 0 9px 14px -4px rgba(0, 0, 0, .5); }
+  /* oppgaver man ikke har råd til ennå: falmet papir og grå stift */
+  button.bill:disabled { opacity: .72; background: var(--paper-2); }
+  button.bill:disabled::before { background: radial-gradient(circle at 35% 30%, #e6e1d6 0 15%, #8d877b 50%, #3d3a34 100%); }
   button.bill:disabled .cost { background: transparent; color: var(--ink-2); border-color: var(--ink-2); }
-  /* Gullramme: prosjekter som åpner noe helt nytt på skjermen eller i historien. Sier ikke hva, bare at noe venter */
-  button.bill.gild { border: 2px solid var(--brass); box-shadow: inset 4px 0 0 var(--brass); padding: 4px 8px 5px 13px; }
+  /* Gullramme: oppgaver som åpner noe helt nytt på skjermen eller i historien. Sier ikke hva, bare at noe venter */
+  button.bill.gild { box-shadow: inset 0 0 0 2px var(--brass), inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--brass), 0 1px 1px rgba(0, 0, 0, .25), 0 5px 9px -3px rgba(0, 0, 0, .45); padding: 10px 12px 9px 13px; }
+  button.bill.gild::before { background: radial-gradient(circle at 35% 30%, #fff1c4 0 15%, #c79a3c 45%, #5a4010 100%); }
   button.bill.gild b::after { content: " \2726"; color: var(--brass); font-size: 13px; }
-  button.bill.gild:disabled { border: 2px dashed var(--brass); box-shadow: none; padding-left: 8px; opacity: .75; }
+  button.bill.gild:disabled { opacity: .8; }
 
   /* Avisa skal se ut som en ekte avis (tilbakemelding fra en tester: den ble oppfattet som støy). Lyst avispapir med svart
      trykksverte i begge modusene, en svak bretteskygge midt på, gotisk avishode, ører med vær og pris, og fete
