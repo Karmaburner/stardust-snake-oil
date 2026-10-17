@@ -314,7 +314,7 @@
       <li><b>Sell.</b> Customers buy on their own. A lower price sells faster, a higher price earns more per bottle. Try to sell about as fast as you brew.</li>
       <li><b>Keep the barrels full.</b> Buy water before it runs out. The price drifts, and rain makes it cheaper.</li>
       <li><b>Grow.</b> Hire apprentices to brew for you, and advertise to draw a bigger crowd.</li>
-      <li><b>Mana and projects.</b> In time you gain mana. Spend it on projects that change the business.</li>
+      <li><b>Mana and the to-do list.</b> In time you gain mana. Spend it on the to-do list to change the business.</li>
       <li><b>Read the paper.</b> It knows more than it lets on.</li>
     </ol>
     <button id="btnTutClose" type="button">Close the handbook</button>
@@ -415,14 +415,14 @@
     <div class="col" id="colProp">
       <section class="label" id="farmerBox" hidden><div class="in">
         <h2>The Proprietor</h2>
-        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some projects, and assign them to Spirit and Intellect. Some projects cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
         <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one point of Mastery each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
         <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
         <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
         <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Intellect to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
-        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most projects. It refills by itself as fast as your Spirit allows, up to what your Intellect can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
+        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most tasks on the to-do list. It refills by itself as fast as your Spirit allows, up to what your Intellect can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
           <div class="gauge vial"><i id="manaGauge"></i></div></div>
-        <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some projects cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
+        <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some tasks on the to-do list cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
       </div></section>
 
       <section class="label" id="coffeeBox" hidden><div class="in">
@@ -442,7 +442,7 @@
       </div></section>
 
       <section class="label" id="projBox" hidden><div class="in">
-        <h2>Projects</h2>
+        <h2>To-do list</h2>
         <div class="bills" id="projects"></div>
       </div></section>
     </div>
@@ -1315,7 +1315,7 @@
       S.flags.comp = 1;
       ['slagord', 'duft', 'menighet'].forEach(id => { if (!S.done.includes(id)) S.done.push(id); });
       S.level = Math.max(S.level, 100);
-      say('Test mode: “Just add water.” is ready in the project list.');
+      say('Test mode: “Just add water.” is ready on the to-do list.');
     },
   };
   const cheatBtns = {};
@@ -1526,7 +1526,7 @@
 
     // Ting dukker opp når de blir aktuelle
     if (S.funds >= 5) S.flags.boy = 1;
-    if (!S.flags.comp && (S.total >= 2000 || stuck())) { S.flags.comp = 1; say('New powers awakened. Mana can be spent on projects, and when it is full, inspiration comes.'); }
+    if (!S.flags.comp && (S.total >= 2000 || stuck())) { S.flags.comp = 1; say('New powers awakened. Mana can be spent on the to-do list, and when it is full, inspiration comes.'); }
     // Inspirasjonen kommer av seg selv når Bonden har åpnet (Kenneths valg, ikke et eget prosjekt som i Paperclips)
     if (S.flags.comp) S.dreaming = 1;
     // lærlinger, Cauldron Walkers og Dowsing Rod hører til fase 1 og skal ikke komme tilbake i fase 2
