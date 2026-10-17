@@ -131,10 +131,10 @@
   /* Avisa skal se ut som en ekte avis (tilbakemelding fra en tester: den ble oppfattet som støy). Lyst avispapir med svart
      trykksverte i begge modusene, en svak bretteskygge midt på, gotisk avishode, ører med vær og pris, og fete
      overskrifter over notisene («NOT A CLOUD IN SIGHT: …» deles i overskrift og tekst) */
-  .gazette, .extra-page { --paper: #ece6d6; --paper-2: #e0d8c3; --ink: #1c1915; --ink-2: #554e40; --rule: #1c1915; --blood: #7c211b; --blood-2: #9a2c23; --brass: #7a5e26; color: var(--ink); color-scheme: light; }
+  .gazette, .extra-page { --paper: #e1dfd6; --paper-2: #d5d2c7; --ink: #1c1915; --ink-2: #554e40; --rule: #1c1915; --blood: #7c211b; --blood-2: #9a2c23; --brass: #7a5e26; color: var(--ink); color-scheme: light; }
   :root[data-theme="dark"] .gazette, :root[data-theme="dark"] .extra-page { --paper: #e0d9c5; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gazette, :root:not([data-theme="light"]) .extra-page { --paper: #e0d9c5; } }
-  .gazette { border: 1px solid #a9a089; padding: 10px 14px 12px; background: linear-gradient(180deg, transparent 49.5%, rgba(60, 50, 30, .08) 50%, transparent 50.8%), var(--paper);
+  .gazette { border: 1px solid #9b988c; padding: 10px 14px 12px; background: linear-gradient(180deg, transparent 49.5%, rgba(60, 50, 30, .08) 50%, transparent 50.8%), var(--paper);
     box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 10px 26px rgba(0, 0, 0, .3); }
   .gazette .masthead { display: grid; grid-template-columns: 58px minmax(0, 1fr) 58px; align-items: center; gap: 6px; }
   .gazette .ear { border: 1px solid var(--rule); padding: 3px 2px; text-align: center; font-size: 11.5px; line-height: 1.15; font-style: italic; }
