@@ -102,6 +102,7 @@
   button:focus-visible { outline: 2px solid var(--blood); outline-offset: 2px; }
   button.sm { padding: 0 7px 1px; min-width: 28px; }
   .price { display: inline-flex; align-items: center; gap: 6px; }
+  .price button { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   select { font-family: var(--f-head); font-size: 14px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--ink); }
 
   .gauge { height: 12px; border: 1px solid var(--ink); background: var(--paper-2); margin: 6px 0 2px; overflow: hidden; }
@@ -366,7 +367,7 @@
           <div class="row"><span class="k">Potions sold per day</span><span class="v" id="avgSales">0</span></div>
         </div>
         <div class="row"><span class="k" data-tip="Potions brewed but not yet sold." tabindex="0">Potion inventory</span><span class="v" id="unsold">0</span></div>
-        <div class="row"><span class="k" data-tip="What customers pay for one potion. A lower price sells faster. Selling at a loss is allowed." tabindex="0">Price per potion</span><span class="v price"><button id="btnLower" class="sm" type="button" aria-label="Lower price">‹</button><span id="price">0</span><button id="btnRaise" class="sm" type="button" aria-label="Raise price">›</button></span></div>
+        <div class="row"><span class="k" data-tip="What customers pay for one potion. A lower price sells faster. Selling at a loss is allowed. Hold the arrows to change it quickly." tabindex="0">Price per potion</span><span class="v price"><button id="btnLower" class="sm" type="button" aria-label="Lower price">‹</button><span id="price">0</span><button id="btnRaise" class="sm" type="button" aria-label="Raise price">›</button></span></div>
         <div class="row"><span class="k" data-tip="How eager customers are to buy. A lower price and more advertising raise it." tabindex="0">Crowd appetite</span><span class="v"><span id="demand">0</span>%</span></div>
         <div class="bars" id="barsBox" hidden data-tip="Potions you brew per day compared with how many potions customers want to buy per day at the current price.">
           <div class="bar"><span class="n" id="barMadeN">0</span><div class="tube"><i id="barMade"></i></div><span class="l">Potions per day</span></div>
@@ -1258,8 +1259,19 @@
   const buyWater = () => { if (S.flags.dry) return; if (S.funds >= S.waterCost) { S.funds -= S.waterCost; S.water += S.waterSupply; S.waterPeak = S.water; S.waterBuys++; S.waterBase += 0.05; S.waterTimer = 0; } };
   $('btnWater').onclick = () => { buyWater(); update(); };
   $('btnAutoWater').onclick = () => { S.autoWaterOn = S.autoWaterOn ? 0 : 1; update(); };
-  $('btnRaise').onclick = () => { S.price = Math.round((S.price + 0.01) * 100) / 100; update(); };
-  $('btnLower').onclick = () => { if (S.price > 0.01) S.price = Math.round((S.price - 0.01) * 100) / 100; update(); };
+  // Pilene ved prisen kan holdes inne (Kenneths ønske): ett steg med en gang, så gjentas det etter en kort pause og
+  // går stadig raskere. Klikk fra tastaturet (detail 0) gir ett steg som før.
+  const holdRepeat = (btn, step) => {
+    let timer = 0;
+    const stop = () => { clearTimeout(timer); timer = 0; };
+    const tick = delay => { step(); update(); timer = setTimeout(() => tick(Math.max(30, delay * 0.88)), delay); };
+    btn.onpointerdown = e => { if (e && e.button) return; stop(); step(); update(); timer = setTimeout(() => tick(110), 380); };
+    btn.onpointerup = btn.onpointerleave = btn.onpointercancel = btn.onblur = stop;
+    btn.oncontextmenu = e => { if (e && e.preventDefault) e.preventDefault(); };
+    btn.onclick = e => { if (e && e.detail > 0) return; step(); update(); };
+  };
+  holdRepeat($('btnRaise'), () => { S.price = Math.round((S.price + 0.01) * 100) / 100; });
+  holdRepeat($('btnLower'), () => { if (S.price > 0.01) S.price = Math.round((S.price - 0.01) * 100) / 100; });
   $('btnSign').onclick = () => { const c = signCost(); if (S.funds >= c) { S.funds -= c; S.signLvl++; update(); } };
   $('btnBoy').onclick = () => { const c = boyCost(); if (S.funds >= c) { S.funds -= c; S.boys++; update(); } };
   $('btnTractor').onclick = () => { const c = tractorCost(); if (S.funds >= c) { S.funds -= c; S.tractors++; update(); } };
