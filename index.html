@@ -323,8 +323,8 @@
 
 <div id="tutorial" class="extra" hidden role="dialog" aria-modal="true" aria-labelledby="tutHead">
   <div class="extra-page tut">
-    <div class="date">Stardust Snake Oil Inc. · For new proprietors</div>
-    <h2 id="tutHead">The Proprietor’s Handbook</h2>
+    <div class="date">Stardust Snake Oil Inc. · For new alchemists</div>
+    <h2 id="tutHead">The Alchemist’s Handbook</h2>
     <p class="sub">Results not guaranteed.</p>
     <ol>
       <li><b>Brew.</b> Press <i>Brew Potion</i>. Every potion uses one liter of water.</li>
@@ -431,7 +431,7 @@
 
     <div class="col" id="colProp">
       <section class="label" id="farmerBox" hidden><div class="in">
-        <h2>The Proprietor</h2>
+        <h2>The Alchemist</h2>
         <div class="row" id="levelRow"><span class="k" data-tip="Your reputation. You gain points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
         <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one point of Mastery each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
         <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
@@ -670,7 +670,7 @@
     const by = 'By our own correspondent';
     news.push(S.flags.heart ? { h: 'THE HEART STILL BEATS', d: 'It is the size of the world.', t: 'The Order keeps watch where the ley lines meet. Nobody has slept since.' }
       : S.flags.farm ? { h: 'THE ORDER RETURNS TO WORK', d: 'The wells are still dry. Something below is still awake.', t: 'The diviners went back to the ley lines at dawn. The furnaces were never allowed to go out.' }
-      : S.total ? { h: 'STARDUST SNAKE OIL INC. OPEN AS USUAL', d: 'The proprietor has returned. Nobody saw where from.', t: 'Business resumed this morning. Regular customers report that the remedies taste exactly as they remember.' }
+      : S.total ? { h: 'STARDUST SNAKE OIL INC. OPEN AS USUAL', d: 'The alchemist has returned. Nobody saw where from.', t: 'Business resumed this morning. Regular customers report that the remedies taste exactly as they remember.' }
       : { h: 'WELCOME TO STARDUST SNAKE OIL INC.', d: 'Remarkable remedies now available at introductory prices.', t: 'Stardust Snake Oil Inc. opened its doors this morning under fair skies and uncertain medical supervision. Townsfolk are advised that all claims remain technically unverified.' });
     Object.assign(news[news.length - 1], { front: 1, s: 'Front Page', b: by, raw: '', n: 1 });
     if (news.length > NEWS_MAX) news.shift();
