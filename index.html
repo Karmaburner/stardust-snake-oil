@@ -25,7 +25,7 @@
   body > * { max-width: 1120px; margin-left: auto; margin-right: auto; }
 
   /* Slutten på fase 1: ekstrautgave av avisa over hele skjermen, og en sprekk i etiketten med slangeskinn under */
-  .extra { position: fixed; inset: 0; z-index: 40; background: rgba(20, 14, 8, .6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .extra { position: fixed; inset: 0; max-width: none; margin: 0; z-index: 40; background: rgba(20, 14, 8, .6); display: flex; align-items: center; justify-content: center; padding: 16px; }
   .extra-page { background: var(--paper); color: var(--ink); border: 2px solid var(--rule); box-shadow: 0 0 0 6px var(--paper), 0 0 0 8px var(--rule);
     max-width: 560px; width: 100%; padding: 18px 24px 22px; text-align: center; transform-origin: top center; animation: unfold .9s ease-out; }
   .extra-page .name { font-family: var(--f-mast); font-size: 30px; line-height: 1; }
@@ -35,6 +35,14 @@
   .extra-page .nl.show { opacity: 1; }
   .extra-page .last { font-weight: 600; font-style: italic; font-size: 20px; margin-top: 16px; }
   .extra-page button { margin-top: 14px; }
+  /* Tutorial (Kenneths ønske): et lite hefte som forklarer starten, bare for den som vil ha det */
+  .tut { text-align: left; max-width: 520px; max-height: calc(100vh - 32px); overflow-y: auto; }
+  .tut .date, .tut h2, .tut .sub { text-align: center; }
+  .tut h2 { font-size: clamp(26px, 6vw, 36px); margin-bottom: 2px; }
+  .tut .sub { margin: 0 0 10px; }
+  .tut ol { margin: 0; padding-left: 22px; }
+  .tut li { margin: 7px 0; font-size: 16px; line-height: 1.35; }
+  .tut button { display: block; margin: 16px auto 0; }
   @keyframes unfold { from { transform: scaleY(.05); opacity: 0; } to { transform: none; opacity: 1; } }
   .mast { position: relative; }
   .crack { position: absolute; left: -6px; top: 0; height: 100%; width: calc(100% + 12px); pointer-events: none; }
@@ -247,6 +255,23 @@
     <p class="nl">Scientists: “Something drank it.”</p>
     <p class="nl last">Something beneath the Earth has woken.</p>
     <button id="btnExtra" type="button" class="nl">Fold the paper</button>
+  </div>
+</div>
+
+<div id="tutorial" class="extra" hidden role="dialog" aria-modal="true" aria-labelledby="tutHead">
+  <div class="extra-page tut">
+    <div class="date">Stardust Snake Oil Inc. · For new proprietors</div>
+    <h2 id="tutHead">The Proprietor’s Handbook</h2>
+    <p class="sub">Results not guaranteed.</p>
+    <ol>
+      <li><b>Brew.</b> Press <i>Brew Potion</i>. Every potion uses one liter of water.</li>
+      <li><b>Sell.</b> Customers buy on their own. A lower price sells faster, a higher price earns more per bottle. Try to sell about as fast as you brew.</li>
+      <li><b>Keep the barrels full.</b> Buy water before it runs out. The price drifts, and rain makes it cheaper.</li>
+      <li><b>Grow.</b> Hire apprentices to brew for you, and advertise to draw a bigger crowd.</li>
+      <li><b>Mana and projects.</b> In time you gain mana. Spend it on projects that change the business.</li>
+      <li><b>Read the paper.</b> It knows more than it lets on.</li>
+    </ol>
+    <button id="btnTutClose" type="button">Close the handbook</button>
   </div>
 </div>
 
@@ -463,7 +488,7 @@
 </main>
 
 <footer class="foot">
-  <span>Stardust Snake Oil Inc.</span> · <button id="btnTheme" class="link" type="button" data-tip="Switch between dark lamplight and light daylight.">Daylight</button> · <button id="btnReset" class="link" type="button">Start over</button>
+  <span>Stardust Snake Oil Inc.</span> · <button id="btnTutorial" class="link" type="button" data-tip="A short guide to getting started.">Tutorial</button> · <button id="btnTheme" class="link" type="button" data-tip="Switch between dark lamplight and light daylight.">Daylight</button> · <button id="btnReset" class="link" type="button">Start over</button>
   <span class="sub" id="resetNote"></span>
 </footer>
 
@@ -1182,6 +1207,10 @@
   window.addEventListener('hashchange', showTest); showTest();
   $('btnCoffee').onclick = () => { coffeeBreak(); update(); };
   $('btnExtra').onclick = foldPaper;
+  const openTutorial = () => { $('tutorial').hidden = false; if ($('btnTutClose').focus) $('btnTutClose').focus(); };
+  const closeTutorial = () => { $('tutorial').hidden = true; if ($('btnTutorial').focus) $('btnTutorial').focus(); };
+  $('btnTutorial').onclick = openTutorial; $('btnTutClose').onclick = closeTutorial;
+  $('tutorial').onclick = e => { if (e.target === $('tutorial')) closeTutorial(); };
   $('btnDiv').onclick = () => { buyN('diviners', 1); update(); };
   $('btnDis').onclick = () => { buyN('distillers', 1); update(); };
   $('btnFurnace').onclick = () => { buyN('furnaces', 1); update(); };
@@ -1194,7 +1223,7 @@
   $('btnFeast').onclick = () => { if (S.dreams < S.feastCost) return; S.dreams -= S.feastCost; S.feastCost += 10000; S.bored = 0; S.boredom = 0; S.boredMsg = 0; say('The Order feasts. For now, it is content.'); update(); };
   $('btnReunite').onclick = () => { if (S.coin < 5000) return; S.coin -= 5000; S.sects = 0; S.disorg = 0; S.sectMsg = 0; say('The sects are reunited. The Order speaks with one voice again.'); update(); };
   if (S.flags.dry) { $('flask').classList.toggle('still', true); $('flask').classList.toggle('drained', true); }
-  if (document.addEventListener) document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('extra').hidden) foldPaper(); });
+  if (document.addEventListener) document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('extra').hidden) foldPaper(); if (e.key === 'Escape' && !$('tutorial').hidden) closeTutorial(); });
   $('btnSeance').onclick = () => { beginSeance(); update(); };
   // bankene telles når knappen trykkes ned, så raske klikk ikke går tapt. Tastaturet teller bare ett bank per trykk
   $('seanceTable').onpointerdown = e => { if (e && e.preventDefault) e.preventDefault(); knock(); drawSeance(); };
