@@ -269,17 +269,20 @@
     .flask .potion, .flask.omen .potion { animation: none; transition: none; }
   }
 
-  /* Apotekervekten (Kenneths ønske, i stedet for søylene, som gjorde det for lett): venstre skål er det man brygger per
-     dag, høyre er det kundene vil ha per dag. Den tyngste siden synker, uten tall. Står bjelken i vater, er prisen riktig */
-  .scale { display: flex; justify-content: center; padding: 4px 0 2px; border-bottom: 1px dotted var(--ink-2); }
-  .scale svg { width: 220px; max-width: 100%; height: auto; overflow: visible; }
-  .scale .base { fill: url(#woodG); stroke: #2e1c0e; stroke-width: 1; }
-  .scale .plate, .scale .pillar, .scale .beam, .scale .pan, .scale .knob { fill: url(#brassG); stroke: #5a4010; stroke-width: .8; }
-  .scale .rim { fill: #f0d68e; fill-opacity: .55; stroke: #5a4010; stroke-width: .6; }
-  .scale .chain { fill: none; stroke: #b8964a; stroke-width: .9; stroke-dasharray: 2 1.2; }
-  .scale .needle { stroke: #5a4010; stroke-width: 1.4; }
-  .scale .dial { fill: none; stroke: var(--ink-2); stroke-width: .9; }
-  .scale text { font-family: var(--f-head); font-size: 11px; letter-spacing: .06em; fill: var(--ink-2); text-anchor: middle; }
+  /* Måleren for tilbud og etterspørsel (Kenneths valg, i stedet for søylene og apotekervekten): et halvrundt instrument i
+     messing med elfenbensskive. Viseren går mot Shortage når kundene vil ha mer enn man brygger, mot Surplus når man
+     brygger mer. I det grønne feltet er prisen riktig. Ingen tall. */
+  .scale { display: flex; justify-content: center; padding: 6px 0 4px; border-bottom: 1px dotted var(--ink-2); }
+  .scale svg { width: 210px; max-width: 100%; height: auto; }
+  .scale .bezel, .scale .foot, .scale .cap { fill: url(#brassG); stroke: #5a4010; stroke-width: .9; }
+  .scale .face { fill: url(#faceG); stroke: #5a4010; stroke-width: .6; }
+  .scale .zone { fill: none; stroke: #5f9a52; stroke-width: 7; }
+  .scale .tk { stroke: #2a1c10; stroke-width: 1.6; }
+  .scale .tm { stroke: #2a1c10; stroke-width: .8; }
+  .scale .needle { fill: #8a241c; stroke: #4a0f0b; stroke-width: .5; }
+  .scale text { font-family: var(--f-head); text-anchor: middle; fill: #4a3a28; }
+  .scale .lb { font-size: 10.5px; letter-spacing: .05em; }
+  .scale .mk { font-size: 8.5px; letter-spacing: .14em; fill: #7a6a52; }
   /* Fase 2 */
   .buyrow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
   .buyrow .sub { margin-left: auto; }
@@ -374,7 +377,7 @@
         <div class="row"><span class="k" data-tip="Potions brewed but not yet sold." tabindex="0">Potion inventory</span><span class="v" id="unsold">0</span></div>
         <div class="row"><span class="k" data-tip="What customers pay for one potion. A lower price sells faster. Selling at a loss is allowed. Hold the arrows to change it quickly." tabindex="0">Price per potion</span><span class="v price"><button id="btnLower" class="sm" type="button" aria-label="Lower price">‹</button><span id="price">0</span><button id="btnRaise" class="sm" type="button" aria-label="Raise price">›</button></span></div>
         <div class="row"><span class="k" data-tip="How eager customers are to buy. A lower price and more advertising raise it." tabindex="0">Crowd appetite</span><span class="v"><span id="demand">0</span>%</span></div>
-        <div class="scale" id="barsBox" hidden data-tip="An apothecary’s scale. The left pan holds what you brew per day, the right pan what customers want per day at this price. The heavier side sinks. When the beam is level, you have found the price."><svg viewBox="0 0 220 134" aria-hidden="true"><defs><linearGradient id="brassG" x1="0" x2="1"><stop offset="0" stop-color="#7a5a22"/><stop offset=".45" stop-color="#e6c472"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient><linearGradient id="woodG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a32"/><stop offset="1" stop-color="#4a2e17"/></linearGradient></defs><path class="base" d="M66 122L74 110H146L154 122L146 130H74Z"/><rect class="plate" x="84" y="106" width="52" height="5" rx="2"/><rect class="pillar" x="107" y="24" width="6" height="84"/><circle class="knob" cx="110" cy="13" r="3.5"/><path class="dial" d="M98 14A14 14 0 0 1 122 14"/><line class="dial" x1="110" y1="3" x2="110" y2="7"/><g id="scaleBeam"><line class="needle" x1="110" y1="26" x2="110" y2="6"/><path class="beam" d="M40 24.5H180V27.5H40Z"/><circle class="knob" cx="110" cy="26" r="4"/><circle class="knob" cx="40" cy="26" r="2.5"/><circle class="knob" cx="180" cy="26" r="2.5"/></g><g id="panMade"><path class="chain" d="M0 0L-24 46M0 0L0 47M0 0L24 46"/><path class="pan" d="M-29 46Q0 63 29 46Z"/><ellipse class="rim" cx="0" cy="46" rx="29" ry="2.6"/><text x="0" y="75">Brewed</text></g><g id="panWant"><path class="chain" d="M0 0L-24 46M0 0L0 47M0 0L24 46"/><path class="pan" d="M-29 46Q0 63 29 46Z"/><ellipse class="rim" cx="0" cy="46" rx="29" ry="2.6"/><text x="0" y="75">Wanted</text></g></svg></div>
+        <div class="scale" id="barsBox" hidden data-tip="A supply gauge. The needle points to Shortage when customers want more than you brew, and to Surplus when you brew more than they want. In the green, the price is right."><svg viewBox="0 0 220 122" aria-hidden="true"><defs><linearGradient id="brassG" x1="0" x2="1"><stop offset="0" stop-color="#7a5a22"/><stop offset=".45" stop-color="#e6c472"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient><radialGradient id="faceG" cx=".4" cy=".25" r=".9"><stop offset="0" stop-color="#f7f0dd"/><stop offset="1" stop-color="#ddd1b2"/></radialGradient></defs><path class="bezel" d="M14 108A96 96 0 0 1 206 108Z"/><path class="face" d="M22 108A88 88 0 0 1 198 108Z"/><rect class="foot" x="10" y="107" width="200" height="8" rx="2"/><path class="zone" d="M99.4 32.7A76 76 0 0 1 120.6 32.7"/><line class="tk" x1="45.0" y1="96.5" x2="31.2" y2="94.1"/><line class="tm" x1="42.3" y1="83.4" x2="34.8" y2="80.6"/><line class="tm" x1="47.6" y1="72.0" x2="40.7" y2="68.0"/><line class="tm" x1="54.8" y1="61.7" x2="48.7" y2="56.6"/><line class="tk" x1="67.6" y1="57.4" x2="58.6" y2="46.7"/><line class="tm" x1="74.0" y1="45.6" x2="70.0" y2="38.7"/><line class="tm" x1="85.4" y1="40.3" x2="82.6" y2="32.8"/><line class="tm" x1="97.5" y1="37.1" x2="96.1" y2="29.2"/><line class="tk" x1="110.0" y1="42.0" x2="110.0" y2="28.0"/><line class="tm" x1="122.5" y1="37.1" x2="123.9" y2="29.2"/><line class="tm" x1="134.6" y1="40.3" x2="137.4" y2="32.8"/><line class="tm" x1="146.0" y1="45.6" x2="150.0" y2="38.7"/><line class="tk" x1="152.4" y1="57.4" x2="161.4" y2="46.7"/><line class="tm" x1="165.2" y1="61.7" x2="171.3" y2="56.6"/><line class="tm" x1="172.4" y1="72.0" x2="179.3" y2="68.0"/><line class="tm" x1="177.7" y1="83.4" x2="185.2" y2="80.6"/><line class="tk" x1="175.0" y1="96.5" x2="188.8" y2="94.1"/><text class="lb" x="64" y="90">Shortage</text><text class="lb" x="156" y="90">Surplus</text><text class="mk" x="110" y="72">Supply &amp; Demand</text><g id="gaugeNeedle"><path class="needle" d="M108.6 108L110 38L111.4 108Z"/></g><circle class="cap" cx="110" cy="108" r="6.5"/></svg></div>
         <div class="act" data-tip="Each level raises demand by 10%. The cost doubles every time."><button id="btnSign" type="button">Advertise</button><span class="sub">Level <span id="signLvl">1</span> · <span id="signCost">0</span> gold</span></div>
       </div></section>
 
@@ -1123,7 +1126,7 @@
     { id: 'regnskap', gild: true, title: 'Bookkeeper', cost: { energy: 500 }, desc: 'Tracks revenue and sales per day',
       show: () => S.flags.comp, buy: () => { S.flags.rev = 1; say('The bookkeeper asks no questions. You pay extra for that.'); } },
     // Søylene i The Shop: finnes ikke i Paperclips. Låses opp ved Advertising level 5, tidlig, men ikke med en gang (Kenneths valg)
-    { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'An apothecary’s scale that weighs what you brew against what customers want',
+    { id: 'publikum', gild: true, title: 'Read the Crowd', cost: { energy: 1000 }, desc: 'A brass gauge that shows whether you brew too little or too much for the crowd',
       show: () => S.flags.comp && S.signLvl >= 5, buy: () => { S.flags.bars = 1; say('You learn to read a crowd. Every face tells you what it will pay.'); } },
     { id: 'gave', repeat: true, title: 'Charity Gala', get cost() { return { kr: S.giftCost }; }, desc: 'The public trusts you more (+1 Mastery point). Costs twice as much each time',
       show: () => S.level >= 85 && S.level < 100 && S.total >= 101000000, buy: () => { S.level++; S.giftCost *= 2; say('The gala raises a fortune for a cause nobody remembers. Your photo is in every paper.'); } },
@@ -1472,16 +1475,13 @@
     $('demand').textContent = num(demand() * 10);
     $('barsBox').hidden = !S.flags.bars;
     const dm = demand(), want = 10 * Math.min(1, dm / 100) * Math.floor(0.7 * Math.pow(dm, 1.15));
-    // vekten: produksjonen mot hvor mange kundene vil kjøpe per dag, regnet som salget i slowTick. Bjelken tipper høyst
-    // 14 grader, og den glir mot riktig vinkel i stedet for å hoppe
+    // måleren: produksjonen mot hvor mange kundene vil kjøpe per dag, regnet som salget i slowTick. Viseren går høyst
+    // 80 grader ut til hver side, står i det grønne (±8 grader) når de er omtrent like, og glir i stedet for å hoppe
     const made = S.water >= S.waterPerPotato ? rate() : 0;
     if (S.flags.bars) {
-      const target = made <= 0 && want <= 0 ? 0 : made <= 0 ? 14 : want <= 0 ? -14 : -14 * Math.tanh(Math.log(made / want));
+      const target = made <= 0 && want <= 0 ? 0 : made <= 0 ? -80 : want <= 0 ? 80 : 80 * Math.tanh(Math.log(made / want));
       scaleAngle += (target - scaleAngle) * 0.3;
-      const a = scaleAngle * Math.PI / 180, dx = 70 * Math.cos(a), dy = 70 * Math.sin(a);
-      $('scaleBeam').setAttribute('transform', `rotate(${scaleAngle.toFixed(2)} 110 26)`);
-      $('panMade').setAttribute('transform', `translate(${(110 - dx).toFixed(2)} ${(26 - dy).toFixed(2)})`);
-      $('panWant').setAttribute('transform', `translate(${(110 + dx).toFixed(2)} ${(26 + dy).toFixed(2)})`);
+      $('gaugeNeedle').setAttribute('transform', `rotate(${scaleAngle.toFixed(2)} 110 108)`);
     }
     $('signLvl').textContent = S.signLvl; $('signCost').textContent = kr(signCost());
     $('rate').textContent = num(Math.round(S.water >= S.waterPerPotato ? rate() : 0));
