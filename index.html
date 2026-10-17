@@ -6,7 +6,7 @@
 <title>Stardust Snake Oil Inc.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Rye&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Rye&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 <style>
   /* Utseende: apotekerens etikett fra 1800-tallet (gulnet papir, blekk og oksblod), så spillet ser ut som noe eget og ikke som Paperclips.
      Avisa «The Daily Elixir» er loggen. På smale skjermer kommer avisa øverst, så historien alltid synes. */
@@ -128,13 +128,27 @@
   button.bill.gild b::after { content: " \2726"; color: var(--brass); font-size: 13px; }
   button.bill.gild:disabled { border: 2px dashed var(--brass); box-shadow: none; padding-left: 8px; opacity: .75; }
 
-  .gazette { border: 2px solid var(--rule); padding: 10px 14px 12px; background: var(--paper); }
-  .gazette .name { font-family: var(--f-mast); font-size: 23px; text-align: center; line-height: 1; }
-  .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink-2); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 6px 0 10px; }
+  /* Avisa skal se ut som en ekte avis (tilbakemelding fra en tester: den ble oppfattet som støy). Lyst avispapir med svart
+     trykksverte i begge modusene, en svak bretteskygge midt på, gotisk avishode, ører med vær og pris, og fete
+     overskrifter over notisene («NOT A CLOUD IN SIGHT: …» deles i overskrift og tekst) */
+  .gazette, .extra-page { --paper: #ece6d6; --paper-2: #e0d8c3; --ink: #1c1915; --ink-2: #554e40; --rule: #1c1915; --blood: #7c211b; --blood-2: #9a2c23; --brass: #7a5e26; color: var(--ink); color-scheme: light; }
+  :root[data-theme="dark"] .gazette, :root[data-theme="dark"] .extra-page { --paper: #e0d9c5; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .gazette, :root:not([data-theme="light"]) .extra-page { --paper: #e0d9c5; } }
+  .gazette { border: 1px solid #a9a089; padding: 10px 14px 12px; background: linear-gradient(180deg, transparent 49.5%, rgba(60, 50, 30, .08) 50%, transparent 50.8%), var(--paper);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 10px 26px rgba(0, 0, 0, .3); }
+  .gazette .masthead { display: grid; grid-template-columns: 58px minmax(0, 1fr) 58px; align-items: center; gap: 6px; }
+  .gazette .ear { border: 1px solid var(--rule); padding: 3px 2px; text-align: center; font-size: 11.5px; line-height: 1.15; font-style: italic; }
+  .gazette .ear b { display: block; font-family: var(--f-head); font-style: normal; font-weight: 400; font-size: 10px; letter-spacing: .08em; }
+  .gazette .name, .extra-page .name { font-family: "UnifrakturMaguntia", var(--f-mast); }
+  .gazette .name { font-size: 28px; text-align: center; line-height: 1; white-space: nowrap; }
+  .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 7px 0 10px; }
   #log { display: flex; flex-direction: column-reverse; justify-content: flex-end; min-height: 4em; }
-  #log div { font-size: 15px; padding: 5px 0; border-top: 1px dotted var(--ink-2); white-space: pre-wrap; }
+  #log div { font-size: 14.5px; padding: 6px 0; border-top: 1px solid rgba(28, 25, 21, .3); white-space: pre-wrap; }
   #log div:empty { display: none; }
-  #log div:last-child { font-size: 18px; font-weight: 600; line-height: 1.2; border-top: none; padding-top: 0; margin-bottom: 4px; }
+  #log div[data-k]:not([data-k=""])::before { content: attr(data-k); display: block; font-weight: 600; font-size: 13px; letter-spacing: .03em; line-height: 1.15; margin-bottom: 2px; color: var(--ink); }
+  #log div:last-child { font-size: 19px; font-weight: 600; line-height: 1.15; border-top: none; padding-top: 0; margin-bottom: 4px; }
+  #log div:last-child[data-k]:not([data-k=""]) { font-size: 15px; font-weight: 400; line-height: 1.3; }
+  #log div:last-child[data-k]:not([data-k=""])::before { font-size: 20px; line-height: 1.1; letter-spacing: .01em; margin-bottom: 4px; }
   #log div:nth-child(-n+2) { color: var(--ink-2); }
 
   .table-wrap { overflow-x: auto; }
@@ -203,7 +217,8 @@
   /* Mobil: avisa tar mindre plass, så butikken kommer høyere opp */
   @media (max-width: 640px) {
     .gazette { padding: 8px 12px 10px; }
-    .gazette .name { font-size: 20px; }
+    .gazette .masthead { grid-template-columns: 52px minmax(0, 1fr) 52px; }
+    .gazette .name { font-size: 24px; }
     .gazette .date { margin: 4px 0 6px; }
     #log { min-height: 0; }
     #log div:last-child { font-size: 16px; }
@@ -359,7 +374,11 @@
     </div>
 
     <section class="gazette" id="news">
-      <div class="name">The Daily Elixir</div>
+      <div class="masthead">
+        <div class="ear"><b>Weather</b><span id="weather">Fair</span></div>
+        <div class="name">The Daily Elixir</div>
+        <div class="ear"><b>Price</b><span id="paperPrice">One penny</span></div>
+      </div>
       <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
       <div id="log" aria-live="polite"><div></div><div></div><div></div><div></div><div></div></div>
       <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" class="idle" aria-live="polite"></p></div>
@@ -505,9 +524,11 @@
 
   // Logg med fem linjer
   const logLines = [...$('log').children];
+  // «NOT A CLOUD IN SIGHT: 412 days without rain …» vises som overskrift (data-k) og tekst under
   const say = msg => {
-    for (let i = 0; i < logLines.length - 1; i++) logLines[i].textContent = logLines[i + 1].textContent;
-    logLines[logLines.length - 1].textContent = msg;
+    for (let i = 0; i < logLines.length - 1; i++) { logLines[i].textContent = logLines[i + 1].textContent; logLines[i].dataset.k = logLines[i + 1].dataset.k || ''; }
+    const m = /^([A-Z][A-Z0-9 ,’'.-]+): (.+)$/.exec(msg), last = logLines[logLines.length - 1];
+    last.textContent = m ? m[2] : msg; last.dataset.k = m ? m[1] : '';
   };
   const time = () => {
     const s = Math.floor(S.t / 10), m = Math.floor(s / 60), h = Math.floor(m / 60);
@@ -1231,6 +1252,8 @@
     if (S.water > S.waterPeak) S.waterPeak = S.water;
     $('waterGauge').style.width = (S.waterPeak > 0 ? S.water / S.waterPeak * 100 : 0).toFixed(1) + '%';
     $('day').textContent = num(S.t / 10 + 1);
+    $('weather').textContent = S.flags.dry ? 'Wells dry' : S.rainLeft > 0 ? 'Rain' : S.flags.drought && S.story.dry1 === true ? `Dry ${num(dryDays())} days` : 'Fair';
+    $('paperPrice').textContent = S.flags.farm ? 'One potion' : 'One penny';
     $('btnWater').disabled = S.flags.dry || S.funds < S.waterCost;
     $('waterEmpty').textContent = S.flags.dry ? '(the wells are dry)' : S.water < S.waterPerPotato ? '(empty)' : '';
     $('flask').classList.toggle('drained', !!S.flags.dry);
