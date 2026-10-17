@@ -469,7 +469,7 @@
 
       <section class="label" id="raceBox" hidden><div class="in">
         <h2>Liar’s Table</h2>
-        <div class="act" data-tip="Pick the liar you think will win, then press Run. Every liar plays every other liar. The better your pick does, the more Arcane Tokens you win."><select id="horsePick" aria-label="Pick a liar"></select><button id="btnRun" type="button">Run</button></div>
+        <div class="act" data-tip="Pick the liar you think will win, then press Play. Every liar plays every other liar. The better your pick does, the more Arcane Tokens you win."><select id="horsePick" aria-label="Pick a liar"></select><button id="btnRun" type="button">Play</button></div>
         <div class="sub" id="raceStatus"></div>
         <div class="table-wrap"><table class="payoff">
           <thead><tr><th></th><th></th><th class="who" colspan="2" id="raceV">Opponent</th></tr>
@@ -480,8 +480,8 @@
           </tbody></table></div>
         <div class="race-results" id="raceResults"></div>
         <div class="row" style="margin-top: 6px"><span class="k">Arcane Tokens</span><span class="v" id="coin">0</span></div>
-        <div class="act" data-tip="Costs mana and deals a new table of payoffs."><button id="btnNewRace" type="button">New Game</button><span class="sub"><span id="raceCost">1,000</span> mana</span></div>
-        <div class="act" id="autoRaceBox" hidden data-tip="Starts a new game by itself three days after the last one ends. Click to turn it on or off."><button id="btnAutoRace" type="button">Hired Dealer</button><span class="sub" id="autoRaceStatus">ON</span></div>
+        <div class="act" data-tip="Costs mana and deals a new table of payoffs."><button id="btnNewRace" type="button">Deal a New Hand</button><span class="sub"><span id="raceCost">1,000</span> mana</span></div>
+        <div class="act" id="autoRaceBox" hidden data-tip="Deals a new hand by itself three days after the last one ends. Click to turn it on or off."><button id="btnAutoRace" type="button">Hired Dealer</button><span class="sub" id="autoRaceStatus">ON</span></div>
       </div></section>
     </div>
   </div>
@@ -833,13 +833,13 @@
   const beatsLast = pos => { const g = S.raceGrid, opp = pos === 1 ? R.vPrev : R.hPrev; return opp === 1 ? (g.aa > g.ba ? 1 : 2) : (g.ab > g.bb ? 1 : 2); };
   const HORSES = {
     random:   { name: 'Wild Card Will', move: () => Math.random() < .5 ? 1 : 2 },
-    inner:    { name: 'Always Lies', move: () => 1 },
-    outer:    { name: 'Always Honest', move: () => 2 },
-    greedy:   { name: 'Greedy Gus', move: () => biggest() < 3 ? 1 : 2 },
-    generous: { name: 'Generous Gwen', move: () => [1, 3].includes(biggest()) ? 1 : 2 },
-    minimax:  { name: 'Minimax Max', move: () => [1, 3].includes(biggest()) ? 2 : 1 },
-    tft:      { name: 'Tit-for-Tat Tom', move: pos => pos === 1 ? R.vPrev : R.hPrev },
-    beatlast: { name: 'Beat-Last Betty', move: pos => beatsLast(pos) },
+    inner:    { name: 'Crooked Cornelius', move: () => 1 },
+    outer:    { name: 'Parson Prudence', move: () => 2 },
+    greedy:   { name: 'Alfred the Dog', move: () => biggest() < 3 ? 1 : 2 },
+    generous: { name: 'The Widow Winifred', move: () => [1, 3].includes(biggest()) ? 1 : 2 },
+    minimax:  { name: 'The Undertaker', move: () => [1, 3].includes(biggest()) ? 2 : 1 },
+    tft:      { name: 'Mirror Molly', move: pos => pos === 1 ? R.vPrev : R.hPrev },
+    beatlast: { name: 'Hindsight Hank', move: pos => beatsLast(pos) },
   };
   const horseName = i => HORSES[S.horses[i]].name;
   const drawHit = () => ['AA', 'AB', 'BA', 'BB'].forEach(k => $('cell' + k).classList.toggle('hit', R.inProg && R.hit === k));
@@ -866,7 +866,7 @@
       const beaten = S.horses.length - order.indexOf(S.pick) - 1;
       const gain = R.scores[S.pick] * S.coinBoost * Math.max(1, beaten);
       S.coin += gain;
-      S.lastRace = `${horseName(S.pick)} scored ${num(R.scores[S.pick])} and beat ${beaten} ${beaten === 1 ? 'liar' : 'liars'}. +${num(gain)} Arcane Tokens`;
+      S.lastRace = `${horseName(S.pick)} won ${num(R.scores[S.pick])} chips and fleeced ${beaten} ${beaten === 1 ? 'rival' : 'rivals'}. +${num(gain)} Arcane Tokens`;
     } else S.lastRace = 'You didn’t bet on anyone.';
     R.timer = 0; update();
   };
@@ -888,8 +888,8 @@
   };
   const raceStep = () => { if (R.heat < 10) heat(); else { R.round++; nextRound(); } };
   const runRace = () => { if (!R.ready || R.inProg) return; R.ready = false; R.inProg = true; nextRound(); };
-  const horse = (id, name, energy, after, desc) => ({ id: 'hest_' + id, title: 'New Liar: ' + name, cost: { energy }, desc,
-    show: () => done(after), buy: () => { S.horses.push(id); S.raceCost += 1000; say(`${name} has joined the Liar’s Table.`); } });
+  const horse = (id, name, energy, after, desc) => ({ id: 'hest_' + id, title: 'A Seat for ' + name, cost: { energy }, desc,
+    show: () => done(after), buy: () => { S.horses.push(id); S.raceCost += 1000; say(`${name} pulls up a chair.`); } });
   // Slutten på fase 1 (Kenneths ønske: ikke likt Paperclips' blinkende ord). Vannet renner ut av måleren og kolben,
   // en ekstrautgave av avisa folder seg ut med notiser én etter én, og når den lukkes, har etiketten øverst sprukket
   // så slangeskinnet synes. Ingen blinking. Med «redusert bevegelse» vises alt uten animasjon.
@@ -1005,16 +1005,16 @@
       show: () => done('ouija'), buy: () => { say('The spirits speak through the trumpet. They sound a lot like your apprentice.'); } },
     { id: 'ecto', title: 'Ectoplasm', cost: { kr: 1000000 }, desc: 'Séance: every knock counts four times',
       show: () => done('trumpet'), buy: () => { say('It is mostly cheesecloth. It glows anyway.'); } },
-    horse('inner', 'Always Lies', 15000, 'trav', 'Lies every single time'),
-    horse('outer', 'Always Honest', 17500, 'hest_inner', 'Tells the truth every single time'),
-    horse('greedy', 'Greedy Gus', 20000, 'hest_outer', 'Goes for the biggest payoff in the table'),
-    horse('generous', 'Generous Gwen', 22500, 'hest_greedy', 'Lets the opponent win the most'),
-    horse('minimax', 'Minimax Max', 25000, 'hest_generous', 'Blocks the opponent’s biggest payoff'),
-    horse('tft', 'Tit-for-Tat Tom', 30000, 'hest_minimax', 'Does what the opponent did last round'),
-    horse('beatlast', 'Beat-Last Betty', 32500, 'hest_tft', 'Picks whatever beats the opponent’s last move'),
-    { id: 'stalltips', title: 'Marked Cards', cost: { dreams: 25000 }, desc: 'Double cost per game and double winnings',
+    horse('inner', 'Crooked Cornelius', 15000, 'trav', 'Lies every single time'),
+    horse('outer', 'Parson Prudence', 17500, 'hest_inner', 'Cannot tell a lie'),
+    horse('greedy', 'Alfred the Dog', 20000, 'hest_outer', 'Always reaches for the biggest pot'),
+    horse('generous', 'The Widow Winifred', 22500, 'hest_greedy', 'Lets the other player have the better deal'),
+    horse('minimax', 'The Undertaker', 25000, 'hest_generous', 'Plays not to lose. Blocks your biggest win'),
+    horse('tft', 'Mirror Molly', 30000, 'hest_minimax', 'Does to you what you did to her last hand'),
+    horse('beatlast', 'Hindsight Hank', 32500, 'hest_tft', 'Plays whatever would have beaten your last move'),
+    { id: 'stalltips', title: 'Marked Cards', cost: { dreams: 25000 }, desc: 'Double cost per hand and double winnings',
       show: () => S.horses.length >= 8, buy: () => { S.coinBoost = 2; S.raceCost *= 2; say('The cards are marked. So is everyone else’s.'); } },
-    { id: 'fastkupong', title: 'Hired Dealer', cost: { dreams: 50000 }, desc: 'A new game starts by itself when the last one ends',
+    { id: 'fastkupong', title: 'Hired Dealer', cost: { dreams: 50000 }, desc: 'A new hand is dealt by itself when the last one ends',
       show: () => S.flags.race && S.level >= 90, buy: () => { S.autoRace = 1; S.autoRaceOn = 1; say('The dealer never blinks.'); } },
     // ---------- Fase 2, samme rekkefølge, priser og virkning som i Paperclips ----------
     { id: 'tubule', gild: true, title: 'Living Glass', cost: { energy: 45000 }, desc: 'Grow brewing apparatus directly out of potions',
@@ -1388,7 +1388,7 @@
       $('cellBA').textContent = g ? `${g.ba},${g.ab}` : ''; $('cellBB').textContent = g ? `${g.bb},${g.bb}` : '';
       drawHit();
       $('raceH').textContent = R.inProg ? horseName(R.h) : 'Liar'; $('raceV').textContent = R.inProg ? horseName(R.v) : 'Opponent';
-      $('raceStatus').textContent = R.inProg ? `Round ${R.round + 1} of ${R.rounds}` : R.ready ? 'Pick a liar and press Run.' : S.lastRace || 'Start a new game to see the table.';
+      $('raceStatus').textContent = R.inProg ? `Hand ${R.round + 1} of ${R.rounds}` : R.ready ? 'Pick a liar and press Play.' : S.lastRace || 'Deal a new hand to see the table.';
       $('raceResults').innerHTML = !R.inProg && !R.ready && S.raceResults ? S.raceResults.map((x, k) => `<span${x.i === S.pick ? ' class="mine"' : ''}>${k + 1}. ${horseName(x.i)}: ${num(x.score)}</span>`).join('') : '';
       $('coin').textContent = num(S.coin); $('raceCost').textContent = num(S.raceCost);
       $('btnRun').disabled = !R.ready || R.inProg;
