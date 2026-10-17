@@ -66,7 +66,8 @@
   .count .lbl { font-family: var(--f-head); letter-spacing: .1em; color: var(--ink-2); }
   .count .lbl { font-size: 14px; }
   .count .big { font-size: clamp(30px, 4.5vw, 44px); font-weight: 600; line-height: 1; }
-  button.seal { width: 88px; height: 88px; border-radius: 50%; border: 2px solid var(--blood); box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--blood); background: var(--blood); color: var(--on-blood); font-family: var(--f-head); font-size: 16px; line-height: 1.1; padding: 0; transition: transform .12s ease, background-color .12s ease; }
+  /* seglet er litt mindre og har marg for ringene, så det ikke går over de doble strekene i toppen */
+  button.seal { width: 80px; height: 80px; margin: 6px; border-radius: 50%; border: 2px solid var(--blood); box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--blood); background: var(--blood); color: var(--on-blood); font-family: var(--f-head); font-size: 16px; line-height: 1.1; padding: 0; transition: transform .12s ease, background-color .12s ease; }
   button.seal:hover:not(:disabled) { background: var(--blood-2); border-color: var(--blood-2); transform: scale(1.06); }
   button.seal:active:not(:disabled) { transform: scale(.97); }
   button.seal:focus-visible { outline: 2px solid var(--ink); outline-offset: 9px; }
