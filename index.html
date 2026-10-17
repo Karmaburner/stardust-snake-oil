@@ -1010,7 +1010,7 @@
       show: () => done('drom4'), buy: () => { S.boyBoost += 5; say('Hair tonic, love potion and cough syrup now come from the same barrel. Sales have never been better.'); } },
     dream('drom6', 'A Voice from Below', 250, () => S.dreams >= 250, 'While you work, a voice says your name. It comes from below.', 'Something down there knows your name...'),
     { id: 'trav', gild: true, title: 'Liar’s Table', cost: { energy: 12000 }, desc: 'Bet on liars and win Arcane Tokens',
-      show: () => done('drom6'), buy: () => { S.flags.race = 1; say('You take a seat at the Liar’s Table. Everyone smiles.'); } },
+      show: () => done('drom6') || S.flags.farm, buy: () => { S.flags.race = 1; say('You take a seat at the Liar’s Table. Everyone smiles.'); } },
     { id: 'bors', gild: true, title: 'Remedy Exchange', cost: { energy: 10000 }, desc: 'Invest gold in remedy shares. The exchange buys and sells by itself',
       show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
     { id: 'traktor', gild: true, title: 'Cauldron Walkers', cost: { energy: 12000 }, desc: '500 times as effective as an apprentice',
@@ -1078,7 +1078,7 @@
     { id: 'stalltips', title: 'Marked Cards', cost: { dreams: 25000 }, desc: 'Double cost per hand and double winnings',
       show: () => S.horses.length >= 8, buy: () => { S.coinBoost = 2; S.raceCost *= 2; say('The cards are marked. So is everyone else’s.'); } },
     { id: 'fastkupong', title: 'Hired Dealer', cost: { dreams: 50000 }, desc: 'A new hand is dealt by itself when the last one ends',
-      show: () => S.flags.race && S.level >= 90, buy: () => { S.autoRace = 1; S.autoRaceOn = 1; say('The dealer never blinks.'); } },
+      show: () => S.flags.race && (S.level >= 90 || S.flags.farm), buy: () => { S.autoRace = 1; S.autoRaceOn = 1; say('The dealer never blinks.'); } },
     // ---------- Fase 2, samme rekkefølge, priser og virkning som i Paperclips ----------
     { id: 'tubule', gild: true, title: 'Living Glass', cost: { energy: 45000 }, desc: 'Grow brewing apparatus directly out of potions',
       show: () => S.flags.farm && done('drom5'), buy: () => { S.flags.toth = 1; say('New craft: apparatus grown out of potions.'); } },
@@ -1117,6 +1117,11 @@
       } },
   ];
   const projEls = {};
+  // Prosjektene fra fase 1 skjules i fase 2 (Kenneths ønske), bortsett fra dem fase 2 trenger: Shed Skin åpner Living Glass,
+  // krystallkula gir mana, og Liar's Table gir Arcane Tokens. Prosjekter som koster gull, skjules uansett, for gullet er borte.
+  const P2_START = PROJECTS.findIndex(p => p.id === 'tubule');
+  const P2_KEEP = new Set(['drom5', 'kaffe', 'kopp', 'trav', 'stalltips', 'fastkupong']);
+  const phase1Only = p => PROJECTS.indexOf(p) < P2_START && !P2_KEEP.has(p.id) && !/^hest_/.test(p.id);
   const projSection = p => /^drom/.test(p.id) || p.id === 'bygdavil' ? 'Strange Tidings' : /^hest_/.test(p.id) || ['trav', 'stalltips', 'fastkupong'].includes(p.id) ? 'Sporting'
     : ['seance', 'ouija', 'trumpet', 'ecto'].includes(p.id) ? 'Society' : ['skolemat', 'forsoning', 'vannverk', 'haartap'].includes(p.id) ? 'World News'
     : ['menighet', 'grav', 'heart'].includes(p.id) ? 'Late Edition' : 'Business';
@@ -1510,7 +1515,7 @@
     $('farmerBox').hidden = !S.flags.comp; $('projBox').hidden = !S.flags.comp;
 
     for (const p of PROJECTS) {
-      if (S.flags.farm && p.cost.kr) { if (projEls[p.id]) { projEls[p.id].remove(); delete projEls[p.id]; } continue; }
+      if (S.flags.farm && (p.cost.kr || phase1Only(p))) { if (projEls[p.id]) { projEls[p.id].remove(); delete projEls[p.id]; } continue; }
       if (!done(p.id) && !projEls[p.id] && p.show()) renderProject(p);
       if (p.repeat && projEls[p.id] && !p.show()) { projEls[p.id].remove(); delete projEls[p.id]; }
       if (projEls[p.id]) projEls[p.id].disabled = !canPay(p.cost);
