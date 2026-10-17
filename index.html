@@ -188,7 +188,11 @@
   .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 7px 0 10px; }
   /* Avisa som en ekte avisside (Kenneths ønske): hovedsaken over hele bredden med stor forbokstav, eldre meldinger som
      korte notiser i spalter med seksjonsnavn, like meldinger slått sammen, og Apothecary's Notes som fast rubrikk */
-  #log { min-height: 4em; }
+  /* Avisa har alltid samme høyde (Kenneths ønske), så den ikke hopper når nyhetene kommer. Det som ikke får plass,
+     forsvinner bak «Continued on page 2», og Apothecary's Notes har også fast høyde */
+  #log { height: 318px; overflow: hidden; -webkit-mask-image: linear-gradient(#000 calc(100% - 34px), transparent calc(100% - 4px)); mask-image: linear-gradient(#000 calc(100% - 34px), transparent calc(100% - 4px)); }
+  .gazette .cont { text-align: right; font-style: italic; font-size: 12px; color: var(--ink-2); margin-top: -2px; }
+  @media (max-width: 980px) { #log { height: 268px; } }
   #log .lead { padding-bottom: 7px; }
   #log .sec { font-family: var(--f-head); font-size: 10.5px; letter-spacing: .1em; color: var(--ink-2); line-height: 1.2; margin-bottom: 1px; }
   #log .lead h3 { font-family: var(--f-body); font-weight: 600; font-size: 20px; line-height: 1.12; margin: 0 0 4px; }
@@ -261,7 +265,7 @@
   .toil input { flex: 1; min-width: 0; accent-color: var(--blood); }
   .crack.wide svg { transform: scaleY(2.4); transform-origin: center; }
   .k[data-tip] { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
-  .guide { border: 1px solid var(--rule); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--rule); margin-top: 8px; padding: 6px 10px 7px; min-height: 7.4em; }
+  .guide { border: 1px solid var(--rule); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--rule); margin-top: 8px; padding: 6px 10px 7px; height: 132px; overflow: hidden; }
   .guide .gh { font-family: var(--f-head); font-size: 13px; letter-spacing: .08em; text-align: center; border-bottom: 1px solid var(--rule); padding-bottom: 2px; margin-bottom: 4px; }
   .guide p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.3; }
   .guide .ad b { font-family: var(--f-head); font-weight: 400; letter-spacing: .06em; }
@@ -271,9 +275,9 @@
     .gazette { padding: 8px 12px 10px; }
     .gazette .masthead { grid-template-columns: 52px minmax(0, 1fr) 52px; }
     .gazette .date { margin: 4px 0 6px; }
-    #log { min-height: 0; }
+    #log { height: 238px; }
     #log .lead h3 { font-size: 18px; }
-    .guide { min-height: 4.4em; margin-top: 6px; }
+    .guide { height: 112px; margin-top: 6px; }
   }
 
   .testbar { margin-top: 24px; border: 1px dashed var(--ink-2); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -451,6 +455,7 @@
       </div>
       <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
       <div id="log"></div>
+      <div class="cont" aria-hidden="true">Continued on page 2</div>
       <p id="logLive" class="sr-only" aria-live="polite"></p>
       <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" aria-live="polite" hidden></p><p id="helpAd" class="ad"></p><p id="helpHint" class="hint">Point at a dotted word, or at a button, for the apothecary’s notes.</p></div>
     </section>
