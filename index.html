@@ -1083,7 +1083,8 @@
     { id: 'bors', gild: true, title: 'Remedy Exchange', cost: { energy: 10000 }, desc: 'Invest gold in remedy shares. The exchange buys and sells by itself',
       show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
     { id: 'traktor', gild: true, title: 'Cauldron Walkers', cost: { energy: 12000 }, desc: '500 times as effective as an apprentice',
-      show: () => S.boys >= 75, buy: () => { S.flags.tractor = 1; say('The cauldron walkers stride off on their own. They do not sleep.'); } },
+      // ved 65 lærlinger (Kenneths valg 2026-10-18), MegaClippers i Paperclips kommer ved 75
+      show: () => S.boys >= 65, buy: () => { S.flags.tractor = 1; say('The cauldron walkers stride off on their own. They do not sleep.'); } },
     { id: 'aggregat', title: 'Self-Stirring Cauldrons', cost: { energy: 14000 }, desc: 'Cauldron Walkers: 25% faster',
       show: () => done('traktor'), buy: () => { S.tractorBoost += 0.25; say('The cauldrons stir themselves now.'); } },
     { id: 'gps', title: 'Thinking Copper', cost: { energy: 17000 }, desc: 'Cauldron Walkers: 50% faster',
