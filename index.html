@@ -228,7 +228,9 @@
 
   .testbar { margin-top: 24px; border: 1px dashed var(--ink-2); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .testbar b { font-family: var(--f-head); font-weight: 400; margin-right: 4px; }
-  .colophon { margin-top: 8px; display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  /* Bunnlinja (Kenneths ønske): tema og «Start over» ligger utenfor selve spillet, som i A Dark Room og Kittens Game */
+  .foot { margin-top: 28px; border-top: 3px double var(--rule); padding-top: 8px; display: flex; justify-content: center; align-items: baseline; gap: 6px 8px; flex-wrap: wrap;
+    color: var(--ink-2); font-size: 13px; font-style: italic; }
   button.link { background: none; border: none; padding: 0; font-family: var(--f-body); font-style: italic; font-size: 13px; letter-spacing: 0; color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
   button.link:hover:not(:disabled) { background: none; color: var(--blood); }
 </style>
@@ -383,7 +385,6 @@
       <div class="date">Vol. I · Day <span id="day">1</span> · All news fit to swallow</div>
       <div id="log" aria-live="polite"><div></div><div></div><div></div><div></div><div></div></div>
       <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" class="idle" aria-live="polite"></p></div>
-      <div class="colophon"><span class="sub" id="resetNote"></span><button id="btnTheme" class="link" type="button" data-tip="Switch between dark lamplight and light daylight.">Daylight</button> · <button id="btnReset" class="link" type="button">Start over</button></div>
     </section>
 
     <div class="col" id="colMarket">
@@ -460,6 +461,11 @@
   </div>
 
 </main>
+
+<footer class="foot">
+  <span>Stardust Snake Oil Inc.</span> · <button id="btnTheme" class="link" type="button" data-tip="Switch between dark lamplight and light daylight.">Daylight</button> · <button id="btnReset" class="link" type="button">Start over</button>
+  <span class="sub" id="resetNote"></span>
+</footer>
 
 <script>
 (() => {
