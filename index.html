@@ -611,6 +611,8 @@
   if (S.milestones === 7 && S.total >= 1000000) S.milestones = 8;
   if (S.cups > 0) S.flags.coffee = 1;
   if (S.done.includes('jingle')) { S.mktEff /= 2; S.done = S.done.filter(id => id !== 'jingle'); if (S.done.includes('duft')) S.mktEff *= 2; }
+  // The Medicine Show ga ×10 før den ble delt i A Brass Band (×2) og Medicine Show (×5): den som har den, har begge
+  if (S.done.includes('duft') && !S.done.includes('band')) S.done.push('band');
   if (S.giftCost < 125000) S.giftCost = 125000;
   if (S.orbSpeed > 1.8) S.orbSpeed = 1.8;
   if (S.flags.farm) { S.flags.dry = 1; S.flags.cracked = 1; }
@@ -1089,8 +1091,11 @@
       show: () => done('gps'), buy: () => { S.tractorBoost += 1; say('The walkers move as one now. None of them needs you.'); } },
     { id: 'anlegg', gild: true, title: 'Dowsing Rod', cost: { energy: 7000 }, desc: 'Buys water automatically when the barrels run dry',
       show: () => S.waterBuys >= 15, buy: () => { S.flags.autoWater = 1; S.autoWaterOn = 1; say('The rod twitches. Water appears. You stop asking how.'); } },
-    { id: 'duft', title: 'The Medicine Show', cost: { energy: 7500, level: 1 }, desc: 'A brass band, a snake handler and a man in the crowd who is cured every night. Advertising: ten times as effective',
-      show: () => done('slagord'), buy: () => { S.mktEff *= 10; say('The same man is cured every night. Nobody notices it is always him.'); } },
+    // Som Catchy Jingle (×2) og Hypno Harmonics (×5) i Paperclips. Var slått sammen til ×10 fram til 2026-10-18 (Kenneth: føltes for sterk)
+    { id: 'band', title: 'A Brass Band', cost: { dreams: 45, energy: 4500 }, desc: 'Advertising: twice as effective',
+      show: () => done('slagord'), buy: () => { S.mktEff *= 2; say('The band plays slightly out of tune. Nobody in town can stop humming it.'); } },
+    { id: 'duft', title: 'The Medicine Show', cost: { energy: 7500, level: 1 }, desc: 'A snake handler, the brass band and a man in the crowd who is cured every night. Advertising: five times as effective',
+      show: () => done('band'), buy: () => { S.mktEff *= 5; say('The same man is cured every night. Nobody notices it is always him.'); } },
     // Slutten på fase 1, som HypnoDrones og Release the HypnoDrones i Paperclips
     { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
       show: () => done('duft'), buy: () => { S.flags.drought = 1; S.droughtDay = today(); say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
