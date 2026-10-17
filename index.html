@@ -6,7 +6,7 @@
 <title>Stardust Snake Oil Inc.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Rye&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English+SC&family=Rye&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
 <style>
   /* Utseende: apotekerens etikett fra 1800-tallet (gulnet papir, blekk og oksblod), så spillet ser ut som noe eget og ikke som Paperclips.
      Avisa «The Daily Elixir» er loggen. På smale skjermer kommer avisa øverst, så historien alltid synes. */
@@ -139,10 +139,10 @@
   .gazette .masthead { display: grid; grid-template-columns: 58px minmax(0, 1fr) 58px; align-items: center; gap: 6px; }
   .gazette .ear { border: 1px solid var(--rule); padding: 3px 2px; text-align: center; font-size: 11.5px; line-height: 1.15; font-style: italic; }
   .gazette .ear b { display: block; font-family: var(--f-head); font-style: normal; font-weight: 400; font-size: 10px; letter-spacing: .08em; }
-  .gazette .name, .extra-page .name { font-family: "UnifrakturMaguntia", var(--f-mast); }
+  .gazette .name, .extra-page .name { font-family: "UnifrakturCook", var(--f-mast); font-weight: 700; }
   /* avishodet skalerer med avisas bredde, så det ikke går inn i ørene */
   .gazette { container-type: inline-size; }
-  .gazette .name { font-size: 22px; font-size: clamp(19px, 7.5cqi, 30px); text-align: center; line-height: 1; white-space: nowrap; }
+  .gazette .name { font-size: 22px; font-size: clamp(18px, 7cqi, 30px); text-align: center; line-height: 1; white-space: nowrap; }
   .gazette .date { font-family: var(--f-head); font-size: 13px; text-align: center; color: var(--ink); border-top: 1px solid var(--rule); border-bottom: 3px double var(--rule); padding: 2px 0; margin: 7px 0 10px; }
   #log { display: flex; flex-direction: column-reverse; justify-content: flex-end; min-height: 4em; }
   #log div { font-size: 14.5px; padding: 6px 0; border-top: 1px solid rgba(28, 25, 21, .3); white-space: pre-wrap; }
