@@ -268,8 +268,9 @@
   .goods { margin-top: 8px; border-top: 1px solid var(--ink); }
   .good { padding: 5px 0 6px; border-bottom: 1px dotted var(--ink-2); }
   .good .gtop { display: grid; grid-template-columns: minmax(0, 1fr) 92px auto; gap: 8px; align-items: center; }
-  .good .gname { font-family: var(--f-head); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .good .gname i { font-style: normal; margin-left: 4px; font-size: 12px; }
+  .good .gname { font-family: var(--f-head); font-size: 15px; display: flex; align-items: baseline; min-width: 0; }
+  .good .gname span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .good .gname i { font-style: normal; margin-left: 4px; font-size: 12px; flex: none; }
   .good .up { color: #4f8f5a; } .good .down { color: var(--blood); } .good .flat { color: var(--ink-2); }
   .good svg.spark { width: 92px; height: 24px; display: block; }
   .good svg.spark polyline { fill: none; stroke: var(--ink-2); stroke-width: 1.3; vector-effect: non-scaling-stroke; }
@@ -1240,7 +1241,7 @@
       let arrow = '';
       if (tele && g.hist.length > 12) { const d = P / g.hist[g.hist.length - 11] - 1; arrow = `<i class="${d > 0.005 ? 'up' : d < -0.005 ? 'down' : 'flat'}">${d > 0.005 ? '▲' : d < -0.005 ? '▼' : '▬'}</i>`; }
       const own = have > 0 ? `${num(have * P)} gold${g.bunits > 0 ? ' (broker)' : ''}` : 'none';
-      h += `<div class="good"><div class="gtop"><div class="gname">${def.n}${arrow}</div>${exSpark(g)}<div class="gprice">${P >= 100 ? num(P) : P.toFixed(2)}</div></div>`
+      h += `<div class="good"><div class="gtop"><div class="gname"><span>${def.n}</span>${arrow}</div>${exSpark(g)}<div class="gprice">${P >= 100 ? num(P) : P.toFixed(2)}</div></div>`
         + `<div class="gmid"><span class="gown">${own}</span><span class="gbtn">Buy <button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="0.1"${S.bankroll < 1 ? ' disabled' : ''}>10%</button><button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="0.5"${S.bankroll < 1 ? ' disabled' : ''}>50%</button><button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="1"${S.bankroll < 1 ? ' disabled' : ''}>All</button><span class="gap"></span>Sell <button type="button" class="sm" data-ex="sell" data-i="${i}" data-s="0.5"${g.units <= 0 ? ' disabled' : ''}>½</button><button type="button" class="sm" data-ex="sell" data-i="${i}" data-s="1"${g.units <= 0 ? ' disabled' : ''}>All</button></span></div></div>`;
     });
     if (h !== goodsDrawn) { goodsDrawn = h; $('goods').innerHTML = h; }
