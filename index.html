@@ -1304,8 +1304,8 @@
     { id: 'trumpet', title: 'Spirit Trumpet', cost: { kr: 100000 }, desc: 'Séance: every knock counts three times',
       show: () => done('ouija'), buy: () => { say('The spirits speak through the trumpet. They sound a lot like your apprentice.'); } },
     // Autobanking i seansen (Kenneths idé, navnet hans valg): gullramme siden den åpner en ny bryter. Man kan alltid velge Manual
-    { id: 'poltergeist', gild: true, title: 'A Helpful Poltergeist', cost: { kr: 25000 }, desc: 'Something knocks on the table by itself. You can still knock yourself, whenever you like',
-      show: () => done('ouija'), buy: () => { S.flags.poltergeist = 1; S.seanceAuto = 1; say('Something knocks on the table by itself. You did not hire it.'); } },
+    { id: 'poltergeist', gild: true, title: 'A Helpful Poltergeist', cost: { kr: 25000 }, desc: 'Séance: a poltergeist knocks on the table for you. You can still knock yourself, whenever you like',
+      show: () => done('ouija'), buy: () => { S.flags.poltergeist = 1; S.seanceAuto = 1; say('Something knocks on the séance table by itself. You did not hire it.'); } },
     { id: 'ecto', title: 'Ectoplasm', cost: { kr: 1000000 }, desc: 'Séance: every knock counts four times',
       show: () => done('trumpet'), buy: () => { say('It is mostly cheesecloth. It glows anyway.'); } },
     horse('inner', 'Crooked Cornelius', 15000, 'trav', 'Lies every single time'),
