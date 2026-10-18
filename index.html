@@ -176,6 +176,18 @@
       radial-gradient(circle at 60% 70%, rgba(40, 22, 8, .22) 0 1px, transparent 1.6px) 3px 4px / 7px 7px, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .06 0 0 0 0 .02 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23c)' opacity='.35'/%3E%3C/svg%3E"), #8f6a43;
     border: 7px solid #5b3b20; border-radius: 3px; box-shadow: inset 0 0 0 1px #2f1d0f, inset 0 3px 10px rgba(0, 0, 0, .45), 0 0 0 1px #3a2513; }
   :root[data-theme="dark"] .bills { background-color: #7a5838; }
+  /* Tavla har en fast høyde så den ikke tar så mye plass (Kenneth), og lappene ruller inni. Rullefeltet er tynt og i messing,
+     en skygge øverst viser at man har rullet, og nederst står hvor mange lapper som er skjult. Ikke på mobil: å rulle inni
+     en liste midt på en side som også ruller, gir at fingeren setter seg fast. */
+  .boardWrap { position: relative; }
+  .boardWrap .bills { max-height: clamp(280px, 52vh, 440px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #c9a55e #4a2f19; }
+  .boardWrap .bills::-webkit-scrollbar { width: 9px; }
+  .boardWrap .bills::-webkit-scrollbar-track { background: #4a2f19; }
+  .boardWrap .bills::-webkit-scrollbar-thumb { background: #c9a55e; border-radius: 4px; border: 1px solid #5a4010; }
+  .boardMore { position: absolute; left: 7px; right: 16px; bottom: 7px; height: 42px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; pointer-events: none;
+    background: linear-gradient(rgba(43, 26, 13, 0), rgba(43, 26, 13, .88)); color: #f3e3bc; font-style: italic; font-size: 13px; }
+  .boardWrap.scrolled::before { content: ""; position: absolute; z-index: 2; left: 7px; right: 16px; top: 7px; height: 16px; pointer-events: none; background: linear-gradient(rgba(43, 26, 13, .8), rgba(43, 26, 13, 0)); }
+  @media (max-width: 640px) { .boardWrap .bills { max-height: none; overflow: visible; } .boardMore { display: none; } .boardWrap.scrolled::before { display: none; } }
   button.bill { position: relative; display: block; width: 100%; text-align: left; font-family: var(--f-body); font-size: 14px; letter-spacing: 0; line-height: 1.25; color: var(--ink);
     background: linear-gradient(170deg, rgba(255, 255, 255, .35), transparent 40%), var(--paper); border: none; border-radius: 1px 2px 1px 3px; padding: 9px 10px 7px 11px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .25), 0 5px 9px -3px rgba(0, 0, 0, .45); rotate: -.7deg; transition: opacity .5s, background-color .5s, translate .15s, box-shadow .15s; }
@@ -500,7 +512,7 @@
 
       <section class="label" id="projBox" hidden><div class="in">
         <h2>To-do list</h2>
-        <div class="bills" id="projects"></div>
+        <div class="boardWrap" id="boardWrap"><div class="bills" id="projects"></div><div class="boardMore" id="boardMore" hidden aria-hidden="true"></div></div>
       </div></section>
     </div>
 
@@ -1324,6 +1336,19 @@
       } },
   ];
   const projEls = {};
+  // Hvor mange lapper som er skjult under kanten på tavla. Regnes ut når lista endrer seg og når man ruller.
+  let boardKey = '';
+  const boardCheck = (force) => {
+    const el = $('projects'), more = $('boardMore'), wrap = $('boardWrap');
+    if (!el || !el.children || el.clientHeight === undefined || !el.clientHeight) return;
+    const key = el.children.length + '|' + el.clientHeight + '|' + el.scrollHeight + '|' + Math.round(el.scrollTop);
+    if (!force && key === boardKey) return;
+    boardKey = key;
+    const limit = el.scrollTop + el.clientHeight - 6; let hidden = 0;
+    for (const c of el.children) if (c.offsetTop + 8 > limit) hidden++;
+    if (more) { more.hidden = hidden === 0; more.textContent = hidden ? `▾ ${hidden} more ${hidden === 1 ? 'note' : 'notes'} below` : ''; }
+    if (wrap && wrap.classList) wrap.classList.toggle('scrolled', el.scrollTop > 4);
+  };
   // Prosjektene fra fase 1 skjules i fase 2 (Kenneths ønske), bortsett fra dem fase 2 trenger: Shed Skin åpner Living Glass,
   // krystallkula gir mana, og Liar's Table gir Arcane Tokens. Prosjekter som koster gull, skjules uansett, for gullet er borte.
   const P2_START = PROJECTS.findIndex(p => p.id === 'tubule');
@@ -1555,6 +1580,8 @@
   $('btnTutorial').onclick = () => { if (!S.flags.farm) { S.guide.off = 0; S.guide.recall = 1; } openTutorial(); update(); };
   $('btnTutClose').onclick = closeTutorial;
   $('btnMentorOff').onclick = () => { S.guide.off = 1; S.guide.recall = 0; update(); };
+  if ($('projects').addEventListener) $('projects').addEventListener('scroll', () => boardCheck(true), { passive: true });
+  if (window.addEventListener) window.addEventListener('resize', () => boardCheck(true));
   const mqPhone = window.matchMedia && window.matchMedia('(max-width: 640px)');
   const placeMentor = () => { const to = $(mqPhone && mqPhone.matches ? 'colShop' : 'colProp'); if (to.prepend && $('mentorBox').parentNode !== to) to.prepend($('mentorBox')); };
   placeMentor(); if (mqPhone && mqPhone.addEventListener) mqPhone.addEventListener('change', placeMentor);
@@ -1764,12 +1791,14 @@
     $('boyBox').hidden = p2 || !S.flags.boy; $('tractorBox').hidden = p2 || !S.flags.tractor;
     $('farmerBox').hidden = !S.flags.comp; $('projBox').hidden = !S.flags.comp;
 
+    boardCheck();
     for (const p of PROJECTS) {
       if (S.flags.farm && (p.cost.kr || phase1Only(p))) { if (projEls[p.id]) { projEls[p.id].remove(); delete projEls[p.id]; } continue; }
       if (!done(p.id) && !projEls[p.id] && p.show()) renderProject(p);
       if (p.repeat && projEls[p.id] && !p.show()) { projEls[p.id].remove(); delete projEls[p.id]; }
       if (projEls[p.id]) projEls[p.id].disabled = !canPay(p.cost);
     }
+    boardCheck();
   }
 
   // ---------- FASE 2: The Elemental Awakening ----------
