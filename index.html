@@ -140,6 +140,7 @@
     box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--blood); }
   button.table.live:hover:not(:disabled) { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .3), transparent 45%), var(--paper); }
   button.table.live:active { transform: scale(.97); }
+  button.table.ready { color: var(--blood); border-color: var(--brass); font-size: 40px; }
   .orb.target .ball, .orb.target .stand { stroke: var(--brass); stroke-width: 1.8; }
   .orb .ball { fill: var(--blood); fill-opacity: 0; stroke: var(--ink); stroke-width: 1.2; }
   .orb .stand, .orb .glow { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; }
@@ -782,14 +783,17 @@
   const seanceCost = () => S.flags.farm ? Math.max(1e6, Math.round(30 * S.bottleRate)) : Math.max(100, Math.round(30 * (S.avgRev || 0)));
   const seanceMoney = () => S.flags.farm ? S.unused : S.funds;
   const seanceMult = () => done('ecto') ? 4 : done('trumpet') ? 3 : done('ouija') ? 2 : 1;
-  let seanceUntil = 0, knocks = 0, seanceNote = '';
-  const seanceLive = () => performance.now() < seanceUntil;
+  // Nedtelling 3, 2, 1 før man kan banke (Kenneths ønske), så man rekker å legge fingeren klar. Bank under nedtellingen teller ikke
+  const SEANCE_READY = 3000;
+  let seanceUntil = 0, seanceStart = 0, knocks = 0, seanceNote = '';
+  const seanceLive = () => { const t = performance.now(); return t >= seanceStart && t < seanceUntil; };
+  const seanceWaiting = () => !!seanceUntil && performance.now() < seanceStart;
   const beginSeance = () => {
     if (seanceUntil) return;
     const cost = seanceCost();
     if (seanceMoney() < cost) { seanceNote = S.flags.farm ? 'Not enough potions.' : 'Not enough gold.'; return; }
     if (S.flags.farm) S.unused -= cost; else S.funds = Math.round((S.funds - cost) * 100) / 100;
-    knocks = 0; seanceUntil = performance.now() + SEANCE_MS;
+    knocks = 0; seanceStart = performance.now() + SEANCE_READY; seanceUntil = seanceStart + SEANCE_MS;
   };
   const knock = () => { if (seanceLive() && knocks < SEANCE_MAX) knocks++; };
   const endSeance = () => {
@@ -799,11 +803,11 @@
     seanceUntil = 0;
   };
   const drawSeance = () => {
-    if (seanceUntil && !seanceLive()) endSeance();
-    const live = seanceLive(), t = $('seanceTable');
-    t.classList.toggle('live', live);
-    t.textContent = seanceUntil || knocks ? knocks : '·';
-    $('seanceNote').textContent = live ? `Knock! ${((seanceUntil - performance.now()) / 1000).toFixed(1)} s left`
+    if (seanceUntil && performance.now() >= seanceUntil) endSeance();
+    const live = seanceLive(), wait = seanceWaiting(), t = $('seanceTable');
+    t.classList.toggle('live', live); t.classList.toggle('ready', wait);
+    t.textContent = wait ? Math.ceil((seanceStart - performance.now()) / 1000) : seanceUntil || knocks ? knocks : '·';
+    $('seanceNote').textContent = wait ? 'Get ready. The spirits are gathering…' : live ? `Knock! ${((seanceUntil - performance.now()) / 1000).toFixed(1)} s left`
       : (seanceNote ? seanceNote + ' · ' : '') + `Next séance: ${S.flags.farm ? big(seanceCost()) + ' potions' : num(seanceCost()) + ' gold'}${seanceMult() > 1 ? ` · ×${seanceMult()}` : ''}`;
     $('btnSeance').disabled = !!seanceUntil || seanceMoney() < seanceCost();
   };
