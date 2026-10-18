@@ -522,7 +522,7 @@
         <div class="row"><span class="k">Total</span><span class="v"><span id="portTotal">0</span> gold</span></div>
         <div class="sub" id="ledger"></div>
         <div class="table-wrap"><table class="stocks"><thead><tr><th>Remedy</th><th>Qty</th><th>Price</th><th>Value</th><th>+/−</th></tr></thead><tbody id="stockRows"></tbody></table></div>
-        <div class="act" data-tip="Each upgrade raises the chance that a share goes up by one percentage point."><button id="btnInvestUp" type="button">Upgrade Exchange</button><span class="sub">Level <span id="investLevel">0</span> · <span id="investCost">0</span> Arcane Tokens</span></div>
+        <div class="act" data-tip="Each broker you hire raises the chance that a share goes up by one percentage point. Each one costs more than the last."><button id="btnInvestUp" type="button">Hire a Broker</button><span class="sub"><span id="investLevel">0</span> brokers · <span id="investCost">0</span> Arcane Tokens</span></div>
       </div></section>
 
       <section class="label" id="raceBox" hidden><div class="in">
@@ -1338,7 +1338,7 @@
     if (S.coin < S.investCost) return;
     S.coin -= S.investCost; S.investLevel++; S.gainChance += .01;
     S.investCost = Math.floor(Math.pow(S.investLevel + 1, Math.E) * 100);
-    say(`The exchange is upgraded. Chance of gain is now ${Math.round(S.gainChance * 100)}%.`); update();
+    say(`A new broker joins your desk. Chance of gain is now ${Math.round(S.gainChance * 100)}%.`); update();
   };
   // Hjelpetekster: hold musa over (eller tab til) noe med data-tip, så står forklaringen fast nederst i avisa
   // (Apothecary's Notes). Den følger ikke musa, så den aldri dekker spillet.
