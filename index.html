@@ -86,6 +86,31 @@
   .label { border: 2px solid var(--rule); padding: 4px; background: var(--paper); }
   .label > .in { border: 1px solid var(--rule); padding: 6px 12px 10px; }
   .label h2 { font-family: var(--f-head); font-weight: 400; font-size: 22px; text-align: center; margin: 0 0 4px; letter-spacing: .04em; font-size: 19px; }
+  /* Alkymisten (Kenneths ønske): en liten pixelert figur som er spilleren selv. Han hjelper i gang i starten, og kledd
+     etter tittelen står han som portrett i The Alchemist. Bare animasjon i stor størrelse, og ikke med redusert bevegelse */
+  .mentor .in { display: flex; gap: 6px; align-items: flex-end; padding-right: 10px; }
+  .mentor .scene { display: flex; align-items: flex-end; flex: none; }
+  .mentor .who { width: 80px; } .mentor .pot { width: 66px; margin-left: -4px; }
+  .mentor svg, .portrait svg { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+  .bubble { position: relative; flex: 1; min-width: 0; margin: 0 0 10px 8px; padding: 7px 10px 5px; background: #eee6cf; color: #24190f; border: 2px solid #24190f; border-radius: 7px; font-size: 14.5px; line-height: 1.3; box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+  .bubble::before { content: ""; position: absolute; left: -11px; bottom: 12px; border: 6px solid transparent; border-right: 9px solid #24190f; border-left: 0; }
+  .bubble::after { content: ""; position: absolute; left: -7px; bottom: 14px; border: 4px solid transparent; border-right: 6px solid #eee6cf; border-left: 0; }
+  .bubble p { margin: 0 0 3px; }
+  .bubble button.link { display: block; margin-left: auto; color: #5e4a33; }
+  .bubble button.link:hover:not(:disabled) { color: #8a241c; }
+  .portrait { position: absolute; top: -2px; right: 8px; width: 38px; }
+  #farmerBox .in { position: relative; }
+  .fig .bobber { animation: bob 1.4s steps(1) infinite; }
+  .fig .eye { animation: blink 5s steps(1) infinite; }
+  .cauldron .fire { animation: flick .6s steps(1) infinite; }
+  .cauldron .bub { animation: rise 1.8s linear infinite; }
+  .cauldron .b2 { animation-delay: .6s; } .cauldron .b3 { animation-delay: 1.2s; }
+  .portrait .fig .bobber, .portrait .fig .eye { animation: none; }
+  @keyframes bob { 0%, 55% { transform: translateY(0); } 56%, 100% { transform: translateY(.6px); } }
+  @keyframes blink { 0%, 94% { opacity: 1; } 95%, 100% { opacity: 0; } }
+  @keyframes flick { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  @keyframes rise { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-2px); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .fig .bobber, .fig .eye, .cauldron .fire, .cauldron .bub { animation: none; } }
   .rank { text-align: center; font-style: italic; color: var(--ink-2); font-size: 14.5px; margin: -2px 0 6px; }
   .label h2::before, .label h2::after { content: "\2766"; color: var(--brass); font-size: 15px; margin: 0 .5em; vertical-align: 2px; }
   .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 2px 0; border-bottom: 1px dotted var(--ink-2); }
@@ -303,6 +328,7 @@
     .gazette .masthead { grid-template-columns: 52px minmax(0, 1fr) 52px; }
     .gazette .date { margin: 4px 0 6px; }
     #log { height: 238px; }
+    .mentor .who { width: 68px; } .mentor .pot { width: 56px; }
     #log .lead h3 { font-size: 18px; }
     .guide { height: 112px; margin-top: 6px; }
   }
@@ -437,7 +463,12 @@
     </div>
 
     <div class="col" id="colProp">
+      <section class="label mentor" id="mentorBox" hidden aria-label="The alchemist"><div class="in">
+        <div class="scene" aria-hidden="true"><div class="who" id="mentorWho"></div><div class="pot" id="mentorPot"></div></div>
+        <div class="bubble"><p id="mentorSay"></p><button id="btnMentorOff" class="link" type="button">Thank you, that will do</button></div>
+      </div></section>
       <section class="label" id="farmerBox" hidden><div class="in">
+        <div class="portrait" id="portrait" aria-hidden="true"></div>
         <h2>The Alchemist</h2>
         <div class="rank" id="rankTitle" data-tip="Your title. It rises with the most Mastery points you have ever had, so spending them never costs you your title.">Travelling Peddler</div>
         <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
@@ -603,7 +634,9 @@
     // Fortellende hendelser: når hver ble utløst, siste avisnotis, ryktene etter Unexpected Results og tørken etter Order of the Serpent
     story: {}, storyDay: 0, surgeDay: null, rainDay: 0, droughtDay: 0,
     // tittelen til The Alchemist følger det høyeste antallet Mastery points man har hatt
-    peakLevel: 0, rankTitle: '',
+    peakLevel: 0, rankTitle: '', rankIdx: 0,
+    // Alkymisten som hjelper i gang: hvilket trinn man er på, om man har sendt ham bort, og om Tutorial har kalt ham tilbake
+    guide: { step: 0, off: 0, recall: 0 },
     // Fase 2: samme tall som Paperclips (matter, droner, fabrikker, strøm og svermen), med våre navn
     unused: 0, matter: 6e27, rawMagic: 0, diviners: 0, distillers: 0, works: 0, worksCost: 1e8,
     divRate: 26180337, disRate: 16180339, worksRate: 1e9, worksBoost: 1, droneBoost: 1,
@@ -764,9 +797,105 @@
     [100, () => order() ? 'Keeper of the Serpent' : 'Archmagus', () => order() ? 'KEEPER OF THE SERPENT: The Order kneels when the alchemist passes. The alchemist has stopped asking why.'
       : 'ARCHMAGUS: The alchemist’s shadow now arrives a moment before the alchemist.'],
   ];
+  // ---------- Alkymisten: pixelert figur, hjelp i gang og portrett ----------
+  // Pixelerte figurer til Alkymisten (16 × 22) og kjelen (14 × 12). Brukes både i spillet og i testarket.
+  const W = 16;
+  const B = (pad, inner) => '.'.repeat(pad) + 'k' + inner + 'k' + '.'.repeat(pad);
+  const SPR_HATS = [
+    // 0 flat lue
+    ['................', '................', '................', '................', '.....kkkkkk.....', '....khhhhhhk....', '....kHHHHHHHHk..'],
+    // 1 flosshatt
+    ['................', '......kkkk......', '.....khhhhk.....', '.....khhhhk.....', '.....kHHHHk.....', '....kkhhhhkk....', '...kkkkkkkkkk...'],
+    // 2 apotekerlue
+    ['................', '................', '................', '................', '......kkkk......', '.....kwwwwk.....', '.....kwwwwk.....'],
+    // 3 spiss lue
+    ['................', '.......kk.......', '......khhk......', '.....khhhhk.....', '....khhhhhhk....', '....kHHHHHHk....', '....kkkkkkkk....'],
+    // 4 flosshatt med gullbånd
+    ['................', '......kkkk......', '.....khhhhk.....', '.....khhhhk.....', '.....kHHHHk.....', '....kkhhhhkk....', '...kkkkkkkkkk...'],
+    // 5 trollmannshatt
+    ['.......kk.......', '......khhk......', '.....khhhhk.....', '.....khHhhk.....', '....khhhhhhk....', '...khhhhhhhhk...', '..kkkkkkkkkkkk..'],
+    // 6 samme hatt
+    ['.......kk.......', '......khhk......', '.....khhhhk.....', '.....khHhhk.....', '....khhhhhhk....', '...khhhhhhhhk...', '..kkkkkkkkkkkk..'],
+    // 7 hette
+    ['................', '......kkkk......', '.....khhhhk.....', '....khhhhhhk....', '...khhhhhhhhk...', '...khhhhhhhhk...', '...khHHHHHHhk...'],
+  ];
+  const SPR_HEAD = ['....kssssssk....', '....ksessesk....', '....kssssssk....', '....kbbbbbbk....', '.....kbbbbk.....'];
+  const SPR_BODY = [B(3, 'CccccccC'), B(3, 'cccCCccc'), B(3, 'cccCCccc'), B(3, 'aaaaaaaa'), B(3, 'cccCCccc'), B(2, 'ccccCCcccc'), B(2, 'CcccCCcccC'),
+    '..' + 'k'.repeat(12) + '..', '....ttt..ttt....', '....kkk..kkk....'];
+  const SPR_POT = ['..............', '..............', '..kkkkkkkkkk..', '.kppppppppppk.', 'kDDDDddddddddk', 'kDdddddddddddk', 'kddddddddddddk', '.kddddddddddk.', '..kkddddddkk..', '..kk......kk..', '....ffyyff....', '.....fyyf.....'];
+  const POT_PAL = { k: '#241a12', d: '#4a4a52', D: '#6e6e7a', p: '#b79ce0', f: '#e8742c', y: '#f4c84a' };
+  const PX = { k: '#241a12', s: '#e6b88a', e: '#241a12', b: '#d8d2c2', w: '#f2ecd9', a: '#c9a55e', p: '#b79ce0', g: '#6fd08c', t: '#5a3d24' };
+
+  const looks = (i, order) => [
+    { h: '#7a5a3a', H: '#4a3220', c: '#8b6a45', C: '#5e4630' },
+    { h: '#2a2a2e', H: '#a9382c', c: '#6b3d2a', C: '#4a2a1c' },
+    { h: '#f2ecd9', H: '#d9d2c2', c: '#3d4a5c', C: '#2b3644' },
+    { h: '#3b5f8a', H: '#c9a55e', c: '#3b5f8a', C: '#2a4466' },
+    { h: '#2a2a2e', H: '#c9a55e', c: '#7a2a4a', C: '#5a1c36' },
+    { h: '#5b3a8f', H: '#c9a55e', c: '#5b3a8f', C: '#3e2663' },
+    order ? { h: '#2f7a5a', H: '#c9a55e', c: '#2f7a5a', C: '#1f5440' } : { h: '#7a4aa8', H: '#c9a55e', c: '#7a4aa8', C: '#54307a' },
+    order ? { h: '#1f3a30', H: '#2f6a50', c: '#1f3a30', C: '#13261f' } : { h: '#2a1c40', H: '#c9a55e', c: '#2a1c40', C: '#1a1128' },
+  ][i];
+
+  const buildSprite = (i, order) => {
+    const m = [...SPR_HATS[i], ...SPR_HEAD, ...SPR_BODY].map(r => r.padEnd(W, '.').slice(0, W).split(''));
+    const set = (x, y, ch) => { if (m[y] && x >= 0 && x < W) m[y][x] = ch; };
+    // flasken i høyre hånd
+    set(14, 11, 'a'); set(14, 12, 'p'); set(13, 13, 'p'); set(14, 13, 'p'); set(15, 13, 'k'); set(13, 14, 'p'); set(14, 14, 'p'); set(15, 14, 'k'); set(13, 12, 'k'); set(15, 12, 'k'); set(14, 15, 'k'); set(13, 15, 'k'); set(12, 14, 's');
+    if (i === 2) for (let y = 13; y <= 19; y++) for (let x = 6; x <= 9; x++) if ('cCa'.includes(m[y][x])) m[y][x] = 'w';
+    if (i === 4) { set(2, 3, 'a'); set(1, 4, 'a'); set(3, 4, 'a'); set(2, 5, 'a'); set(13, 2, 'a'); set(12, 3, 'a'); set(14, 3, 'a'); set(13, 4, 'a'); }
+    if (i === 7 && order) { set(6, 8, 'g'); set(9, 8, 'g'); }
+    return m.map(r => r.join(''));
+  };
+
+  const spriteSvg = (rows, pal, cls) => {
+    const Hh = rows.length, Ww = rows[0].length; let r = '';
+    rows.forEach((row, y) => {
+      let x = 0;
+      while (x < Ww) {
+        const ch = row[x];
+        if (ch === '.') { x++; continue; }
+        let n = 1; while (x + n < Ww && row[x + n] === ch) n++;
+        const col = pal[ch] || PX[ch];
+        if (col) r += `<rect${ch === 'e' ? ' class="eye"' : ch === 'f' || ch === 'y' ? ' class="fire"' : ''} x="${x}" y="${y}" width="${n}" height="1" fill="${col}"/>`;
+        x += n;
+      }
+    });
+    return `<svg viewBox="0 0 ${Ww} ${Hh}" shape-rendering="crispEdges" class="${cls || ''}" aria-hidden="true"><g class="bobber">${r}</g></svg>`;
+  };
+  const figureSvg = (i, order) => spriteSvg(buildSprite(i, order), looks(i, order), 'fig');
+  const potSvg = () => spriteSvg(SPR_POT, POT_PAL, 'cauldron').replace('</g></svg>', '<rect class="bub" x="4" y="2" width="1" height="1" fill="#b79ce0"/><rect class="bub b2" x="9" y="2" width="1" height="1" fill="#b79ce0"/><rect class="bub b3" x="6" y="2" width="1" height="1" fill="#d6c8f0"/></g></svg>');
+  // Guiden følger med på hva man gjør, og sier bare noe til man har gjort det (ingen «trykk Neste»). Spill som alt er
+  // godt i gang, hopper rett til slutten og skjuler ham. Han kalles tilbake med Tutorial i bunnlinjen.
+  const GUIDE = [
+    { say: 'Right, then. Press the seal. Every potion is a coin in disguise.', done: () => S.total >= 1 },
+    { say: 'Splendid. Now somebody has to buy it. Customers come on their own, and the price decides how fast.', done: () => S.funds > 0 || S.total >= 20 },
+    { say: 'Our first coin! Try the arrows by the price: lower sells faster, higher pays more per bottle. Aim to sell about as fast as you brew.', done: () => !!S.flags.boy },
+    { say: 'Someone is looking for work. Hire an apprentice. They brew while you rest, and they work for pennies.', done: () => S.boys >= 1 },
+    { say: 'Keep an eye on the barrels, and buy water before they run dry. Advertise, if you want a bigger crowd.', done: () => S.total >= 1000 },
+    { say: 'That is the whole trade. The rest you will find out. Do read the paper. It knows more than it lets on.', done: () => S.total >= 2500 || !!S.flags.comp },
+  ];
+  const GUIDE_WATER = 'The barrels are nearly empty. Buy water, or the brewing stops.';
+  const GUIDE_RECALL = 'Need a hand? Brew potions, sell them, keep the barrels full and hire some help. The paper knows the rest.';
+  const guideNow = () => {
+    const g = S.guide;
+    if (g.off || S.flags.farm) return null;
+    while (g.step < GUIDE.length && GUIDE[g.step].done()) g.step++;
+    if (g.step >= GUIDE.length) { if (g.recall) return { text: GUIDE_RECALL }; g.off = 1; return null; }
+    if (g.step >= 1 && !S.flags.dry && !S.flags.autoWater && S.water < 100) return { text: GUIDE_WATER };
+    return { text: GUIDE[g.step].say };
+  };
+  let mentorKey = '', mentorText = '';
+  const drawMentor = () => {
+    const key = `${S.rankIdx || 0}${order() ? 1 : 0}`;
+    if (key !== mentorKey) { mentorKey = key; const f = figureSvg(S.rankIdx || 0, order()); $('mentorWho').innerHTML = f; $('portrait').innerHTML = f; $('mentorPot').innerHTML = potSvg(); }
+    const gm = guideNow();
+    $('mentorBox').hidden = !gm;
+    if (gm && gm.text !== mentorText) { mentorText = gm.text; $('mentorSay').textContent = gm.text; }
+  };
   const checkRank = () => {
     if (S.level > S.peakLevel) S.peakLevel = S.level;
-    let r = RANKS[0]; for (const x of RANKS) if (S.peakLevel >= x[0]) r = x;
+    let r = RANKS[0], ri = 0; RANKS.forEach((x, i) => { if (S.peakLevel >= x[0]) { r = x; ri = i; } }); S.rankIdx = ri;
     const title = r[1]();
     if (title === S.rankTitle) return;
     const first = !S.rankTitle; S.rankTitle = title;
@@ -1416,7 +1545,12 @@
   $('btnExtra').onclick = foldPaper;
   const openTutorial = () => { $('tutorial').hidden = false; if ($('btnTutClose').focus) $('btnTutClose').focus(); };
   const closeTutorial = () => { $('tutorial').hidden = true; if ($('btnTutorial').focus) $('btnTutorial').focus(); };
-  $('btnTutorial').onclick = openTutorial; $('btnTutClose').onclick = closeTutorial;
+  $('btnTutorial').onclick = () => { if (!S.flags.farm) { S.guide.off = 0; S.guide.recall = 1; } openTutorial(); update(); };
+  $('btnTutClose').onclick = closeTutorial;
+  $('btnMentorOff').onclick = () => { S.guide.off = 1; S.guide.recall = 0; update(); };
+  const mqPhone = window.matchMedia && window.matchMedia('(max-width: 640px)');
+  const placeMentor = () => { const to = $(mqPhone && mqPhone.matches ? 'colShop' : 'colProp'); if (to.prepend && $('mentorBox').parentNode !== to) to.prepend($('mentorBox')); };
+  placeMentor(); if (mqPhone && mqPhone.addEventListener) mqPhone.addEventListener('change', placeMentor);
   $('tutorial').onclick = e => { if (e.target === $('tutorial')) closeTutorial(); };
   $('btnDiv').onclick = () => { buyN('diviners', 1); update(); };
   $('btnDis').onclick = () => { buyN('distillers', 1); update(); };
@@ -1501,6 +1635,7 @@
     $('waterGauge').style.width = (S.waterPeak > 0 ? S.water / S.waterPeak * 100 : 0).toFixed(1) + '%';
     $('day').textContent = num(S.t / 10 + 1);
     $('rankTitle').textContent = S.rankTitle || 'Travelling Peddler';
+    drawMentor();
     if (helpIdle && today() - adDay >= 20) { adDay = today(); adIdx++; drawAd(); }
     $('weather').textContent = S.flags.dry ? 'Wells dry' : S.rainLeft > 0 ? 'Rain' : S.flags.drought && S.story.dry1 === true ? `Dry ${num(dryDays())} days` : 'Fair';
     $('paperPrice').textContent = S.flags.farm ? 'One potion' : 'One penny';
