@@ -282,12 +282,21 @@
   .good .gbtn button { padding: 0 6px 1px; font-size: 13px; min-width: 0; }
   .good .gbtn .gap { width: 6px; }
   .good.locked { opacity: .45; }
-  table.payoff { border-collapse: collapse; font-size: 14px; margin-top: 8px; }
-  table.payoff th { font-family: var(--f-head); font-weight: 400; padding: 1px 8px; text-align: center; white-space: nowrap; }
+  /* Tabellen og boksen skal ikke skifte størrelse fra hånd til hånd: faste kolonner, navn som brytes eller kortes, og plass satt av til resultatene */
+  table.payoff { border-collapse: collapse; font-size: 14px; margin-top: 8px; table-layout: fixed; width: 100%; max-width: 320px; }
+  table.payoff th { font-family: var(--f-head); font-weight: 400; padding: 1px 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  table.payoff thead tr:first-child th:nth-child(1) { width: 34%; }
+  table.payoff thead tr:first-child th:nth-child(2) { width: 14%; }
+  table.payoff thead th { height: 22px; }
+  table.payoff tbody th.who { white-space: normal; line-height: 1.15; }
   table.payoff th.who { color: var(--blood); }
-  table.payoff td { border: 1px solid var(--ink); padding: 2px 12px; text-align: center; min-width: 48px; }
+  table.payoff td { border: 1px solid var(--ink); padding: 2px 4px; text-align: center; height: 24px; }
   table.payoff td.hit { background: var(--blood); color: var(--on-blood); }
-  .race-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; font-size: 14px; margin-top: 6px; }
+  #raceStatus { min-height: 4.2em; line-height: 1.4; }
+  .race-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 0 8px; font-size: 13px; line-height: 1.4; margin-top: 6px; }
+  .race-results span { display: flex; justify-content: space-between; gap: 6px; min-width: 0; }
+  .race-results span i { font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .race-results span b { font-weight: inherit; flex: none; }
   .race-results .mine { font-weight: 600; color: var(--blood); }
 
   .brewtop { display: flex; align-items: center; gap: 12px; }
@@ -1921,7 +1930,8 @@
       drawHit();
       $('raceH').textContent = R.inProg ? horseName(R.h) : 'Liar'; $('raceV').textContent = R.inProg ? horseName(R.v) : 'Opponent';
       $('raceStatus').textContent = R.inProg ? `Hand ${R.round + 1} of ${R.rounds}` : R.ready ? 'Pick a liar and press Play.' : S.lastRace || 'Deal a new hand to see the table.';
-      $('raceResults').innerHTML = !R.inProg && !R.ready && S.raceResults ? S.raceResults.map((x, k) => `<span${x.i === S.pick ? ' class="mine"' : ''}>${k + 1}. ${horseName(x.i)}: ${num(x.score)}</span>`).join('') : '';
+      $('raceResults').innerHTML = !R.inProg && !R.ready && S.raceResults ? S.raceResults.map((x, k) => `<span${x.i === S.pick ? ' class="mine"' : ''} title="${horseName(x.i)}"><i>${k + 1}. ${horseName(x.i)}</i><b>${num(x.score)}</b></span>`).join('') : '';
+      $('raceResults').style.minHeight = (Math.ceil(S.horses.length / 2) * 1.4) + 'em';
       $('coin').textContent = num(S.coin); $('raceCost').textContent = num(S.raceCost);
       $('btnRun').disabled = !R.ready || R.inProg;
       $('btnNewRace').disabled = R.inProg || R.ready || S.energy + S.extraEnergy < S.raceCost;
