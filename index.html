@@ -437,6 +437,19 @@
         <div class="act" id="tractorBox" hidden data-tip="Each cauldron walker brews 500 potions per day, more with upgrades."><button id="btnTractor" type="button">Summon Walker</button><span class="sub"><span id="tractors">0</span> walkers · <span id="tractorCost">0</span> gold</span></div>
       </div></section>
 
+      <section class="label" id="farmerBox" hidden><div class="in">
+        <h2>The Alchemist</h2>
+        <div class="rank" id="rankTitle" data-tip="Your title. It rises with the most Mastery points you have ever had, so spending them never costs you your title.">Travelling Peddler</div>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one Mastery point each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
+        <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
+        <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
+        <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Intellect to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
+        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most tasks on the to-do list. It refills by itself as fast as your Spirit allows, up to what your Intellect can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
+          <div class="gauge vial"><i id="manaGauge"></i></div></div>
+        <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some tasks on the to-do list cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
+      </div></section>
+
       <section class="label" id="earthBox" hidden><div class="in">
         <h2>The Earth</h2>
         <div class="row"><span class="k" data-tip="All the magic still sleeping in the ground. When it reaches zero, there is nothing left to tap." tabindex="0">Magic left in the Earth</span><span class="v" id="matter">0</span></div>
@@ -469,19 +482,6 @@
         <div class="scene" aria-hidden="true"><div class="who" id="mentorWho"></div><div class="pot" id="mentorPot"></div></div>
         <div class="bubble"><p id="mentorSay"></p><button id="btnMentorOff" class="link" type="button">Thank you, that will do</button></div>
       </div></section>
-      <section class="label" id="farmerBox" hidden><div class="in">
-        <h2>The Alchemist</h2>
-        <div class="rank" id="rankTitle" data-tip="Your title. It rises with the most Mastery points you have ever had, so spending them never costs you your title.">Travelling Peddler</div>
-        <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
-        <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one Mastery point each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
-        <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
-        <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
-        <div class="act" id="respecBox" hidden data-tip="Resets Spirit and Intellect to 1, so you can assign all your points again. Mana above the new limit fades within seconds."><button id="btnRespec" type="button">Reassign Points</button><span class="sub">5,000 Arcane Tokens</span></div>
-        <div class="row stack" style="margin-top: 6px"><div class="line"><span class="k" data-tip="Pays for most tasks on the to-do list. It refills by itself as fast as your Spirit allows, up to what your Intellect can hold." tabindex="0">Mana</span><span class="v"><span id="energy">0</span> / <span id="energyMax">0</span></span></div>
-          <div class="gauge vial"><i id="manaGauge"></i></div></div>
-        <div class="row" id="dreamBox" hidden><span class="k" data-tip="Grows by itself whenever your mana is full. More Spirit makes it grow faster. Some tasks on the to-do list cost inspiration." tabindex="0">Inspiration</span><span class="v" id="dreams">0</span></div>
-      </div></section>
-
       <section class="label" id="coffeeBox" hidden><div class="in">
         <h2>Crystal Ball</h2>
         <div data-tip="Gaze when the light reaches one of the two marked orbs. The orb beside them gives half, and a miss costs mana. Hits speed the light up, misses slow it down. Ten perfect gazes in a row freeze it for five seconds.">
