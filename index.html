@@ -888,10 +888,19 @@
   ];
   const GUIDE_WATER = 'The barrels are nearly empty. Buy water, or the brewing stops.';
   const GUIDE_RECALL = 'Need a hand? Brew potions, sell them, keep the barrels full and hire some help. The paper knows the rest.';
+  // Hver melding står i minst åtte sekunder, så den kan leses selv om neste steg alt er gjort (kundene kjøper nesten med en gang).
+  // Trinn som aldri har vært vist, hoppes over med en gang, så et spill som er godt i gang, ikke får en rekke gamle råd.
+  const GUIDE_MIN_MS = 8000;
+  let guideHeld = -1, guideSince = 0;
   const guideNow = () => {
     const g = S.guide;
     if (g.off || S.flags.farm) return null;
-    while (g.step < GUIDE.length && GUIDE[g.step].done()) g.step++;
+    const t = performance.now();
+    while (g.step < GUIDE.length && GUIDE[g.step].done()) {
+      if (guideHeld === g.step && t - guideSince < GUIDE_MIN_MS) break;
+      g.step++;
+    }
+    if (guideHeld !== g.step) { guideHeld = g.step; guideSince = t; }
     if (g.step >= GUIDE.length) { if (g.recall) return { text: GUIDE_RECALL }; g.off = 1; return null; }
     if (g.step >= 1 && !S.flags.dry && !S.flags.autoWater && S.water < 100) return { text: GUIDE_WATER };
     return { text: GUIDE[g.step].say };
