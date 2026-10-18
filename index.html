@@ -322,8 +322,13 @@
   .toil input { flex: 1; min-width: 0; accent-color: var(--blood); }
   .crack.wide svg { transform: scaleY(2.4); transform-origin: center; }
   .k[data-tip] { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
-  .guide { border: 1px solid var(--rule); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--rule); margin-top: 8px; padding: 6px 10px 7px; height: 132px; overflow: hidden; }
+  .guide { border: 1px solid var(--rule); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3px var(--rule); margin-top: 8px; padding: 6px 10px 7px; height: 150px; overflow: hidden; }
   .guide .gh { font-family: var(--f-head); font-size: 13px; letter-spacing: .08em; text-align: center; border-bottom: 1px solid var(--rule); padding-bottom: 2px; margin-bottom: 4px; }
+  /* Alkymisten står ved teksten i Apothecary's Notes (Kenneths ønske): det er han som gir hjelpetekstene */
+  .guide .gbody { display: flex; gap: 8px; align-items: flex-start; }
+  .guide .gwho { flex: none; width: 40px; margin-top: 2px; }
+  .guide .gwho img { display: block; width: 40px; height: auto; image-rendering: pixelated; }
+  .guide .gtext { flex: 1; min-width: 0; }
   .guide p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.3; }
   .guide .ad b { font-family: var(--f-head); font-weight: 400; letter-spacing: .06em; }
   .guide .hint { font-style: italic; color: var(--ink-2); font-size: 12.5px; margin-top: 5px; }
@@ -335,7 +340,7 @@
     #log { height: 238px; }
     .mentor .pot { display: none; }
     #log .lead h3 { font-size: 18px; }
-    .guide { height: 112px; margin-top: 6px; }
+    .guide { height: 132px; margin-top: 6px; }
   }
 
   .testbar { margin-top: 24px; border: 1px dashed var(--ink-2); padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -477,7 +482,7 @@
         <div class="chat" id="portraitSay" hidden></div>
         <h2>The Alchemist</h2>
         <div class="rank" id="rankTitle" data-tip="Your title. It rises with the most Mastery points you have ever had, so spending them never costs you your title.">Travelling Peddler</div>
-        <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
+        <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
         <div class="row" id="nextLevelRow"><span class="k" id="nextLevel" data-tip="You gain one Mastery point each time you reach a production target. The targets grow quickly." tabindex="0"></span></div>
         <div class="act"><span data-tip="Spirit decides how fast your mana refills: 10 mana per day for each point. It also makes inspiration grow faster."><button id="btnSpirit" type="button">Spirit</button> <span id="spirit">0</span></span><span data-tip="Intellect decides how much mana you can hold: 1,000 mana for each point."><button id="btnStamina" type="button">Intellect</button> <span id="stamina">0</span></span></div>
         <div class="row" id="giftRowP" hidden><span class="k" data-tip="Gifts from the Order's prayers. Each gift is a point for Spirit or Intellect." tabindex="0">Gifts to assign</span><span class="v" id="giftsP">0</span></div>
@@ -497,7 +502,7 @@
 
       <section class="label" id="seanceBox" hidden><div class="in">
         <h2>The Séance</h2>
-        <div data-tip="After a short countdown, knock on the table as many times as you can in ten seconds. Only knocks inside the circle count, up to 150. Each knock brings inspiration, multiplied by your séance props.">
+        <div data-tip="After a short countdown, knock on the table as fast as you can for ten seconds. Only knocks inside the circle count, up to 150. Each one brings inspiration, multiplied by your props.">
           <div class="seance"><div class="ouija"><svg class="ouija-art" viewBox="0 0 300 200" aria-hidden="true"><rect class="ob" x="1.5" y="1.5" width="297" height="197" rx="16"/><rect class="oi" x="6" y="6" width="288" height="188" rx="12"/><g class="sun"><circle cx="32" cy="38" r="4.5"/><line x1="39.0" y1="38.0" x2="42.0" y2="38.0"/><line x1="36.9" y1="42.9" x2="39.1" y2="45.1"/><line x1="32.0" y1="45.0" x2="32.0" y2="48.0"/><line x1="27.1" y1="42.9" x2="24.9" y2="45.1"/><line x1="25.0" y1="38.0" x2="22.0" y2="38.0"/><line x1="27.1" y1="33.1" x2="24.9" y2="30.9"/><line x1="32.0" y1="31.0" x2="32.0" y2="28.0"/><line x1="36.9" y1="33.1" x2="39.1" y2="30.9"/></g><path class="moon" d="M270 33a7 7 0 1 0 0 12a5.5 5.5 0 1 1 0-12z"/><text class="oyn" x="32" y="24">YES</text><text class="oyn" x="268" y="24">NO</text><text class="oa" x="37.2" y="115.5" transform="rotate(287.0 37.2 115.5)">A</text><text class="oa" x="47.0" y="92.5" transform="rotate(299.2 47.0 92.5)">B</text><text class="oa" x="61.4" y="72.1" transform="rotate(311.3 61.4 72.1)">C</text><text class="oa" x="79.8" y="55.1" transform="rotate(323.5 79.8 55.1)">D</text><text class="oa" x="101.4" y="42.5" transform="rotate(335.7 101.4 42.5)">E</text><text class="oa" x="125.1" y="34.7" transform="rotate(347.8 125.1 34.7)">F</text><text class="oa" x="150.0" y="32.0" transform="rotate(360.0 150.0 32.0)">G</text><text class="oa" x="174.9" y="34.7" transform="rotate(372.2 174.9 34.7)">H</text><text class="oa" x="198.6" y="42.5" transform="rotate(384.3 198.6 42.5)">I</text><text class="oa" x="220.2" y="55.1" transform="rotate(396.5 220.2 55.1)">J</text><text class="oa" x="238.6" y="72.1" transform="rotate(408.7 238.6 72.1)">K</text><text class="oa" x="253.0" y="92.5" transform="rotate(420.8 253.0 92.5)">L</text><text class="oa" x="262.8" y="115.5" transform="rotate(433.0 262.8 115.5)">M</text><text class="ob2" x="72.5" y="110.5" transform="rotate(297.0 72.5 110.5)">N</text><text class="ob2" x="81.0" y="97.0" transform="rotate(307.5 81.0 97.0)">O</text><text class="ob2" x="91.8" y="85.3" transform="rotate(318.0 91.8 85.3)">P</text><text class="ob2" x="104.5" y="75.8" transform="rotate(328.5 104.5 75.8)">Q</text><text class="ob2" x="118.8" y="68.8" transform="rotate(339.0 118.8 68.8)">R</text><text class="ob2" x="134.1" y="64.5" transform="rotate(349.5 134.1 64.5)">S</text><text class="ob2" x="150.0" y="63.0" transform="rotate(360.0 150.0 63.0)">T</text><text class="ob2" x="165.9" y="64.5" transform="rotate(370.5 165.9 64.5)">U</text><text class="ob2" x="181.2" y="68.8" transform="rotate(381.0 181.2 68.8)">V</text><text class="ob2" x="195.5" y="75.8" transform="rotate(391.5 195.5 75.8)">W</text><text class="ob2" x="208.2" y="85.3" transform="rotate(402.0 208.2 85.3)">X</text><text class="ob2" x="219.0" y="97.0" transform="rotate(412.5 219.0 97.0)">Y</text><text class="ob2" x="227.5" y="110.5" transform="rotate(423.0 227.5 110.5)">Z</text><text class="on" x="54" y="168">1 2 3 4 5</text><text class="on" x="246" y="168">6 7 8 9 0</text><text class="ogb" x="150" y="187">GOOD BYE</text></svg><button type="button" class="table" id="seanceTable" aria-label="Knock on the table">0</button></div></div>
           <div class="gazerow"><button id="btnSeance" type="button">Begin Séance</button><span class="sub" id="seanceNote"></span></div>
         </div>
@@ -519,7 +524,7 @@
       <div id="log"></div>
       <div class="cont" aria-hidden="true">Continued on page 2</div>
       <p id="logLive" class="sr-only" aria-live="polite"></p>
-      <div class="guide"><div class="gh">Apothecary’s Notes</div><p id="helpText" aria-live="polite" hidden></p><p id="helpAd" class="ad"></p><p id="helpHint" class="hint">Point at a dotted word, or at a button, for the apothecary’s notes.</p></div>
+      <div class="guide"><div class="gh">Apothecary’s Notes</div><div class="gbody"><div class="gwho" id="guideWho" aria-hidden="true"></div><div class="gtext"><p id="helpText" aria-live="polite" hidden></p><p id="helpAd" class="ad"></p><p id="helpHint" class="hint">Point at a dotted word, or at a button, for the apothecary’s notes.</p></div></div></div>
     </section>
 
     <div class="col" id="colMarket">
@@ -864,7 +869,7 @@
   let mentorKey = '', mentorText = '';
   const drawMentor = () => {
     const key = `${S.rankIdx || 0}${order() ? 1 : 0}`;
-    if (key !== mentorKey) { mentorKey = key; $('mentorWho').innerHTML = figureImg(S.rankIdx || 0, order(), false); $('portrait').innerHTML = figureImg(S.rankIdx || 0, order(), true); $('mentorPot').innerHTML = potSvg(); }
+    if (key !== mentorKey) { mentorKey = key; $('mentorWho').innerHTML = figureImg(S.rankIdx || 0, order(), false); $('guideWho').innerHTML = figureImg(S.rankIdx || 0, order(), false); $('portrait').innerHTML = figureImg(S.rankIdx || 0, order(), true); $('mentorPot').innerHTML = potSvg(); }
     const gm = guideNow();
     $('mentorBox').hidden = !gm;
     if (gm && gm.text !== mentorText) { mentorText = gm.text; $('mentorSay').textContent = gm.text; }
