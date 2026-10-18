@@ -263,10 +263,23 @@
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   .table-wrap { overflow-x: auto; }
-  table.stocks { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
-  table.stocks th { font-family: var(--f-head); font-weight: 400; text-align: right; border-bottom: 1px solid var(--ink); padding: 1px 4px; white-space: nowrap; }
-  table.stocks td { text-align: right; padding: 2px 4px; border-bottom: 1px dotted var(--ink-2); height: 24px; white-space: nowrap; }
-  table.stocks th:first-child, table.stocks td:first-child { text-align: left; }
+  /* Remedy Exchange 2.0: en rad per vare med kurve, pris og knapper */
+  .goods { margin-top: 8px; border-top: 1px solid var(--ink); }
+  .good { padding: 5px 0 6px; border-bottom: 1px dotted var(--ink-2); }
+  .good .gtop { display: grid; grid-template-columns: minmax(0, 1fr) 92px auto; gap: 8px; align-items: center; }
+  .good .gname { font-family: var(--f-head); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .good .gname i { font-style: normal; margin-left: 4px; font-size: 12px; }
+  .good .up { color: #4f8f5a; } .good .down { color: var(--blood); } .good .flat { color: var(--ink-2); }
+  .good svg.spark { width: 92px; height: 24px; display: block; }
+  .good svg.spark polyline { fill: none; stroke: var(--ink-2); stroke-width: 1.3; vector-effect: non-scaling-stroke; }
+  .good svg.spark circle { fill: var(--brass); }
+  .good .gprice { font-weight: 600; text-align: right; min-width: 54px; }
+  .good .gmid { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+  .good .gown { font-size: 13px; color: var(--ink-2); font-style: italic; }
+  .good .gbtn { display: flex; gap: 3px; align-items: center; font-size: 12px; color: var(--ink-2); }
+  .good .gbtn button { padding: 0 6px 1px; font-size: 13px; min-width: 0; }
+  .good .gbtn .gap { width: 6px; }
+  .good.locked { opacity: .45; }
   table.payoff { border-collapse: collapse; font-size: 14px; margin-top: 8px; }
   table.payoff th { font-family: var(--f-head); font-weight: 400; padding: 1px 8px; text-align: center; white-space: nowrap; }
   table.payoff th.who { color: var(--blood); }
@@ -563,14 +576,14 @@
 
       <section class="label" id="exchangeBox" hidden><div class="in">
         <h2>Remedy Exchange</h2>
-        <div class="act"><span data-tip="Deposit moves all your gold to the exchange. Withdraw brings all of it back."><button id="btnDeposit" type="button">Deposit</button> <button id="btnWithdraw" type="button">Withdraw</button></span>
-          <select id="risk" aria-label="Risk" data-tip="Higher risk means bigger bets and bigger swings."><option value="7">Low risk</option><option value="5">Medium risk</option><option value="1">High risk</option></select></div>
-        <div class="row" style="margin-top: 6px"><span class="k">Cash</span><span class="v" id="bankroll">0</span></div>
-        <div class="row"><span class="k">Shares</span><span class="v" id="secTotal">0</span></div>
+        <div class="act"><span data-tip="Deposit moves all your gold to the exchange. Withdraw brings the cash back to your purse. Cash Out sells every good at once."><button id="btnDeposit" type="button">Deposit</button> <button id="btnWithdraw" type="button">Withdraw</button> <button id="btnCashOut" type="button">Cash Out</button></span></div>
+        <div class="row" style="margin-top: 6px"><span class="k" data-tip="Gold on the exchange, ready to buy goods with." tabindex="0">Cash</span><span class="v" id="bankroll">0</span></div>
+        <div class="row"><span class="k">In goods</span><span class="v" id="secTotal">0</span></div>
         <div class="row"><span class="k">Total</span><span class="v"><span id="portTotal">0</span> gold</span></div>
         <div class="sub" id="ledger"></div>
-        <div class="table-wrap"><table class="stocks"><thead><tr><th>Remedy</th><th>Qty</th><th>Price</th><th>Value</th><th>+/−</th></tr></thead><tbody id="stockRows"></tbody></table></div>
-        <div class="act" data-tip="Each broker you hire raises the chance that a share goes up by one percentage point. Each one costs more than the last."><button id="btnInvestUp" type="button">Hire a Broker</button><span class="sub"><span id="investLevel">0</span> brokers · <span id="investCost">0</span> Arcane Tokens</span></div>
+        <div class="goods" id="goods"></div>
+        <div class="act" id="exUpBox" data-tip=""><button id="btnInvestUp" type="button">Upgrade</button><span class="sub" id="exUpNote"></span></div>
+        <div class="sub" id="exFee"></div>
       </div></section>
 
       <section class="label" id="raceBox" hidden><div class="in">
@@ -642,7 +655,9 @@
     // Gave til bygdelaget: som Token of Goodwill i Paperclips, prisen dobles hver gang
     giftCost: 125000,
     // Potetbørsen: som investeringsmotoren i Paperclips
-    bankroll: 0, stocks: [], stockID: 0, ledger: 0, risk: 7, investLevel: 0, investCost: 100, gainChance: 0.5, sellDelay: 0,
+    // Remedy Exchange 2.0: et marked med åtte varer. ex = markedet (ett sekunds skritt), bankroll = kontanter på børsen,
+    // investLevel = antall oppgraderinger kjøpt (de seks første er trinnene, resten er meglere), gainChance = markedsinnsikt fra megaprosjektene
+    bankroll: 0, stocks: [], stockID: 0, ledger: 0, risk: 7, investLevel: 0, investCost: 100, gainChance: 0.5, sellDelay: 0, ex: null,
     // Travkupongen: som strategimotoren i Paperclips. PotatoCoin tilsvarer yomi
     coin: 0, horses: ['random'], raceCost: 1000, coinBoost: 1, raceGrid: null, raceResults: null, lastRace: '', pick: -1, autoRace: 0, autoRaceOn: 1,
     // regnskapsføreren: faktisk inntekt per sekund de siste 10 sekundene, som RevTracker i Paperclips
@@ -676,6 +691,8 @@
   if (S.orbSpeed > 1.8) S.orbSpeed = 1.8;
   if (S.flags.farm) { S.flags.dry = 1; S.flags.cracked = 1; }
   if (S.flags.farm && !S.flags.p2init) { S.flags.p2init = 1; if (!S.unused) S.unused = S.total; if (S.unused < 1.5e8) S.unused = 1.5e8; S.boys = 0; S.tractors = 0; S.level = 0; S.flags.exchange = 0; S.flags.bars = 0; }
+  // Remedy Exchange 2.0: aksjene fra den gamle børsen selges til gjeldende verdi og legges i kontantene. Oppgraderingene beholdes.
+  if (S.stocks && S.stocks.length) { S.bankroll += S.stocks.reduce((a, st) => a + (st.total || 0), 0); S.stocks = []; }
   // Tarot er byttet med seansen: den som har kjøpt Tarot Deck, får Séance Table
   if (S.done.includes('tarot')) { S.done = S.done.filter(id => id !== 'tarot'); if (!S.done.includes('seance')) S.done.push('seance'); S.flags.seance = 1; delete S.tarotDeal; }
   // Kafé Knollen er fjernet: gjør om virkningen i gamle lagringer
@@ -1083,41 +1100,102 @@
     if (S.orbStreak >= 10) { S.orbStreak = 0; freezeUntil = performance.now() + 5000; freezeGain = 0; gazeNote = ''; }
   };
   // Potetbørsen: samme regler som investeringsmotoren i Paperclips. Terminene får navn etter potetsorter
-  const SORTS = ['Vitae', 'Panacea', 'Balm', 'Salve', 'Tonic', 'Elixir', 'Draught', 'Tincture', 'Philter', 'Nostrum'];
-  const secTotal = () => S.stocks.reduce((a, st) => a + st.total, 0);
+  // Remedy Exchange 2.0 (Kenneths idé 2026-10-18, plan i boers-plan.md): åtte varer som svinger i pris, som spilleren kjøper og selger
+  // selv når han vil. Hver vare har en «riktig verdi» som følger en syklus, og prisen trekkes mot den med litt støy. Det gir et mønster
+  // man kan lese. Oppgraderinger åpner flere varer og senker kurtasjen, og meglere handler automatisk. Tallene er simulert mot dagens
+  // motor i Paperclips (4,4 % per minutt ved start og 11,4 % med alt, for en spiller som følger en enkel regel).
+  const EXG = [
+    { n: 'Gold', F: 100, sig: 0.003, A: 0.08, T: 180 },
+    { n: 'Silver', F: 40, sig: 0.005, A: 0.11, T: 180 },
+    { n: 'Bronze', F: 12, sig: 0.006, A: 0.15, T: 160 },
+    { n: 'Coffee Beans', F: 25, sig: 0.009, A: 0.24, T: 150 },
+    { n: 'Green Leaves', F: 6, sig: 0.012, A: 0.24, T: 150 },
+    { n: 'Leeches', F: 15, sig: 0.016, A: 0.27, T: 140 },
+    { n: 'Dried Bat Ears', F: 70, sig: 0.022, A: 0.30, T: 120 },
+    { n: 'Mummy Dust', F: 300, sig: 0.030, A: 0.34, T: 100 },
+  ];
+  const EX_KAPPA = 0.04, EX_HIST = 150, EX_MAXBROKERS = 8;
+  const EX_UPGRADES = [
+    { name: 'The Telegraph', tip: 'Trend arrows, and the chart shows the last five minutes instead of two.' },
+    { name: 'Cheaper Commission I', tip: 'Every trade costs 1.5% instead of 2%.' },
+    { name: 'A Bigger Floor', tip: 'Opens two more goods: Green Leaves and Leeches.' },
+    { name: 'Cheaper Commission II', tip: 'Every trade costs 1% instead of 1.5%.' },
+    { name: 'The Night Market', tip: 'Opens the two wildest goods: Dried Bat Ears and Mummy Dust.' },
+    { name: 'Cheaper Commission III', tip: 'Every trade costs 0.5% instead of 1%.' },
+  ];
+  const exStep = () => Math.min(EX_UPGRADES.length, S.investLevel);
+  const exBrokers = () => Math.max(0, Math.min(EX_MAXBROKERS, S.investLevel - EX_UPGRADES.length));
+  const exGoodsOpen = () => { const st = exStep(); return st >= 5 ? 8 : st >= 3 ? 6 : 4; };
+  const exFee = () => [0.02, 0.02, 0.015, 0.015, 0.01, 0.01, 0.005][exStep()];
+  const exTele = () => exStep() >= 1;
+  const exPrice = g => Math.exp(g.lnP);
+  const secTotal = () => S.ex ? S.ex.goods.reduce((a, g) => a + (g.units + g.bunits) * exPrice(g), 0) : 0;
   const portTotal = () => S.bankroll + secTotal();
-  const createStock = budget => {
-    S.stockID++;
-    const roll = Math.random();
-    let pri = Math.ceil(Math.random() * (roll > .99 ? 3000 : roll > .85 ? 500 : roll > .60 ? 150 : roll > .20 ? 50 : 15));
-    if (pri > budget) pri = Math.ceil(budget * roll);
-    const amt = Math.min(1000000, Math.floor(budget / pri));
-    S.stocks.push({ id: S.stockID, sort: SORTS[Math.floor(Math.random() * SORTS.length)], price: pri, amount: amt, total: pri * amt, profit: 0 });
-    S.bankroll -= pri * amt;
+  const exFair = (i, t) => Math.log(EXG[i].F) + EXG[i].A * Math.sin(2 * Math.PI * t / EXG[i].T + S.ex.goods[i].ph);
+  const exNoise = () => (Math.random() + Math.random() + Math.random() - 1.5) * 1.0887;
+  // Én sekundsrunde: prisen trekkes mot den riktige verdien med støy, og meglerne handler
+  const exTick = () => {
+    const ex = S.ex; ex.t++;
+    const open = exGoodsOpen(), nb = exBrokers(), insight = Math.max(0, S.gainChance - 0.5);
+    const theta = Math.max(0.04, 0.09 - 0.2 * insight), frac = Math.min(0.7, 0.45 + 2 * insight);
+    ex.goods.forEach((g, i) => {
+      const lnF = exFair(i, ex.t);
+      g.lnP += EX_KAPPA * (lnF - g.lnP) + EXG[i].sig * exNoise();
+      if (ex.t % 2 === 0) { g.hist.push(Math.round(exPrice(g) * 100) / 100); if (g.hist.length > EX_HIST) g.hist.shift(); }
+      if (ex.t <= 0 || i >= open || i >= nb) return;   // ingen meglere i forhistorien
+      const P = exPrice(g), fee = exFee();
+      if (g.bunits === 0 && g.lnP < lnF - theta) {
+        const idle = Math.max(1, ex.goods.slice(0, Math.min(open, nb)).filter(x => x.bunits === 0).length), use = S.bankroll * frac / idle;
+        if (use >= 1) { g.bunits = use * (1 - fee) / P; S.bankroll -= use; }
+      } else if (g.bunits > 0 && g.lnP > lnF + theta) { S.bankroll += g.bunits * P * (1 - fee); g.bunits = 0; }
+    });
   };
-  const stockShop = () => {
-    const pt = portTotal();
-    let budget = Math.ceil(pt / S.risk);
-    const reserves = S.risk == 1 ? 0 : Math.ceil(pt / (11 - S.risk));
-    if (S.bankroll - budget < reserves) {
-      if (S.risk == 1) budget = S.bankroll > pt / 10 ? S.bankroll : 0;
-      else budget = S.bankroll - reserves;
-    }
-    if (S.stocks.length < 5 && S.bankroll >= 5 && budget >= 1 && S.bankroll - budget >= reserves && Math.random() < .25) createStock(budget);
+  const exInit = () => {
+    const goods = EXG.map(g => ({ lnP: Math.log(g.F), units: 0, bunits: 0, ph: Math.random() * 2 * Math.PI, hist: [] }));
+    S.ex = { t: -EX_HIST * 2, goods };
+    // forhistorie, så kurvene ikke er tomme første gang børsen åpnes
+    for (let k = 0; k < EX_HIST * 2; k++) exTick();
   };
-  const updateStocks = () => {
-    for (const st of S.stocks) {
-      if (Math.random() >= .6) continue;
-      const gain = Math.random() <= S.gainChance;
-      const delta = Math.ceil((Math.random() * st.price) / (4 * S.risk));
-      st.price += gain ? delta : -delta;
-      if (st.price == 0 && Math.random() > .24) st.price = 1;
-      st.total = st.price * st.amount;
-      st.profit += (gain ? delta : -delta) * st.amount;
-    }
+  const exBuy = (i, share) => {
+    const g = S.ex.goods[i], v = Math.min(S.bankroll, S.bankroll * share);
+    if (i >= exGoodsOpen() || v < 1) return;
+    g.units += v * (1 - exFee()) / exPrice(g); S.bankroll -= v;
   };
-  const sellStock = () => { S.bankroll += S.stocks[0].total; S.stocks.shift(); };
-
+  const exSell = (i, share) => {
+    const g = S.ex.goods[i], u = g.units * share;
+    if (u <= 0) return;
+    S.bankroll += u * exPrice(g) * (1 - exFee()); g.units -= u; if (g.units < 1e-9) g.units = 0;
+  };
+  const exCashOut = () => {
+    for (const g of S.ex.goods) { S.bankroll += (g.units + g.bunits) * exPrice(g) * (1 - exFee()); g.units = 0; g.bunits = 0; }
+  };
+  // Tegningen av radene: bygges på nytt bare når antall åpne varer endres, og oppdateres ellers én gang i sekundet
+  let goodsKey = '', goodsDrawn = '';
+  const exSpark = g => {
+    const n = exTele() ? EX_HIST : 60, h = g.hist.slice(-n);
+    if (h.length < 3) return '';
+    const mn = Math.min(...h), mx = Math.max(...h), r = mx - mn || 1;
+    const pts = h.map((v, k) => `${(k / (n - 1) * 92).toFixed(1)},${(22 - (v - mn) / r * 20).toFixed(1)}`).join(' ');
+    const last = pts.split(' ').pop().split(',');
+    return `<svg class="spark" viewBox="0 0 92 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}"/><circle cx="${last[0]}" cy="${last[1]}" r="2"/></svg>`;
+  };
+  const drawGoods = () => {
+    if (!S.ex) return;
+    const open = exGoodsOpen(), tele = exTele();
+    const key = `${open}|${S.ex.t}|${tele}|${S.ex.goods.map(g => Math.round(g.units * 1e3) + ':' + Math.round(g.bunits * 1e3)).join(',')}|${Math.round(S.bankroll)}`;
+    if (key === goodsKey) return;
+    goodsKey = key;
+    let h = '';
+    EXG.slice(0, open).forEach((def, i) => {
+      const g = S.ex.goods[i], P = exPrice(g), have = g.units + g.bunits;
+      let arrow = '';
+      if (tele && g.hist.length > 12) { const d = P / g.hist[g.hist.length - 11] - 1; arrow = `<i class="${d > 0.005 ? 'up' : d < -0.005 ? 'down' : 'flat'}">${d > 0.005 ? '▲' : d < -0.005 ? '▼' : '▬'}</i>`; }
+      const own = have > 0 ? `${num(have * P)} gold${g.bunits > 0 ? ' (broker)' : ''}` : 'none';
+      h += `<div class="good"><div class="gtop"><div class="gname">${def.n}${arrow}</div>${exSpark(g)}<div class="gprice">${P >= 100 ? num(P) : P.toFixed(2)}</div></div>`
+        + `<div class="gmid"><span class="gown">${own}</span><span class="gbtn">Buy <button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="0.1"${S.bankroll < 1 ? ' disabled' : ''}>10%</button><button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="0.5"${S.bankroll < 1 ? ' disabled' : ''}>50%</button><button type="button" class="sm" data-ex="buy" data-i="${i}" data-s="1"${S.bankroll < 1 ? ' disabled' : ''}>All</button><span class="gap"></span>Sell <button type="button" class="sm" data-ex="sell" data-i="${i}" data-s="0.5"${g.units <= 0 ? ' disabled' : ''}>½</button><button type="button" class="sm" data-ex="sell" data-i="${i}" data-s="1"${g.units <= 0 ? ' disabled' : ''}>All</button></span></div></div>`;
+    });
+    if (h !== goodsDrawn) { goodsDrawn = h; $('goods').innerHTML = h; }
+  };
   // Travløpet: samme regler som turneringene i Paperclips. Hestene løper heat to og to, 10 heat per par, og alle møter alle.
   // Før hvert heat velger begge innerbanen (1) eller ytterbanen (2). Tabellen sier hvor mange poeng hver får.
   const R = { inProg: false, ready: false, hMove: 1, vMove: 1, hPrev: 1, vPrev: 1, h: 0, v: 0, round: 0, rounds: 0, counter: 0, heat: 0, scores: [], hit: null, hitLeft: 0, timer: 0 };
@@ -1246,7 +1324,7 @@
     { id: 'trav', gild: true, title: 'Liar’s Table', cost: { energy: 12000 }, desc: 'Bet on liars and win Arcane Tokens',
       show: () => done('drom6') || S.flags.farm, buy: () => { S.flags.race = 1; say('You take a seat at the Liar’s Table. Everyone smiles.'); } },
     { id: 'bors', gild: true, title: 'Remedy Exchange', cost: { energy: 10000 }, desc: 'Invest gold in remedy shares. The exchange buys and sells by itself',
-      show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
+      show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; if (!S.ex) exInit(); say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
     { id: 'traktor', gild: true, title: 'Cauldron Walkers', cost: { energy: 12000 }, desc: '500 times as effective as an apprentice',
       // ved 65 lærlinger (Kenneths valg 2026-10-18), MegaClippers i Paperclips kommer ved 75
       show: () => S.boys >= 65, buy: () => { S.flags.tractor = 1; say('The cauldron walkers stride off on their own. They do not sleep.'); } },
@@ -1505,15 +1583,23 @@
   $('btnSign').onclick = () => { const c = signCost(); if (S.funds >= c) { S.funds -= c; S.signLvl++; update(); } };
   $('btnBoy').onclick = () => { const c = boyCost(); if (S.funds >= c) { S.funds -= c; S.boys++; update(); } };
   $('btnTractor').onclick = () => { const c = tractorCost(); if (S.funds >= c) { S.funds -= c; S.tractors++; update(); } };
-  $('risk').value = String(S.risk);
-  $('risk').onchange = () => { S.risk = +$('risk').value; };
   $('btnDeposit').onclick = () => { const f = Math.floor(S.funds); S.ledger -= f; S.bankroll += f; S.funds -= f; update(); };
   $('btnWithdraw').onclick = () => { S.ledger += S.bankroll; S.funds += S.bankroll; S.bankroll = 0; update(); };
+  $('btnCashOut').onclick = () => { if (S.ex) exCashOut(); update(); };
+  $('goods').onclick = e => {
+    const b = e && e.target && e.target.closest ? e.target.closest('[data-ex]') : null;
+    if (!b || b.disabled || !S.ex) return;
+    if (b.dataset.ex === 'buy') exBuy(+b.dataset.i, +b.dataset.s); else exSell(+b.dataset.i, +b.dataset.s);
+    update();
+  };
+  // Oppgraderinger: de seks første i rekkefølge, deretter opptil åtte meglere. Alle betales med Arcane Tokens
   $('btnInvestUp').onclick = () => {
-    if (S.coin < S.investCost) return;
-    S.coin -= S.investCost; S.investLevel++; S.gainChance += .01;
+    if (S.coin < S.investCost || (S.investLevel >= EX_UPGRADES.length + EX_MAXBROKERS)) return;
+    const was = exStep(); S.coin -= S.investCost; S.investLevel++;
     S.investCost = Math.floor(Math.pow(S.investLevel + 1, Math.E) * 100);
-    say(`A new broker joins your desk. Chance of gain is now ${Math.round(S.gainChance * 100)}%.`); update();
+    if (S.investLevel <= EX_UPGRADES.length) say(`${EX_UPGRADES[S.investLevel - 1].name}: ${EX_UPGRADES[S.investLevel - 1].tip}`);
+    else say('A new broker joins your desk. He trades by himself, even when you are away.');
+    update();
   };
   // Hjelpetekster: hold musa over (eller tab til) noe med data-tip, så står forklaringen fast nederst i avisa
   // (Apothecary's Notes). Den følger ikke musa, så den aldri dekker spillet.
@@ -1787,16 +1873,19 @@
       $('autoRaceBox').hidden = !S.autoRace; $('autoRaceStatus').textContent = S.autoRaceOn ? 'ON' : 'OFF';
     }
     if (S.flags.exchange) {
+      if (!S.ex) exInit();
       const st = secTotal(), pt = S.bankroll + st;
       $('bankroll').textContent = num(S.bankroll); $('secTotal').textContent = num(st); $('portTotal').textContent = num(pt);
       const g = S.ledger + pt;
       $('ledger').textContent = S.ledger ? `Total ${g >= 0 ? 'gain' : 'loss'}: ${num(Math.abs(g))} gold` : '';
-      $('stockRows').innerHTML = Array.from({ length: 5 }, (_, i) => { const x = S.stocks[i];
-        return x ? `<tr><td>${x.sort}</td><td>${num(x.amount)}</td><td>${num(x.price)}</td><td>${num(x.total)}</td><td>${x.profit >= 0 ? '+' : '−'}${num(Math.abs(x.profit))}</td></tr>`
-                 : '<tr><td></td><td></td><td></td><td></td><td></td></tr>'; }).join('');
-      $('investLevel').textContent = S.investLevel; $('investCost').textContent = num(S.investCost);
-      $('btnInvestUp').disabled = S.coin < S.investCost;
-      $('btnDeposit').disabled = S.funds < 1; $('btnWithdraw').disabled = S.bankroll < 1;
+      drawGoods();
+      const lv = S.investLevel, steps = EX_UPGRADES.length, nb = exBrokers(), maxed = lv >= steps + EX_MAXBROKERS;
+      $('btnInvestUp').textContent = lv < steps ? EX_UPGRADES[lv].name : 'Hire a Broker';
+      $('exUpBox').dataset.tip = lv < steps ? EX_UPGRADES[lv].tip : 'Each broker trades one good by himself, buying when the price is low and selling when it is high. He pays the full commission. Each one costs more than the last.';
+      $('exUpNote').textContent = maxed ? 'every good has a broker' : `${lv >= steps ? nb + ' of ' + EX_MAXBROKERS + ' brokers · ' : ''}${num(S.investCost)} Arcane Tokens`;
+      $('btnInvestUp').disabled = maxed || S.coin < S.investCost;
+      $('exFee').textContent = `Commission ${(exFee() * 100).toFixed(1).replace(/\.0$/, '')}% on every trade${exTele() ? '' : ' · no trend arrows yet'}`;
+      $('btnDeposit').disabled = S.funds < 1; $('btnWithdraw').disabled = S.bankroll < 1; $('btnCashOut').disabled = secTotal() < 1;
     }
     if (S.flags.coffee || S.cups) {
       drawOrbs();
@@ -1943,14 +2032,7 @@
     // bonden: nivå fra produksjonsmål, energi fylles opp med 10 per sekund per Spirit opp til Intellect × 1 000
     if (!S.flags.farm) levelSource().check();
     checkRank();
-    if (S.flags.exchange) {
-      if (S.t % 10 === 0) stockShop();
-      if (S.t % 25 === 0) {
-        S.sellDelay++;
-        if (S.stocks.length && S.sellDelay >= 5 && Math.random() <= .3) { sellStock(); S.sellDelay = 0; }
-        if (S.stocks.length) updateStocks();
-      }
-    }
+    if (S.flags.exchange && S.ex && S.t % 10 === 0) exTick();
     if (S.flags.comp) {
       // overskuddet fra kaffen forsvinner etter 8 sekunder, stadig raskere, som tempOps i Paperclips
       if (S.extraEnergy > 0) {
