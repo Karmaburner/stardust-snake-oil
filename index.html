@@ -879,7 +879,7 @@
   // Guiden følger med på hva man gjør, og sier bare noe til man har gjort det (ingen «trykk Neste»). Spill som alt er
   // godt i gang, hopper rett til slutten og skjuler ham. Han kalles tilbake med Tutorial i bunnlinjen.
   const GUIDE = [
-    { say: 'Right, then. Press the seal. Every potion is a coin in disguise.', done: () => S.total >= 1 },
+    { say: 'Right, then. Press Brew Potion. Every potion is a coin in disguise.', done: () => S.total >= 1 },
     { say: 'Splendid. Now somebody has to buy it. Customers come on their own, and the price decides how fast.', done: () => S.funds > 0 || S.total >= 20 },
     { say: 'Our first coin! Try the arrows by the price: lower sells faster, higher pays more per bottle. Aim to sell about as fast as you brew.', done: () => !!S.flags.boy },
     { say: 'Someone is looking for work. Hire an apprentice. They brew while you rest, and they work for pennies.', done: () => S.boys >= 1 },
