@@ -1406,7 +1406,7 @@
     { id: 'duft', title: 'The Medicine Show', cost: { energy: 7500, level: 1 }, desc: 'A snake handler, the brass band and a man in the crowd who is cured every night. Advertising: five times as effective',
       show: () => done('band'), buy: () => { S.mktEff *= 5; say('The same man is cured every night. Nobody notices it is always him.'); } },
     // Slutten på fase 1, som HypnoDrones og Release the HypnoDrones i Paperclips
-    { id: 'menighet', title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
+    { id: 'menighet', gild: true, title: 'Order of the Serpent', cost: { energy: 70000 }, desc: 'A secret order that has been waiting for someone like you',
       show: () => done('duft'), buy: () => { S.flags.drought = 1; S.droughtDay = today(); say('The Order gathers every night. They speak of something sleeping beneath the Earth.'); } },
     { id: 'grav', gild: true, title: 'Just add water.', cost: { level: 100 }, desc: 'The Order is waiting for your word',
       show: () => done('menighet'), buy: () => { S.flags.farm = 1; endPhase(); say('The Order pours your water into the deepest well on Earth.'); say('Something down there drinks.'); say('Every well on Earth is empty. Something below is not.'); say(`Day ${num(S.endDay)}: the wells ran dry.`); if (S.titheMsg) { say(S.titheMsg); S.titheMsg = ''; } S.chapter1 = S.t; say(`End of Chapter 1. Time spent on the first chapter: ${clock(S.t / 10)}`); } },
