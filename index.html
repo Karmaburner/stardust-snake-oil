@@ -99,6 +99,14 @@
   .bubble button.link { display: block; margin-left: auto; color: #5e4a33; }
   .bubble button.link:hover:not(:disabled) { color: #8a241c; }
   .portrait { position: absolute; top: -2px; right: 8px; width: 38px; }
+  /* Replikk fra alkymisten ved store øyeblikk: en liten boble under portrettet som legger seg oppå resten i noen sekunder,
+     så ingenting flytter seg. Kan ikke klikkes på. */
+  .chat { position: absolute; z-index: 6; top: 54px; right: 4px; width: min(220px, 82%); padding: 6px 9px 5px; background: #eee6cf; color: #24190f; border: 2px solid #24190f; border-radius: 7px;
+    font-size: 14px; line-height: 1.3; box-shadow: 0 3px 8px rgba(0, 0, 0, .45); pointer-events: none; animation: chatIn .35s ease-out; }
+  .chat::before { content: ""; position: absolute; right: 18px; top: -11px; border: 6px solid transparent; border-bottom: 9px solid #24190f; border-top: 0; }
+  .chat::after { content: ""; position: absolute; right: 20px; top: -7px; border: 4px solid transparent; border-bottom: 6px solid #eee6cf; border-top: 0; }
+  @keyframes chatIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .chat { animation: none; } }
   #farmerBox .in { position: relative; }
   .fig .bobber { animation: bob 1.4s steps(1) infinite; }
   .fig .eye { animation: blink 5s steps(1) infinite; }
@@ -469,6 +477,7 @@
       </div></section>
       <section class="label" id="farmerBox" hidden><div class="in">
         <div class="portrait" id="portrait" aria-hidden="true"></div>
+        <div class="chat" id="portraitSay" hidden></div>
         <h2>The Alchemist</h2>
         <div class="rank" id="rankTitle" data-tip="Your title. It rises with the most Mastery points you have ever had, so spending them never costs you your title.">Travelling Peddler</div>
         <div class="row" id="levelRow"><span class="k" data-tip="Your standing as an alchemist. You gain Mastery points at production targets and from some tasks on the to-do list, and assign them to Spirit and Intellect. Some tasks cost Mastery points." tabindex="0">Mastery</span><span class="v"><span id="level">0</span> <span class="sub" id="points"></span></span></div>
@@ -637,6 +646,8 @@
     peakLevel: 0, rankTitle: '', rankIdx: 0,
     // Alkymisten som hjelper i gang: hvilket trinn man er på, om man har sendt ham bort, og om Tutorial har kalt ham tilbake
     guide: { step: 0, off: 0, recall: 0 },
+    // hvilke replikker alkymisten alt har sagt, så de bare kommer én gang
+    chat: {},
     // Fase 2: samme tall som Paperclips (matter, droner, fabrikker, strøm og svermen), med våre navn
     unused: 0, matter: 6e27, rawMagic: 0, diviners: 0, distillers: 0, works: 0, worksCost: 1e8,
     divRate: 26180337, disRate: 16180339, worksRate: 1e9, worksBoost: 1, droneBoost: 1,
@@ -893,12 +904,37 @@
     $('mentorBox').hidden = !gm;
     if (gm && gm.text !== mentorText) { mentorText = gm.text; $('mentorSay').textContent = gm.text; }
   };
+  // Replikker ved store øyeblikk (Kenneths ønske): kommer én gang hver, i kø hvis flere kommer samtidig, og vises i åtte sekunder
+  const REACT = {
+    drom5: 'Something shifted under my boots. Probably the cellar.',
+    drom6: 'Did someone say my name? From down there?',
+    isbre: 'Dust in every barrel. Pretty. I shall not ask.',
+    bygdavil: 'It actually works. And it was only ever water!',
+    traktor: 'They walk on their own. I never taught them that.',
+    bors: 'Shares in remedies. A fine way to lose money on water.',
+    seance: 'The spirits charge by the hour. So do I.',
+    kaffe: 'I see... mostly my own reflection.',
+    menighet: 'They knelt. Nobody has ever knelt for me before.',
+    tubule: 'Glass that grows out of potions. I have stopped asking.',
+    fact: 'A works with nobody working in it. Efficient. Unsettling.',
+    heart: 'It is beating. Under my feet. It is the size of the world.',
+  };
+  const RANK_REACT = { 4: 'Miracle Worker. They say it as if it were true.', 7: () => order() ? 'Keeper. Of what, exactly? Nobody will say.' : 'Archmagus. My shadow arrives before I do.' };
+  const chatQ = []; let chatText = '', chatUntil = 0;
+  const react = (id, text) => { if (!text || S.chat[id]) return; S.chat[id] = 1; chatQ.push(text); };
+  const chatStep = () => {
+    const t = performance.now();
+    if (chatText && t >= chatUntil) chatText = '';
+    if (!chatText && chatQ.length && !$('farmerBox').hidden) { chatText = chatQ.shift(); chatUntil = t + 8000; }
+    const el = $('portraitSay'); if (el.textContent !== chatText) el.textContent = chatText; el.hidden = !chatText;
+  };
   const checkRank = () => {
     if (S.level > S.peakLevel) S.peakLevel = S.level;
     let r = RANKS[0], ri = 0; RANKS.forEach((x, i) => { if (S.peakLevel >= x[0]) { r = x; ri = i; } }); S.rankIdx = ri;
     const title = r[1]();
     if (title === S.rankTitle) return;
     const first = !S.rankTitle; S.rankTitle = title;
+    if (!first && RANK_REACT[S.rankIdx]) { const rl = RANK_REACT[S.rankIdx]; react('rank' + S.rankIdx, typeof rl === 'function' ? rl() : rl); }
     if (!first && r[2]) { sayCtx = 'Society'; say(r[2]()); sayCtx = ''; }
   };
   const freePoints = () => S.flags.farm ? S.gifts : S.level - S.spirit - S.stamina;
@@ -1183,6 +1219,7 @@
   const foldPaper = () => {
     $('extra').hidden = true; S.flags.cracked = 1;
     const c = $('crack'); c.hidden = false; c.classList.toggle('opening', !calmMotion2());
+    react('fold', 'Dry. All of it. And something down there is still thirsty.');
     update();
   };
   const PROJECTS = [
@@ -1340,7 +1377,7 @@
     b.innerHTML = `<span class="cost">${priceTag(p.cost)}</span><b>${p.title}</b>${p.desc}`;
     b.onclick = () => {
       if (!canPay(p.cost)) return;
-      pay(p.cost); sayCtx = projSection(p); p.buy(); sayCtx = '';
+      pay(p.cost); sayCtx = projSection(p); p.buy(); sayCtx = ''; react(p.id, REACT[p.id]);
       if (!p.repeat) S.done.push(p.id);
       b.remove(); delete projEls[p.id]; update();
     };
@@ -1380,6 +1417,7 @@
   const dryDays = () => today() - Math.max(S.rainDay || 0, S.droughtDay || 0);
   let omenTimer = 0;
   const omen = () => {
+    react('omen', 'The flask blinked. I did not touch it.');
     const f = $('flask'); f.classList.toggle('omen', true);
     clearTimeout(omenTimer); omenTimer = setTimeout(() => f.classList.toggle('omen', false), calmMotion() ? 2500 : 600);
   };
@@ -1635,7 +1673,7 @@
     $('waterGauge').style.width = (S.waterPeak > 0 ? S.water / S.waterPeak * 100 : 0).toFixed(1) + '%';
     $('day').textContent = num(S.t / 10 + 1);
     $('rankTitle').textContent = S.rankTitle || 'Travelling Peddler';
-    drawMentor();
+    drawMentor(); chatStep();
     if (helpIdle && today() - adDay >= 20) { adDay = today(); adIdx++; drawAd(); }
     $('weather').textContent = S.flags.dry ? 'Wells dry' : S.rainLeft > 0 ? 'Rain' : S.flags.drought && S.story.dry1 === true ? `Dry ${num(dryDays())} days` : 'Fair';
     $('paperPrice').textContent = S.flags.farm ? 'One potion' : 'One penny';
