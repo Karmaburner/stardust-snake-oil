@@ -1123,6 +1123,28 @@
     { name: 'The Night Market', tip: 'Opens the two wildest goods: Dried Bat Ears and Mummy Dust.' },
     { name: 'Cheaper Commission III', tip: 'Every trade costs 0.5% instead of 1%.' },
   ];
+  // Prosjekter som flytter prisene (Kenneths idé): man gjør noe, avisa skriver om det med en gang, og prisen følger etter 20 til 40 sekunder
+  // senere. Samme prosjekt kan kjøpes på nytt etter ti minutter, og redaktøren trenger fire minutter mellom to saker. 15 % av gangene var det bare et rykte («CORRECTION»), og prisen rører seg ikke.
+  // Gullet har et knep til: etter noen minutter viser det seg at det var messing, og prisen faller under det den var.
+  const EX_EVENTS = [
+    { id: 'gold', title: 'Salt the Old Mine', cost: 5000, amp: 0.18, flavor: 'A little gold dust in an old shaft',
+      news: 'RICH VEIN FOUND IN ABANDONED MINE: A prospector shows off a sack of gold dust. Gold is expected to climb.', fix: 'The story about gold was a misunderstanding. The editor apologises.',
+      dump: { amp: 0.16, news: 'ASSAY OFFICE: THE GOLD IS MOSTLY BRASS: The vein turns out to be an old kettle. Gold is expected to drop.' } },
+    { id: 'silver', title: 'Start a Silver Scare', cost: 4000, amp: 0.20, flavor: 'A whisper in the jewellers’ quarter',
+      news: 'SILVER SCARCE, SAY JEWELLERS: Three shops are out of spoons. Silver is expected to climb.', fix: 'The silver was in the other drawer. The jewellers apologise.' },
+    { id: 'bronze', title: 'Unveil a Bronze Statue', cost: 4000, amp: 0.22, flavor: 'A statue takes a lot of bronze',
+      news: 'TOWN TO RAISE BRONZE STATUE OF ITS FOUNDER: The founder is said to have been rather large. Bronze is expected to climb.', fix: 'The statue will be made of cardboard. Bronze is unaffected.' },
+    { id: 'coffee', title: 'Hire a Coffee Critic', cost: 4500, amp: 0.25, flavor: 'A critic with a loud voice and a free cup',
+      news: 'CRITIC PRAISES LOCAL BEAN: It is “fearless, and a little damp”. Coffee Beans are expected to climb.', fix: 'The critic had the wrong cup. Coffee Beans are unaffected.' },
+    { id: 'leaves', title: 'Start a Herbal Fashion', cost: 5000, amp: 0.25, flavor: 'A fashionable tea means a fashionable price',
+      news: 'HERBAL TEAS ALL THE RAGE IN THE CAPITAL: Society ladies sip nettles. Green Leaves are expected to climb.', fix: 'It was only one lady, and she was allergic. Green Leaves are unaffected.' },
+    { id: 'leeches', title: 'Start a Leech Craze', cost: 6000, amp: 0.30, flavor: 'Every doctor wants one, soon',
+      news: 'DOCTORS NOW PRESCRIBE LEECHES FOR EVERYTHING: Even the cough. Leeches are expected to climb.', fix: 'The doctors meant lemons. Leeches are unaffected.' },
+    { id: 'bats', title: 'Plant Rumours About Bats', cost: 8000, amp: 0.35, flavor: 'Nobody knows why, but everyone will want them',
+      news: 'BATS SEEN CIRCLING THE TOWN HALL: Nobody knows why. Dried Bat Ears are expected to climb.', fix: 'They were swallows. Dried Bat Ears are unaffected.' },
+    { id: 'mummy', title: 'Unwrap a Mummy', cost: 12000, amp: 0.45, flavor: 'The museum gets an exhibit, the market a craze',
+      news: 'MUMMY UNWRAPPED AT THE MUSEUM, CROWDS FAINT: Mummy Dust is expected to climb sharply.', fix: 'It was a rolled-up carpet. Mummy Dust is unaffected.' },
+  ];
   const exStep = () => Math.min(EX_UPGRADES.length, S.investLevel);
   const exBrokers = () => Math.max(0, Math.min(EX_MAXBROKERS, S.investLevel - EX_UPGRADES.length));
   const exGoodsOpen = () => { const st = exStep(); return st >= 5 ? 8 : st >= 3 ? 6 : 4; };
@@ -1131,30 +1153,55 @@
   const exPrice = g => Math.exp(g.lnP);
   const secTotal = () => S.ex ? S.ex.goods.reduce((a, g) => a + (g.units + g.bunits) * exPrice(g), 0) : 0;
   const portTotal = () => S.bankroll + secTotal();
-  const exFair = (i, t) => Math.log(EXG[i].F) + EXG[i].A * Math.sin(2 * Math.PI * t / EXG[i].T + S.ex.goods[i].ph);
+  const exBase = (i, t) => Math.log(EXG[i].F) + EXG[i].A * Math.sin(2 * Math.PI * t / EXG[i].T + S.ex.goods[i].ph);
+  const exEnv = (e, t) => {
+    const dt = t - e.t0, sm = x => x * x * (3 - 2 * x);
+    if (dt <= 0) return 0;
+    if (dt < e.ramp) return sm(dt / e.ramp);
+    if (dt < e.ramp + e.hold) return 1;
+    if (dt < e.ramp + e.hold + e.down) return 1 - sm((dt - e.ramp - e.hold) / e.down);
+    return 0;
+  };
+  const exFair = (i, t) => exBase(i, t) + (S.ex.events || []).reduce((a, e) => e.g === i ? a + e.amp * exEnv(e, t) : a, 0);
   const exNoise = () => (Math.random() + Math.random() + Math.random() - 1.5) * 1.0887;
   // Én sekundsrunde: prisen trekkes mot den riktige verdien med støy, og meglerne handler
   const exTick = () => {
     const ex = S.ex; ex.t++;
+    if (!ex.events) { ex.events = []; ex.cool = {}; }
+    // nyheter som står i kø (for eksempel at gullet var messing), og hendelser som er ferdige
+    for (const e of ex.events) if (!e.said && ex.t >= e.newsAt) { e.said = true; sayCtx = 'From the Market'; say(e.news); sayCtx = ''; }
+    ex.events = ex.events.filter(e => !e.said || ex.t < e.t0 + e.ramp + e.hold + e.down);
     const open = exGoodsOpen(), nb = exBrokers(), insight = Math.max(0, S.gainChance - 0.5);
     const theta = Math.max(0.04, 0.09 - 0.2 * insight), frac = Math.min(0.7, 0.45 + 2 * insight);
     ex.goods.forEach((g, i) => {
-      const lnF = exFair(i, ex.t);
+      const lnF = exFair(i, ex.t), lnB = exBase(i, ex.t);   // meglerne kjenner bare den vanlige verdien, ikke nyhetene
       g.lnP += EX_KAPPA * (lnF - g.lnP) + EXG[i].sig * exNoise();
       if (ex.t % 2 === 0) { g.hist.push(Math.round(exPrice(g) * 100) / 100); if (g.hist.length > EX_HIST) g.hist.shift(); }
       if (ex.t <= 0 || i >= open || i >= nb) return;   // ingen meglere i forhistorien
       const P = exPrice(g), fee = exFee();
-      if (g.bunits === 0 && g.lnP < lnF - theta) {
+      if (g.bunits === 0 && g.lnP < lnB - theta) {
         const idle = Math.max(1, ex.goods.slice(0, Math.min(open, nb)).filter(x => x.bunits === 0).length), use = S.bankroll * frac / idle;
         if (use >= 1) { g.bunits = use * (1 - fee) / P; S.bankroll -= use; }
-      } else if (g.bunits > 0 && g.lnP > lnF + theta) { S.bankroll += g.bunits * P * (1 - fee); g.bunits = 0; }
+      } else if (g.bunits > 0 && g.lnP > lnB + theta) { S.bankroll += g.bunits * P * (1 - fee); g.bunits = 0; }
     });
   };
   const exInit = () => {
     const goods = EXG.map(g => ({ lnP: Math.log(g.F), units: 0, bunits: 0, ph: Math.random() * 2 * Math.PI, hist: [] }));
-    S.ex = { t: -EX_HIST * 2, goods };
+    S.ex = { t: -EX_HIST * 2, goods, events: [], cool: {} };
     // forhistorie, så kurvene ikke er tomme første gang børsen åpnes
     for (let k = 0; k < EX_HIST * 2; k++) exTick();
+  };
+  const exTrigger = i => {
+    const d = EX_EVENTS[i], ex = S.ex;
+    if (!ex.events) { ex.events = []; ex.cool = {}; }
+    const t0 = ex.t + 20 + Math.floor(Math.random() * 20), dud = Math.random() < 0.15;
+    ex.cool[i] = ex.t + 600; ex.cool.all = ex.t + 240;   // ti minutter før samme vare igjen, og fire minutter før noen ny nyhet
+    sayCtx = 'From the Market'; say(d.news); sayCtx = '';
+    if (dud) ex.events.push({ g: i, amp: 0, t0, ramp: 1, hold: 0, down: 1, news: 'CORRECTION: ' + d.fix, newsAt: t0 + 5, said: false });
+    else {
+      ex.events.push({ g: i, amp: d.amp, t0, ramp: 45, hold: 30, down: 75, news: null, newsAt: 0, said: true });
+      if (d.dump) ex.events.push({ g: i, amp: -d.dump.amp, t0: t0 + 240, ramp: 40, hold: 40, down: 90, news: d.dump.news, newsAt: t0 + 215, said: false });
+    }
   };
   const exBuy = (i, share) => {
     const g = S.ex.goods[i], v = Math.min(S.bankroll, S.bankroll * share);
@@ -1323,6 +1370,11 @@
     dream('drom6', 'A Voice from Below', 250, () => S.dreams >= 250, 'While you work, a voice says your name. It comes from below.', 'Something down there knows your name...'),
     { id: 'trav', gild: true, title: 'Liar’s Table', cost: { energy: 12000 }, desc: 'Bet on liars and win Arcane Tokens',
       show: () => done('drom6') || S.flags.farm, buy: () => { S.flags.race = 1; say('You take a seat at the Liar’s Table. Everyone smiles.'); } },
+    // Prosjekter som flytter prisene på børsen (Kenneths idé): én per vare, når varen er åpen. Kan kjøpes på nytt etter ti minutter
+    ...EX_EVENTS.map((d, i) => ({ id: 'ev_' + d.id, repeat: true, title: d.title, cost: { energy: d.cost },
+      desc: `Remedy Exchange: ${d.flavor}. The paper runs the story first, and ${EXG[i].n} follows${d.dump ? '. Watch out for the assay' : ''}. The editor needs a few minutes between stories`,
+      show: () => !!S.flags.exchange && !!S.ex && i < exGoodsOpen() && S.ex.t >= ((S.ex.cool && S.ex.cool[i]) || 0) && S.ex.t >= ((S.ex.cool && S.ex.cool.all) || 0),
+      buy: () => { exTrigger(i); react('exev', 'A little rumour, a little ink. The market does the rest.'); } })),
     { id: 'bors', gild: true, title: 'Remedy Exchange', cost: { energy: 10000 }, desc: 'Invest gold in remedy shares. The exchange buys and sells by itself',
       show: () => S.level >= 8, buy: () => { S.flags.exchange = 1; if (!S.ex) exInit(); say('You have a seat at the Remedy Exchange. Prices go up and down all day.'); } },
     { id: 'traktor', gild: true, title: 'Cauldron Walkers', cost: { energy: 12000 }, desc: '500 times as effective as an apprentice',
